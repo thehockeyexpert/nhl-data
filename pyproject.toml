@@ -1,0 +1,20 @@
+[project]
+name = "nhl-data"
+version = "0.1.0"
+description = "NHL data platform: ingest, dbt, MotherDuck"
+requires-python = ">=3.13"
+dependencies = [
+    "dbt-duckdb>=1.11.0",
+    "duckdb>=1.5.6",
+    "httpx>=0.28.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+# Lets the tests import the ingest/ folder from the project root.
+pythonpath = ["."]
+testpaths = ["tests"]

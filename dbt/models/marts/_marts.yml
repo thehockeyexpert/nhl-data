@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: fct_games
+    description: >
+      One row per NHL game (preseason, regular season, playoffs) with the result.
+      Scores are final scores as the NHL reports them, so a shootout win counts as one goal.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [unique, not_null]
+      - name: season
+        description: Eight-digit season ID, e.g. 20252026.
+        data_tests: [not_null]
+      - name: game_type_label
+        description: preseason, regular or playoff.
+        data_tests: [not_null]
+      - name: game_date
+        description: The calendar date the NHL lists the game under.
+        data_tests: [not_null]
+      - name: home_team_id
+        description: The NHL's ID for the home team.
+        data_tests: [not_null]
+      - name: away_team_id
+        description: The NHL's ID for the away team.
+        data_tests: [not_null]
+      - name: is_final
+        description: True once the game is finished.
+      - name: last_period_type
+        description: How the game ended. REG = regulation, OT = overtime, SO = shootout.
+      - name: winner_team_id
+        description: The winning team. Empty if the game is not finished or ended in a tie.
+      - name: is_tie
+        description: True if a finished game ended level. Only possible in seasons that allowed ties.

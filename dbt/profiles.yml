@@ -1,0 +1,10 @@
+# How dbt connects to the database. No secret lives here:
+# DuckDB reads the motherduck_token environment variable by itself.
+nhl_data:
+  target: motherduck
+  outputs:
+    motherduck:
+      type: duckdb
+      path: "md:nhl"
+      schema: main
+      threads: 1

@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_nhl_web__schedule_games
+    description: >
+      One row per game from the NHL weekly schedule (api-web.nhle.com). Includes preseason,
+      regular season, playoffs and any special events the NHL lists, such as the Olympics.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game, e.g. 2025020001.
+        data_tests: [unique, not_null]
+      - name: season
+        description: Eight-digit season ID, e.g. 20252026.
+        data_tests: [not_null]
+      - name: game_type
+        description: The NHL's numeric game type.
+        data_tests: [not_null]
+      - name: game_type_label
+        description: Readable game type. Unverified types are labelled 'unknown type N'.
+      - name: game_date
+        description: The calendar date the NHL lists the game under (local North American date, not UTC).
+      - name: is_final
+        description: True once the game is finished.
+      - name: last_period_type
+        description: How the game ended. REG = regulation, OT = overtime, SO = shootout.
+
+  - name: stg_nhl_stats__games
+    description: >
+      One row per game from the NHL stats API game list. Thinner than the weekly schedule and
+      used as an independent cross-check. Includes scheduled playoff games that were never played.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [unique, not_null]
+      - name: season
+        description: Eight-digit season ID.
+        data_tests: [not_null]
+      - name: is_final
+        description: True for finished games. False for scheduled games that were never played.
+
+  - name: stg_nhl_stats__seasons
+    description: One row per season with the NHL's own facts about it, used by the data checks.
+    columns:
+      - name: season
+        description: Eight-digit season ID.
+        data_tests: [unique, not_null]
+      - name: scheduled_games_per_team
+        description: >
+          Games each team was scheduled to play. In a season that was cut short (2019-20)
+          teams played fewer than this.
+      - name: total_regular_season_games
+        description: Regular-season games actually played in the season.
+        data_tests: [not_null]
+      - name: total_playoff_games
+        description: Playoff games actually played in the season.
+      - name: is_ties_in_use
+        description: True for seasons in which a game could end in a tie.

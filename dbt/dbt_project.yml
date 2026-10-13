@@ -1,0 +1,22 @@
+# dbt's settings file for this project.
+name: nhl_data
+version: "1.0.0"
+
+# Which connection in profiles.yml to use.
+profile: nhl_data
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+# Folders dbt generates and can safely delete.
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  nhl_data:
+    staging:
+      +schema: staging
+      +materialized: view   # staging is light reshaping, so it is stored as a saved query
+    marts:
+      +schema: marts
+      +materialized: table  # marts are stored as real tables so they are fast to query

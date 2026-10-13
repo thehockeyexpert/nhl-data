@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    description: API responses exactly as received, loaded by the Python code in ingest/.
+    database: nhl
+    schema: raw
+    tables:
+      - name: nhl_web__schedule
+        description: One row per weekly schedule response from api-web.nhle.com.
+      - name: nhl_stats__game
+        description: One row per season game-list response from the NHL stats API.
+      - name: nhl_stats__season
+        description: One row per season-facts response from the NHL stats API.

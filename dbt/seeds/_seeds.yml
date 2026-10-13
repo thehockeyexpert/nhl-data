@@ -1,0 +1,68 @@
+version: 2
+
+seeds:
+  - name: game_type_labels
+    description: >
+      Readable names for the NHL's numeric game types. A pair gets a row only after the data
+      was checked and the owner confirmed it. Anything not listed shows as 'unknown type N'.
+    columns:
+      - name: season
+        description: Eight-digit season ID. Empty means the label applies to every season.
+      - name: game_type
+        description: The NHL's numeric game type.
+        data_tests: [not_null]
+      - name: label
+        description: The readable name.
+        data_tests: [not_null]
+      - name: evidence
+        description: What was seen in the data that justifies the label.
+        data_tests: [not_null]
+      - name: verified_on
+        description: The date the owner confirmed it.
+        data_tests: [not_null]
+
+  - name: team_lineage_overrides
+    description: >
+      Cases where a club's lineage (the club followed through its moves) should differ from the
+      NHL's official franchise. Each needs a reason and an independent source. Empty for now.
+    columns:
+      - name: team_id
+        description: The NHL team ID the override applies to.
+        data_tests: [unique, not_null]
+      - name: lineage_id
+        description: The franchise ID whose lineage this team belongs to instead.
+        data_tests: [not_null]
+      - name: reason
+        description: Why the lineage differs from the NHL's franchise.
+        data_tests: [not_null]
+      - name: source
+        description: An independent source confirming it.
+        data_tests: [not_null]
+      - name: approved_on
+        description: The date the owner approved it.
+        data_tests: [not_null]
+
+  - name: check_exceptions
+    description: >
+      Known, documented cases where a data check is allowed to fail. The checks themselves are
+      not loosened. An exception with no game_id covers that check for the whole season.
+    columns:
+      - name: check_name
+        description: The check's name, as it appears in checks.check_failures.
+        data_tests: [not_null]
+      - name: season
+        description: The season the exception applies to.
+        data_tests: [not_null]
+      - name: game_id
+        description: The single game it applies to. Empty for a whole-season exception.
+      - name: reason
+        description: >
+          The cause, only if a source confirms it. Otherwise it starts with 'unexplained'
+          and states what was observed.
+        data_tests: [not_null]
+      - name: evidence
+        description: The numbers or source that justify the exception.
+        data_tests: [not_null]
+      - name: approved_on
+        description: The date the owner approved it.
+        data_tests: [not_null]

@@ -1,0 +1,2 @@
+check_name,season,game_id,reason,evidence,approved_on
+season_facts_present,20042005,,"unexplained. Observed: the NHL's season facts have no entry for 20042005, although its game list has games for that season.","Game list: 1230 games of type 13 dated 2004-10-13 to 2005-04-10, every one with score 0-0, no period and game state 6. Weekly schedule: no games on those dates.",2026-10-13

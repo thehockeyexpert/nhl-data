@@ -66,7 +66,7 @@ class FakeClient:
                 {"data": [{"preseasonStartdate": "2025-09-20T19:00:00", "endDate": "2025-10-05T00:00:00"}]}
             )
         if "/game?" in url:
-            return json.dumps({"data": [], "total": 0})
+            return json.dumps({"data": [{"gameDate": "2025-09-20"}, {"gameDate": "2025-10-05"}], "total": 2})
         week = url.rsplit("/", 1)[1]
         following = {"2025-09-20": "2025-09-27", "2025-09-27": "2025-10-04", "2025-10-04": "2025-10-11"}
         return json.dumps({"nextStartDate": following[week], "gameWeek": []})

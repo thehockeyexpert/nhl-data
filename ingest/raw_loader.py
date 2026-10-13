@@ -12,6 +12,7 @@ import duckdb
 
 DATABASE = "nhl"
 RAW_SCHEMA = "raw"
+LOG_TABLE = f"{RAW_SCHEMA}.ingest_log"
 
 _TABLE_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -36,15 +37,19 @@ def _qualified(table):
     return f"{RAW_SCHEMA}.{table}"
 
 
-def ensure_table(con, table):
-    """Create the raw schema and table if they do not exist yet."""
+def ensure_table(con, table, seasonal=True):
+    """Create the raw schema and table if they do not exist yet.
+
+    Reference data that does not belong to a season (teams, franchises)
+    uses seasonal=False, which lets the season column stay empty.
+    """
     con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
     con.execute(
         f"""
         CREATE TABLE IF NOT EXISTS {_qualified(table)} (
             source_url   VARCHAR NOT NULL,
             loaded_at    TIMESTAMPTZ NOT NULL,
-            season       INTEGER NOT NULL,
+            season       INTEGER{' NOT NULL' if seasonal else ''},
             payload      JSON NOT NULL,
             payload_hash VARCHAR NOT NULL
         )
@@ -76,3 +81,31 @@ def load_response(con, table, source_url, season, body):
         [source_url, season, body, payload_hash],
     )
     return True
+
+
+def ensure_log(con):
+    """Create the completion log: one row each time a season finishes loading cleanly."""
+    con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
+    con.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {LOG_TABLE} (
+            job         VARCHAR NOT NULL,
+            season      INTEGER NOT NULL,
+            finished_at TIMESTAMPTZ NOT NULL,
+            requests    INTEGER NOT NULL,
+            new_rows    INTEGER NOT NULL
+        )
+        """
+    )
+
+
+def log_season_done(con, job, season, requests, new_rows):
+    con.execute(f"INSERT INTO {LOG_TABLE} VALUES (?, ?, now(), ?, ?)", [job, season, requests, new_rows])
+
+
+def is_season_done(con, job, season):
+    """True if this job has already finished this season at least once."""
+    row = con.execute(
+        f"SELECT 1 FROM {LOG_TABLE} WHERE job = ? AND season = ? LIMIT 1", [job, season]
+    ).fetchone()
+    return row is not None

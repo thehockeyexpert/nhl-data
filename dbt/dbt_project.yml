@@ -8,6 +8,7 @@ profile: nhl_data
 model-paths: ["models"]
 macro-paths: ["macros"]
 test-paths: ["tests"]
+seed-paths: ["seeds"]
 
 # Folders dbt generates and can safely delete.
 clean-targets: ["target", "dbt_packages"]
@@ -20,3 +21,34 @@ models:
     marts:
       +schema: marts
       +materialized: table  # marts are stored as real tables so they are fast to query
+    checks:
+      +schema: checks
+      +materialized: view   # every data check's failing rows, in one place
+
+# Seeds are small hand-written CSV files that dbt loads as tables.
+# They hold decisions we made ourselves (labels, overrides, exceptions), not NHL data.
+seeds:
+  nhl_data:
+    +schema: reference
+    game_type_labels:
+      +column_types:
+        season: integer
+        game_type: integer
+        label: varchar
+        evidence: varchar
+        verified_on: date
+    team_lineage_overrides:
+      +column_types:
+        team_id: integer
+        lineage_id: integer
+        reason: varchar
+        source: varchar
+        approved_on: date
+    check_exceptions:
+      +column_types:
+        check_name: varchar
+        season: integer
+        game_id: bigint
+        reason: varchar
+        evidence: varchar
+        approved_on: date

@@ -12,3 +12,9 @@ sources:
         description: One row per season game-list response from the NHL stats API.
       - name: nhl_stats__season
         description: One row per season-facts response from the NHL stats API.
+      - name: nhl_stats__team
+        description: The NHL stats API team list. Not tied to a season.
+      - name: nhl_records__franchise
+        description: The franchise list from records.nhl.com. Not tied to a season.
+      - name: nhl_records__franchise_team_totals
+        description: Per-team totals from records.nhl.com, used for the seasons each team played.

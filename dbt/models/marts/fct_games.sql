@@ -1,11 +1,21 @@
 -- One row per NHL game: preseason, regular season and playoffs.
 -- Special events such as the Olympics are left out.
 
-with games as (
+with loaded_seasons as (
+
+    -- A weekly schedule response can spill into a neighbouring season.
+    -- Only seasons we loaded in full (they have a game list) belong here.
+    select distinct season
+    from {{ ref('stg_nhl_stats__games') }}
+
+),
+
+games as (
 
     select *
     from {{ ref('stg_nhl_web__schedule_games') }}
     where game_type in (1, 2, 3)
+      and season in (select season from loaded_seasons)
 
 )
 

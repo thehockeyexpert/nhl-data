@@ -16,18 +16,26 @@ models:
         description: The NHL's numeric game type.
         data_tests: [not_null]
       - name: game_type_label
-        description: Readable game type. Unverified types are labelled 'unknown type N'.
+        description: >
+          Readable game type from seeds/game_type_labels.csv. Pairs of season and game type
+          that have not been verified are labelled 'unknown type N'.
+        data_tests: [not_null]
       - name: game_date
-        description: The calendar date the NHL lists the game under (local North American date, not UTC).
+        description: The North American calendar date the NHL lists the game under, not the UTC date.
+      - name: home_team_name
+        description: Place name and team name as the schedule gives them, e.g. "Florida Panthers".
       - name: is_final
         description: True once the game is finished.
       - name: last_period_type
-        description: How the game ended. REG = regulation, OT = overtime, SO = shootout.
+        description: >
+          How the game ended. REG = regulation, OT = overtime, SO = shootout
+          (docs/data_coverage.md, "Shootouts").
 
   - name: stg_nhl_stats__games
     description: >
       One row per game from the NHL stats API game list. Thinner than the weekly schedule and
-      used as an independent cross-check. Includes scheduled playoff games that were never played.
+      used as an independent cross-check. Includes scheduled playoff games that were never played
+      and the 20042005 rows (docs/data_coverage.md, "The 2004-05 gap").
     columns:
       - name: game_id
         description: The NHL's ID for the game.
@@ -35,23 +43,66 @@ models:
       - name: season
         description: Eight-digit season ID.
         data_tests: [not_null]
+      - name: game_type_label
+        description: Readable game type from seeds/game_type_labels.csv, or 'unknown type N'.
+        data_tests: [not_null]
       - name: is_final
-        description: True for finished games. False for scheduled games that were never played.
+        description: True for finished games (state 6 or 7 with a last period recorded).
 
   - name: stg_nhl_stats__seasons
     description: One row per season with the NHL's own facts about it, used by the data checks.
     columns:
       - name: season
-        description: Eight-digit season ID.
+        description: Eight-digit season ID. 20042005 is absent (docs/data_coverage.md, "The 2004-05 gap").
         data_tests: [unique, not_null]
       - name: scheduled_games_per_team
         description: >
-          Games each team was scheduled to play. In a season that was cut short (2019-20)
-          teams played fewer than this.
+          Games each team was scheduled to play. In some seasons teams played fewer than this
+          (see seeds/check_exceptions.csv, check season_balanced).
       - name: total_regular_season_games
-        description: Regular-season games actually played in the season.
+        description: Regular-season games in the season according to the NHL.
         data_tests: [not_null]
       - name: total_playoff_games
-        description: Playoff games actually played in the season.
+        description: Playoff games played in the season according to the NHL.
       - name: is_ties_in_use
-        description: True for seasons in which a game could end in a tie.
+        description: True for seasons in which a game could end in a tie (docs/data_coverage.md, "Ties").
+
+  - name: stg_nhl_stats__teams
+    description: One row per team identity in the NHL stats API team list.
+    columns:
+      - name: team_id
+        description: The NHL's ID for this team identity.
+        data_tests: [unique, not_null]
+      - name: franchise_id
+        description: The NHL franchise the team belongs to. Empty for two placeholder rows.
+
+  - name: stg_nhl_records__franchises
+    description: One row per NHL franchise from records.nhl.com.
+    columns:
+      - name: franchise_id
+        description: The NHL's franchise ID.
+        data_tests: [unique, not_null]
+
+  - name: stg_nhl_records__franchise_team_totals
+    description: >
+      One row per team identity and game type from records.nhl.com, giving the seasons each
+      team identity played.
+    columns:
+      - name: team_id
+        description: The NHL's ID for this team identity.
+        data_tests: [not_null]
+
+  - name: check_failures
+    description: >
+      Every row that breaks a data check, before documented exceptions are removed.
+      Query it to see what is failing and why.
+    columns:
+      - name: check_name
+        description: Which check the row breaks.
+        data_tests: [not_null]
+      - name: season
+        description: The season concerned.
+      - name: game_id
+        description: The game concerned, for checks about single games.
+      - name: detail
+        description: What was expected and what was found.

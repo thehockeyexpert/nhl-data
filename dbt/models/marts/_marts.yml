@@ -5,30 +5,91 @@ models:
     description: >
       One row per NHL game (preseason, regular season, playoffs) with the result.
       Scores are final scores as the NHL reports them, so a shootout win counts as one goal.
+      Coverage differs by era: see docs/data_coverage.md.
     columns:
       - name: game_id
         description: The NHL's ID for the game.
         data_tests: [unique, not_null]
       - name: season
-        description: Eight-digit season ID, e.g. 20252026.
+        description: Eight-digit season ID, e.g. 20252026. Season 20042005 has no rows (docs/data_coverage.md, "The 2004-05 gap").
         data_tests: [not_null]
       - name: game_type_label
-        description: preseason, regular or playoff.
+        description: >
+          preseason, regular or playoff. Preseason is incomplete before 2005-06
+          (docs/data_coverage.md, "Preseason").
         data_tests: [not_null]
       - name: game_date
-        description: The calendar date the NHL lists the game under.
+        description: The North American calendar date the NHL lists the game under, not the UTC date.
         data_tests: [not_null]
       - name: home_team_id
-        description: The NHL's ID for the home team.
-        data_tests: [not_null]
+        description: >
+          The NHL's ID for the home team. Joins to dim_teams. Some preseason and early playoff
+          opponents are not NHL teams (docs/data_coverage.md, "Non-NHL opponents").
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
       - name: away_team_id
-        description: The NHL's ID for the away team.
-        data_tests: [not_null]
+        description: >
+          The NHL's ID for the away team. Joins to dim_teams. Some preseason and early playoff
+          opponents are not NHL teams (docs/data_coverage.md, "Non-NHL opponents").
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
       - name: is_final
         description: True once the game is finished.
       - name: last_period_type
-        description: How the game ended. REG = regulation, OT = overtime, SO = shootout.
+        description: >
+          How the game ended. REG = regulation, OT = overtime, SO = shootout.
+          SO only exists in some seasons (docs/data_coverage.md, "Shootouts").
       - name: winner_team_id
-        description: The winning team. Empty if the game is not finished or ended in a tie.
+        description: >
+          The winning team. Empty if the game is not finished or ended in a tie
+          (docs/data_coverage.md, "Ties").
       - name: is_tie
-        description: True if a finished game ended level. Only possible in seasons that allowed ties.
+        description: >
+          True if a finished game ended level. Only possible in seasons that allowed ties
+          (docs/data_coverage.md, "Ties").
+
+  - name: dim_teams
+    description: >
+      One row per team identity that appears in our games. A club that was renamed or moved
+      usually has several rows, tied together by franchise_id and lineage_id.
+    columns:
+      - name: team_id
+        description: The NHL's ID for this team identity.
+        data_tests: [unique, not_null]
+      - name: team_name
+        description: The team's name under this identity.
+        data_tests: [not_null]
+      - name: team_abbrev
+        description: The three-letter code under this identity.
+      - name: is_nhl_team
+        description: >
+          False for opponents that are not in the NHL's team list
+          (docs/data_coverage.md, "Non-NHL opponents").
+        data_tests: [not_null]
+      - name: first_season
+        description: >
+          First season of this identity. For NHL teams this comes from the NHL records site;
+          for other opponents it is the first season they appear in our games.
+      - name: last_season
+        description: Last season of this identity. Empty for an NHL team that is still playing.
+      - name: is_active
+        description: True for an NHL team identity that is still playing. Empty for non-NHL opponents.
+      - name: franchise_id
+        description: The NHL's official franchise. Empty for non-NHL opponents.
+      - name: franchise_name
+        description: The franchise's current name according to the NHL.
+      - name: lineage_id
+        description: >
+          The club followed through its moves. Equal to franchise_id unless
+          seeds/team_lineage_overrides.csv says otherwise. Use this or franchise_id to
+          group a club's history across renames and moves.
+      - name: lineage_name
+        description: The current name of the lineage.

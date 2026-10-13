@@ -232,6 +232,8 @@ data/
 *.duckdb.wal
 *.parquet
 *.csv
+# Exception: dbt seeds are small reference tables we write by hand, not NHL data
+!dbt/seeds/*.csv
 *.json
 *.json.gz
 *.ndjson

@@ -8,7 +8,9 @@ import json
 from datetime import date
 
 from ingest.nhl_api import NhlApiClient
-from ingest.raw_loader import connect, ensure_table, load_response
+from ingest.raw_loader import connect, ensure_log, ensure_table, load_response, log_season_done
+
+JOB = "schedule"
 
 WEB_API = "https://api-web.nhle.com/v1"
 STATS_API = "https://api.nhle.com/stats/rest/en"
@@ -17,7 +19,7 @@ SEASON_TABLE = "nhl_stats__season"
 GAME_TABLE = "nhl_stats__game"
 SCHEDULE_TABLE = "nhl_web__schedule"
 
-# A season is about 40 weeks. This stops a runaway loop if the API ever misbehaves.
+# The longest season on record spans about 55 weeks. This stops a runaway loop if the API ever misbehaves.
 MAX_WEEKS = 80
 
 
@@ -28,39 +30,53 @@ def season_id(text):
     return int(text)
 
 
-def season_date_range(season_body, season):
-    """Read the first and last day of the season from the season facts response."""
-    rows = json.loads(season_body)["data"]
-    if len(rows) != 1:
-        raise RuntimeError(f"Expected one season record for {season}, got {len(rows)}")
-    facts = rows[0]
-    first = facts.get("preseasonStartdate") or facts["startDate"]
-    return date.fromisoformat(first[:10]), date.fromisoformat(facts["endDate"][:10])
+def game_date_range(game_list_body):
+    """First and last game date in a season's game list, or None if it lists no games.
+
+    The game list is used rather than the season facts because the facts leave out
+    preseason dates for most seasons, and one season (20042005) has no facts at all.
+    """
+    dates = [game["gameDate"][:10] for game in json.loads(game_list_body)["data"]]
+    if not dates:
+        return None
+    return date.fromisoformat(min(dates)), date.fromisoformat(max(dates))
 
 
-def run(season, client, con):
+def run(season, client, con, verbose=True):
     """Fetch and store everything for one season. Returns {table: [fetched, added]}."""
     counts = {SEASON_TABLE: [0, 0], GAME_TABLE: [0, 0], SCHEDULE_TABLE: [0, 0]}
     for table in counts:
         ensure_table(con, table)
+
+    def say(text):
+        if verbose:
+            print(text)
 
     def fetch_and_load(table, url):
         body = client.fetch(url)
         added = load_response(con, table, url, season, body)
         counts[table][0] += 1
         counts[table][1] += added
-        print(f"  {'new      ' if added else 'unchanged'}  {url}")
+        say(f"  {'new      ' if added else 'unchanged'}  {url}")
         return body
 
-    print("Season facts")
+    say("Season facts")
     season_body = fetch_and_load(SEASON_TABLE, f"{STATS_API}/season?cayenneExp=id={season}")
-    print("Game list")
-    fetch_and_load(GAME_TABLE, f"{STATS_API}/game?cayenneExp=season={season}")
+    if not json.loads(season_body)["data"]:
+        # Not an error: the NHL has no facts for a season that was never played.
+        say(f"  note: the NHL has no season facts for {season}")
 
-    # Walk the weekly schedule from the first day of the season to the last,
-    # following the "next week" date that each response gives us.
-    first_day, last_day = season_date_range(season_body, season)
-    print(f"Weekly schedule, {first_day} to {last_day}")
+    say("Game list")
+    game_list_body = fetch_and_load(GAME_TABLE, f"{STATS_API}/game?cayenneExp=season={season}")
+    date_range = game_date_range(game_list_body)
+    if date_range is None:
+        say(f"  note: the NHL lists no games for {season}")
+        return counts
+
+    # Walk the weekly schedule from the first game date to the last, following the
+    # "next week" date that each response gives us. The API skips weeks without games.
+    first_day, last_day = date_range
+    say(f"Weekly schedule, {first_day} to {last_day}")
     week_start = first_day
     for _ in range(MAX_WEEKS):
         body = fetch_and_load(SCHEDULE_TABLE, f"{WEB_API}/schedule/{week_start}")
@@ -77,6 +93,11 @@ def run(season, client, con):
     return counts
 
 
+def totals(counts):
+    """(requests made, new rows stored) across all tables."""
+    return sum(fetched for fetched, _ in counts.values()), sum(added for _, added in counts.values())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--season", type=season_id, required=True, help="for example 20252026")
@@ -85,7 +106,9 @@ def main():
     con = connect()
     client = NhlApiClient()
     try:
+        ensure_log(con)
         counts = run(args.season, client, con)
+        log_season_done(con, JOB, args.season, *totals(counts))
     finally:
         client.close()
         con.close()
@@ -94,7 +117,7 @@ def main():
     print(f"Season {args.season} summary")
     for table, (fetched, added) in counts.items():
         print(f"  raw.{table:<20} fetched {fetched:>3}   new rows {added:>3}")
-    print(f"  total new rows: {sum(added for _, added in counts.values())}")
+    print(f"  total new rows: {totals(counts)[1]}")
 
 
 if __name__ == "__main__":

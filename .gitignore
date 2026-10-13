@@ -218,3 +218,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- nhl-data project rules ----
+
+# Secrets: ignore every .env file except the example (which holds names only)
+.env
+.env.*
+!.env.example
+
+# Data files never go in this public repo
+data/
+*.duckdb
+*.duckdb.wal
+*.parquet
+*.csv
+*.json
+*.json.gz
+*.ndjson
+
+# dbt generated output
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml

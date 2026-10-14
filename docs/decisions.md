@@ -3,6 +3,32 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-14: MotherDuck plan, Business trial until 2026-10-19, then the free Lite plan
+
+**Fact (from the owner, read on the Plans page).** The account is on a MotherDuck Business trial that ends on
+**2026-10-19**. The owner expects to be on the free Lite plan after that.
+
+What MotherDuck's docs say changes on the free Lite plan (read 2026-10-14):
+
+- **Compute** ([Pricing model](https://motherduck.com/docs/about-motherduck/billing/pricing/)):
+  - "Pulse only" instances.
+  - "The Lite plan includes 10 CU hours on Pulse per month."
+  - Pulse is metered "on a per-query basis, with a minimum of 1 Compute Unit (CU) second", with no cooldown. The
+    page's example: "2 queries x 10s = 20 CU seconds".
+  - "Additional usage is billed at the rates above": $0.60 per hour for Lite Pulse in Tier 1.
+  - The page does not say whether a free account is blocked or charged when the allowance is used up.
+- **History retention** ([Storage lifecycle](https://motherduck.com/docs/concepts/storage-lifecycle/)): 0 days,
+  fixed, on Lite (free). Today it is 7 days on the trial. Retained history from rebuilds should therefore stop
+  accumulating after the trial; failsafe retention (7 days for standard databases) still applies.
+- **Usage visibility** ([Monitoring usage and costs](https://motherduck.com/docs/about-motherduck/billing/monitoring-usage/)):
+  - `md_information_schema.query_history` "records every query run across your organization" and is "available on
+    Business plans". It reports execution time, not compute units, and "approximates" billed compute.
+  - The Billing page (app.motherduck.com/settings/billing) breaks costs down per user and service account.
+  - After the trial, the Billing page is the documented place to see usage.
+
+**Consequence for the daily run:** under per-query metering with a 1 CU-second minimum, the **number of queries**
+matters as much as their length. See the measurement and the lighter daily build in `docs/status.md`.
+
 ## 2026-10-14: storage finding, retained history from rebuilds (no decision yet)
 
 **Observed.** MotherDuck's `md_information_schema.storage_info` for `nhl` (computed 2026-10-14 18:12):

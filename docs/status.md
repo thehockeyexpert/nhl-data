@@ -55,6 +55,31 @@ Last updated: 2026-10-14
 - **Proposed, not applied:** build `fct_goalie_games`, `fct_team_games` and `fct_team_standings_by_game` (and
   possibly `fct_games`) incrementally, so the daily run rewrites only the current season.
 
+## Compute for a nightly run (measured 2026-10-14)
+
+- **A full `dbt build` on MotherDuck** (3 seeds, 6 tables, 18 views, 114 tests) took **61 s** (67 s wall clock
+  including start-up). dbt sent **235 SQL statements**, one at a time. The trial runs on a Standard instance.
+- **Query history** recorded the first 204 of them, 11.9 s of execution in total, mostly well under 1 s each. It had
+  not caught up with the rest by the time of checking. It reports execution time, not compute units.
+- **Estimate for Lite**, an estimate and not a measurement:
+  - Pulse bills each query for at least 1 CU-second, so a full build is at least about 235 CU-seconds, plus the time
+    of the few queries over 1 s. Roughly **250 to 300 CU-seconds, about 0.07 to 0.08 CU-hours**, if Pulse runs these
+    queries about as fast as the trial's Standard instance (not verified).
+  - A nightly full build: about **2.1 to 2.5 CU-hours a month** of the 10 included, before ingest and any querying.
+  - To confirm: the Billing page after the first nights on Lite.
+- **Proposed lighter daily build (not applied):**
+  1. **Skip seeds:** `--exclude resource_type:seed`. Seeds change only when the owner approves something; a full
+     build runs then.
+  2. **Skip re-creating views:** views only change when their SQL changes, so the nightly run rebuilds tables only
+     (`dbt run --select config.materialized:table`, 6 tables).
+  3. **Run the data checks every night** (the `dbt/tests` files on `check_failures`, about 30). Run the 80 or so
+     generic key tests on the staging views weekly and after any code change: they scan the raw JSON and are the
+     slowest part.
+  4. **A full `dbt build`** weekly, and whenever models, seeds or exceptions change.
+
+  Expected: about 40 to 50 queries a night instead of 235. That is about 60 to 100 CU-seconds, or 0.5 to 0.8
+  CU-hours a month (estimate). Incremental marts remain a separate, held proposal.
+
 ## Open decisions
 
 - **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13, D14 and D17 to D20.

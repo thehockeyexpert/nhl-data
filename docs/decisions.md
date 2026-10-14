@@ -3,6 +3,41 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-14: storage finding, retained history from rebuilds (no decision yet)
+
+**Observed.** MotherDuck's `md_information_schema.storage_info` for `nhl` (computed 2026-10-14 18:12):
+- active bytes: **33.0 MB (31.5 MiB)**;
+- historical bytes: **264.3 MB (252 MiB)**;
+- retained-for-clone and failsafe bytes: 0;
+- snapshot retention: **7 days**.
+
+`pragma_database_size()` reported 45.5 MiB at the same time. What that figure includes is not documented.
+
+**Cause.** Consistent with dbt re-creating the mart tables and reloading the seeds on every build. MotherDuck's
+docs say:
+- data moves from active to historical bytes when it is "deleted or updated in the database";
+- "create or replace tables" is one of the workloads that "tend to delete a lot of data"
+  ([Storage lifecycle](https://motherduck.com/docs/concepts/storage-lifecycle/)).
+
+That dbt's rebuilds are the specific source of our 264 MB is our inference, not measured per table.
+
+**What MotherDuck's docs say about billing and the free plan** (read 2026-10-14):
+- [Monitoring usage and costs](https://motherduck.com/docs/about-motherduck/billing/monitoring-usage/): "All four
+  categories count toward your storage bill" (active, historical, retained for clone, failsafe). Storage is billed on
+  average daily usage.
+- [Pricing model](https://motherduck.com/docs/about-motherduck/billing/pricing/): "Users are billed for active data
+  plus historical, retained, and failsafe bytes"; "Lite plan includes 10 GB of free storage".
+- [Storage lifecycle](https://motherduck.com/docs/concepts/storage-lifecycle/): default historical retention is 7
+  days on Business (configurable 0 to 90), 1 day fixed on Lite (paid), and 0 days fixed on Lite (free).
+- **Not stated:** what happens when a free account exceeds 10 GB.
+
+**Open points:**
+- **Plan.** The database reports a 7-day retention, which the docs give as the Business default, not the free plan's
+  0 days. Which plan this account is on has not been checked.
+- **Growth.** If historical bytes count toward the allowance, as the billing pages say they count toward the bill,
+  every full rebuild adds roughly the size of the rebuilt tables for 7 days.
+- **Proposed remedy.** Incremental models for the large marts (see `docs/status.md`), not yet applied.
+
 ## 2026-10-14: proceed with the NHL's unofficial endpoints, for personal use
 
 **Decision.** The owner decided to keep collecting data from `api-web.nhle.com`, `api.nhle.com/stats` and

@@ -44,6 +44,17 @@ Last updated: 2026-10-14
    will start failing on any build two days after the last schedule load.
 3. Team game stats, then skater game stats (pilot first, then a storage decision).
 
+## Storage (2026-10-14)
+
+- **MotherDuck storage for `nhl`:** active data 33.0 MB. Retained history 264.3 MB, kept under a 7-day snapshot
+  retention.
+- **Cause:** the history is consistent with dbt re-creating the mart tables on every build (details and sources in
+  `docs/decisions.md`).
+- **Billing:** MotherDuck's billing docs say all four storage categories, history included, count toward the
+  storage bill.
+- **Proposed, not applied:** build `fct_goalie_games`, `fct_team_games` and `fct_team_standings_by_game` (and
+  possibly `fct_games`) incrementally, so the daily run rewrites only the current season.
+
 ## Open decisions
 
 - **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13, D14 and D17 to D20.

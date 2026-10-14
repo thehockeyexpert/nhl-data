@@ -10,7 +10,20 @@ except 2004-05, which cites its source.
 
 - The one pair that broke its rule stays `unknown type 4`: **1948-49, type 4**. It was played on 1948-11-03,
   after that season's regular season began (1948-10-13), and it is listed as a Toronto home game at Chicago Stadium.
-- Every Medium-confidence pair stays unknown: types 6, 7, 8, 12 (2023-24), 14 and 18.
+- The Medium-confidence types (6, 7, 8, 12 for 2023-24, 14 and 18) were held back at first.
+
+**Decision (2026-10-14, later).** Sources were found for all 16 Medium-confidence pairs, and the owner approved them:
+
+| Type | Label |
+|---|---|
+| 6 | `world_cup_group` |
+| 7 | `world_cup_knockout` |
+| 8 | `world_cup_pretournament` |
+| 12 | `all_star_womens_game` |
+| 14 | `canada_cup` |
+| 18 | `exhibition_tour` |
+
+Each seed row names its sources (Wikipedia, NHL.com, Canadian Press), what they confirm, and where they differ. The differences are listed in `docs/data_coverage.md`. The only unlabelled pair left is (1948-49, 4).
 
 The rules applied:
 

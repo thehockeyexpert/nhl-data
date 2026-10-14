@@ -33,10 +33,11 @@ Last updated: 2026-10-14
 3. `dbt build` on MotherDuck after the load (2026-10-14): 67 of 67 pass. `check_failures` holds exactly the four approved exceptions and nothing else. Database size 13.5 MiB.
 4. Game type evidence for the 92 unlabelled (season, type) pairs written to `docs/game_type_evidence.md` (2026-10-14).
 5. High-confidence labels approved (2026-10-14): 75 pairs added to the seed. Rebuilt on MotherDuck: 67 of 67 pass, `fct_games` unchanged (same 72,452 rows, same content fingerprint).
+6. Sourced labels for the 16 Medium-confidence pairs approved (2026-10-14). Discrepancies between the NHL's data and the sources are recorded in `docs/data_coverage.md`.
 
 ## Open decisions
 
-- **Game type labels.** Approved: 1, 2, 3 for all seasons, and types 4, 9, 10, 13, 19 and 20 wherever the evidence meets the rule in `docs/game_type_evidence.md`. Still unknown: (1948-49, 4), which breaks its rule, and the Medium-confidence types 6, 7, 8, 12 (2023-24), 14 and 18.
+- **Game type labels.** Approved: 1, 2, 3 for all seasons, and types 4, 9, 10, 13, 19 and 20 wherever the evidence meets the rule in `docs/game_type_evidence.md`. The Medium-confidence types 6, 7, 8, 12 (2023-24), 14 and 18 were approved later the same day, with outside sources (16 pairs). The only pair still unknown is (1948-49, 4), which breaks its rule.
 - **Utah.** Kept as the NHL's separate franchise (40). No lineage override.
 - **Tier 2 storage.** Whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be decided before Tier 2 starts.
 

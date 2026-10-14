@@ -67,6 +67,17 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 
 - Observed: four venue names arrive garbled from the NHL's weekly schedule, for example `Le Colis√©e` for Le Colisée and `Sportovn√≠ hala` for Sportovní hala. 676 games are affected. They are stored as received.
 
+## Where the NHL's data differs from outside sources
+
+Found while sourcing game type labels (2026-10-14). Raw data is unchanged; these are notes, not corrections.
+We have not established which side is right.
+
+- **1996 World Cup (1996-97, type 6):** the schedule puts Finland's home pool games on 1996-08-27 and 1996-08-28 at "Tampereen Jaahalli Arena". [Wikipedia](https://en.wikipedia.org/wiki/1996_World_Cup_of_Hockey) puts them at the Helsinki Ice Hall.
+- **1938 European tour (1937-38, type 18):** the schedule records game 1 (1938-04-21, Canadiens 5 Red Wings 4) as ending in regulation. [Wikipedia](https://en.wikipedia.org/wiki/1938_Detroit_Red_Wings%E2%80%93Montreal_Canadiens_European_tour) says it went to overtime. That page is also inconsistent about two dates (game 7 on May 7 or 8; series end May 13 or 14). The schedule has May 7 and May 14.
+- **1959 European tour (1958-59, type 18):** the schedule has the Rangers winning 4-3 on 1959-04-30; [Wikipedia](https://en.wikipedia.org/wiki/List_of_international_games_played_by_NHL_teams) has 4-2. The schedule puts the games on 1959-05-04 and 1959-05-05 at "Federal Ice Stadium"; the source puts them at the Patinoire de Boulogne-Billancourt, near Paris. The series record (Rangers 11-9-3) matches.
+- **Coverage gaps in the sources:** the 1991 Canada Cup page gives venues only for the two final games. For the 1976 to 1987 Canada Cups, the venues were compared as a set, not game by game. The 2016 World Cup page text read did not show the date of Finland v Russia.
+- **Not in the NHL's data at all:** the 2004 World Cup's 12 pre-tournament games ([Wikipedia](https://en.wikipedia.org/wiki/2004_World_Cup_of_Hockey)). The 2016 ones are type 8.
+
 ## Game types
 
 - Besides preseason (1), regular season (2) and playoffs (3), the game list holds 12 other game types across various seasons.

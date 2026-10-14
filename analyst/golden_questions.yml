@@ -9,6 +9,10 @@
 #   needs           data the answer requires. "fct_games" and "dim_teams" exist today.
 #   answerable_now  true if today's tables can answer it, "partly" if a definition or small load is still missing
 #   definitions     ids from docs/definitions.md that must be settled first
+#   source          claude_draft (drafted by Claude) or owner (the owner's own wording, unchanged)
+#   flags           optional: ambiguous, not_in_nhl_data, partial_history
+#   proposed_wording optional: a suggested rewording for the owner to approve; the question itself is unchanged
+#   review_note     optional: why it is flagged and what would be needed
 #
 # Defaults already decided: team history uses lineage_id (D03); "above .500" means the opponent's
 # points percentage before that game (D01).
@@ -17,6 +21,7 @@ status: draft
 questions:
   # --- team
   - id: T01
+    source: claude_draft
     theme: team
     question: How many games did Toronto win in 2025-26, and what was their record?
     difficulty: easy
@@ -24,6 +29,7 @@ questions:
     answerable_now: true
     definitions: [D11]
   - id: T02
+    source: claude_draft
     theme: team
     question: Which team scored the most goals in a single regular season?
     difficulty: easy
@@ -31,6 +37,7 @@ questions:
     answerable_now: true
     definitions: [D11]
   - id: T03
+    source: claude_draft
     theme: team
     question: What was Boston's home record and road record in 2025-26?
     difficulty: easy
@@ -38,6 +45,7 @@ questions:
     answerable_now: true
     definitions: [D11]
   - id: T04
+    source: claude_draft
     theme: team
     question: Which team has the best record in one-goal games since 2005-06?
     difficulty: medium
@@ -45,6 +53,7 @@ questions:
     answerable_now: partly
     definitions: [D07]
   - id: T05
+    source: claude_draft
     theme: team
     question: Which teams averaged the most shots per game in 2025-26?
     difficulty: easy
@@ -52,6 +61,7 @@ questions:
     answerable_now: false
     definitions: []
   - id: T06
+    source: claude_draft
     theme: team
     question: Who led the league in power-play percentage in 2025-26?
     difficulty: easy
@@ -61,6 +71,7 @@ questions:
 
   # --- season
   - id: S01
+    source: claude_draft
     theme: season
     question: Which team finished with the most points in 1995-96?
     difficulty: easy
@@ -68,6 +79,7 @@ questions:
     answerable_now: partly
     definitions: [D02]
   - id: S02
+    source: claude_draft
     theme: season
     question: Where did Montreal stand in its division on 2026-01-01?
     difficulty: medium
@@ -75,6 +87,7 @@ questions:
     answerable_now: false
     definitions: [D02]
   - id: S03
+    source: claude_draft
     theme: season
     question: What is the biggest points lead any team has held during a season?
     difficulty: hard
@@ -82,6 +95,7 @@ questions:
     answerable_now: false
     definitions: [D02]
   - id: S04
+    source: claude_draft
     theme: season
     question: How many points did the last-place team have in each season since 1967-68?
     difficulty: medium
@@ -89,6 +103,7 @@ questions:
     answerable_now: partly
     definitions: [D02]
   - id: S05
+    source: claude_draft
     theme: season
     question: Which season had the most games decided in overtime or a shootout?
     difficulty: easy
@@ -98,6 +113,7 @@ questions:
 
   # --- historical
   - id: H01
+    source: claude_draft
     theme: historical
     question: What is the average goals per game by season, all time?
     difficulty: easy
@@ -105,6 +121,7 @@ questions:
     answerable_now: true
     definitions: [D11]
   - id: H02
+    source: claude_draft
     theme: historical
     question: Which season had the most ties?
     difficulty: easy
@@ -112,6 +129,7 @@ questions:
     answerable_now: true
     definitions: []
   - id: H03
+    source: claude_draft
     theme: historical
     question: What is the highest-scoring game in NHL history?
     difficulty: easy
@@ -119,6 +137,7 @@ questions:
     answerable_now: true
     definitions: [D11]
   - id: H04
+    source: claude_draft
     theme: historical
     question: How many shootouts were there per season since 2005-06?
     difficulty: easy
@@ -128,6 +147,7 @@ questions:
 
   # --- franchise
   - id: F01
+    source: claude_draft
     theme: franchise
     question: What is Montreal's all-time regular-season record against every opponent?
     difficulty: medium
@@ -135,6 +155,7 @@ questions:
     answerable_now: true
     definitions: [D03]
   - id: F02
+    source: claude_draft
     theme: franchise
     question: Which franchise has won the most playoff series?
     difficulty: medium
@@ -142,6 +163,7 @@ questions:
     answerable_now: false
     definitions: [D03]
   - id: F03
+    source: claude_draft
     theme: franchise
     question: What is the longest playoff drought for each lineage?
     difficulty: medium
@@ -149,6 +171,7 @@ questions:
     answerable_now: partly
     definitions: [D03, D10]
   - id: F04
+    source: claude_draft
     theme: franchise
     question: How did the Coyotes lineage do in its Winnipeg years compared with Arizona?
     difficulty: easy
@@ -158,6 +181,7 @@ questions:
 
   # --- player
   - id: P01
+    source: claude_draft
     theme: player
     question: Who led the NHL in goals in 2025-26?
     difficulty: easy
@@ -165,6 +189,7 @@ questions:
     answerable_now: false
     definitions: []
   - id: P02
+    source: claude_draft
     theme: player
     question: What is the most points by a player in one game?
     difficulty: easy
@@ -172,6 +197,7 @@ questions:
     answerable_now: false
     definitions: [D11]
   - id: P03
+    source: claude_draft
     theme: player
     question: Who has the most career points against Boston?
     difficulty: medium
@@ -179,6 +205,7 @@ questions:
     answerable_now: false
     definitions: [D03]
   - id: P04
+    source: claude_draft
     theme: player
     question: How many career games and points per game does Connor McDavid have?
     difficulty: easy
@@ -186,6 +213,7 @@ questions:
     answerable_now: false
     definitions: [D11]
   - id: P05
+    source: claude_draft
     theme: player
     question: Which defencemen averaged the most ice time in 2025-26?
     difficulty: easy
@@ -193,6 +221,7 @@ questions:
     answerable_now: false
     definitions: [D05]
   - id: P06
+    source: claude_draft
     theme: player
     question: Which Swedish-born players have scored the most NHL goals?
     difficulty: medium
@@ -200,6 +229,7 @@ questions:
     answerable_now: false
     definitions: []
   - id: P07
+    source: claude_draft
     theme: player
     question: What are the highest-scoring rookie seasons?
     difficulty: hard
@@ -207,6 +237,7 @@ questions:
     answerable_now: false
     definitions: [D09]
   - id: P08
+    source: claude_draft
     theme: player
     question: Which first-overall draft picks scored the most career points?
     difficulty: medium
@@ -216,6 +247,7 @@ questions:
 
   # --- goalie
   - id: G01
+    source: claude_draft
     theme: goalie
     question: Which goalie has the best record against teams above .500?
     difficulty: hard
@@ -223,6 +255,7 @@ questions:
     answerable_now: false
     definitions: [D01, D02, D04, D05]
   - id: G02
+    source: claude_draft
     theme: goalie
     question: Who has the most shutouts in a single season?
     difficulty: easy
@@ -230,6 +263,7 @@ questions:
     answerable_now: false
     definitions: []
   - id: G03
+    source: claude_draft
     theme: goalie
     question: Which goalie had the best save percentage in 2025-26, with a minimum number of games?
     difficulty: easy
@@ -237,6 +271,7 @@ questions:
     answerable_now: false
     definitions: [D05]
   - id: G04
+    source: claude_draft
     theme: goalie
     question: How do goalies do on the second night of back-to-backs since 2010?
     difficulty: hard
@@ -244,6 +279,7 @@ questions:
     answerable_now: false
     definitions: [D04, D08]
   - id: G05
+    source: claude_draft
     theme: goalie
     question: Which goalies have the most playoff wins all time?
     difficulty: easy
@@ -253,6 +289,7 @@ questions:
 
   # --- head to head
   - id: X01
+    source: claude_draft
     theme: head_to_head
     question: What is the Rangers v Islanders all-time record, including playoffs?
     difficulty: easy
@@ -260,6 +297,7 @@ questions:
     answerable_now: true
     definitions: [D03]
   - id: X02
+    source: claude_draft
     theme: head_to_head
     question: Who has scored the most goals in Montreal v Toronto games?
     difficulty: medium
@@ -267,6 +305,7 @@ questions:
     answerable_now: false
     definitions: [D03, D11]
   - id: X03
+    source: claude_draft
     theme: head_to_head
     question: Since 2005-06, which matchup produced the most overtime games?
     difficulty: easy
@@ -276,6 +315,7 @@ questions:
 
   # --- streaks
   - id: K01
+    source: claude_draft
     theme: streaks
     question: What is the longest winning streak in each lineage's history?
     difficulty: medium
@@ -283,6 +323,7 @@ questions:
     answerable_now: partly
     definitions: [D03, D06]
   - id: K02
+    source: claude_draft
     theme: streaks
     question: What is the longest home unbeaten streak ever?
     difficulty: medium
@@ -290,6 +331,7 @@ questions:
     answerable_now: partly
     definitions: [D06]
   - id: K03
+    source: claude_draft
     theme: streaks
     question: What is the longest point streak by a player?
     difficulty: hard
@@ -299,6 +341,7 @@ questions:
 
   # --- current season (2026-27)
   - id: C01
+    source: claude_draft
     theme: current
     question: Who leads the league in points right now?
     difficulty: easy
@@ -306,6 +349,7 @@ questions:
     answerable_now: false
     definitions: [D12]
   - id: C02
+    source: claude_draft
     theme: current
     question: What is Toronto's record in its last 10 games?
     difficulty: easy
@@ -313,6 +357,7 @@ questions:
     answerable_now: false
     definitions: [D12]
   - id: C03
+    source: claude_draft
     theme: current
     question: Which goalie has been best over the last two weeks?
     difficulty: medium
@@ -320,6 +365,7 @@ questions:
     answerable_now: false
     definitions: [D04, D05, D12]
   - id: C04
+    source: claude_draft
     theme: current
     question: What do the wild-card standings look like today?
     difficulty: medium
@@ -329,6 +375,7 @@ questions:
 
   # --- awards
   - id: A01
+    source: claude_draft
     theme: awards
     question: Who has won the Hart Trophy the most times?
     difficulty: easy
@@ -336,9 +383,215 @@ questions:
     answerable_now: false
     definitions: []
   - id: A02
+    source: claude_draft
     theme: awards
     question: Which Vezina winners also won the Stanley Cup that season?
     difficulty: medium
     needs: [awards, playoff_series]
     answerable_now: false
     definitions: []
+  # --- owner's questions (2026-10-14). Wording is the owner's and is not changed.
+  - id: P09
+    source: owner
+    theme: player
+    question: How many games does a player have 5+ assists?
+    difficulty: medium
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D11]
+    flags: [ambiguous]
+    proposed_wording: How many times has a player had 5 or more assists in one regular-season game, and which players did it most often?
+    review_note: Could mean one total count across all players, or a count per player. Assist records in the earliest seasons may be thin.
+  - id: P10
+    source: owner
+    theme: player
+    question: How many games does a player have a hat trick?
+    difficulty: medium
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D11, D16]
+    flags: [ambiguous]
+    proposed_wording: How many times has a player scored 3 or more goals in one regular-season game, and which players did it most often?
+    review_note: Same ambiguity as P09. A hat trick needs a definition (exactly 3 goals, or 3 or more).
+  - id: P11
+    source: owner
+    theme: player
+    question: Highest scoring player from Minnesota
+    difficulty: medium
+    needs: [skater_game_stats, player_bios]
+    answerable_now: false
+    definitions: [D11, D14, D15]
+    flags: [ambiguous]
+    proposed_wording: Which player born in Minnesota has the most career NHL regular-season points?
+    review_note: '"From Minnesota" could mean born there or played for a Minnesota team (North Stars, Wild). "Highest scoring" could mean career, one season, or goals rather than points.'
+  - id: P12
+    source: owner
+    theme: player
+    question: What city has produced the most NHL players?
+    difficulty: medium
+    needs: [player_bios, skater_game_stats, goalie_game_stats]
+    answerable_now: false
+    definitions: [D14, D15]
+    flags: [ambiguous]
+    proposed_wording: Which birth city (city, state or province, country) has the most players who played at least one NHL game?
+    review_note: '"Produced" could mean birthplace or hometown. Cities that share a name must be told apart by state or province and country.'
+  - id: P13
+    source: owner
+    theme: player
+    question: What province or state has produced the highest point totals in NHL history?
+    difficulty: medium
+    needs: [player_bios, skater_game_stats]
+    answerable_now: false
+    definitions: [D11, D14]
+    flags: [ambiguous]
+    proposed_wording: Which Canadian province or US state has the highest combined career NHL regular-season points from players born there?
+    review_note: Could mean combined points or the single highest-scoring player. The NHL records a province or state only for players born in Canada or the United States.
+  - id: P14
+    source: owner
+    theme: player
+    question: Player with the most fights who played at Boston College
+    difficulty: hard
+    needs: [play_by_play_penalties, player_other_leagues]
+    answerable_now: false
+    definitions: [D17, D18]
+    flags: [ambiguous, partial_history]
+    proposed_wording: Among players who played for Boston College (NCAA) and later in the NHL, who had the most NHL fighting majors?
+    review_note: Fights come only from play-by-play penalty events, one request per game. Their completeness in early seasons is unknown. College seasons come from each player's page, one request per player. "Most fights" could also include college fights, which the NHL data does not have.
+  - id: P15
+    source: owner
+    theme: player
+    question: The player with the biggest difference between highest CHL point season and NHL highest point season
+    difficulty: hard
+    needs: [player_other_leagues, skater_game_stats]
+    answerable_now: false
+    definitions: [D11, D15, D18]
+    flags: [ambiguous]
+    proposed_wording: Among players who played in the CHL (OHL, WHL or QMJHL) and the NHL, whose best CHL regular-season point total exceeds their best NHL regular-season point total by the most?
+    review_note: The direction is unclear (a CHL season higher than the NHL best, or either way). "CHL" needs a definition for the years before the three leagues formed the CHL in 1975.
+  - id: G06
+    source: owner
+    theme: goalie
+    question: Goalie with a winning record that has the highest GAA (minimum 50 appearances)
+    difficulty: medium
+    needs: [goalie_game_stats]
+    answerable_now: false
+    definitions: [D04, D11, D13]
+    flags: [ambiguous]
+    proposed_wording: Among goalies with at least 50 career NHL regular-season games played and more wins than losses, who has the highest career goals-against average?
+    review_note: '"Winning record" needs a definition (how ties and OT losses count). "Appearances" is read as games played, including relief appearances.'
+  - id: T07
+    source: owner
+    theme: team
+    question: Which NHL team has the most bench minors since 1990
+    difficulty: easy
+    needs: [team_penalty_stats]
+    answerable_now: false
+    definitions: [D03, D11, D21]
+    flags: [ambiguous]
+    proposed_wording: Since the 1990-91 season, which lineage has taken the most bench minor penalties in the regular season, in total and per game?
+    review_note: '"Since 1990" could mean calendar 1990 or the 1990-91 season. Teams that joined later have fewer seasons, so per-game helps. Source found: the stats API team penalties report gives benchMinorPenalties per team season (1990-91, 2000-01 and 2025-26 sampled).'
+  - id: P16
+    source: owner
+    theme: player
+    question: The most recent NHL player to score more goals in the playoffs than that current season
+    difficulty: medium
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D05]
+    flags: [ambiguous]
+    proposed_wording: Who is the most recent player to score more playoff goals than regular-season goals in the same season, with at least 20 regular-season games played?
+    review_note: '"That current season" is read as the same season''s regular season. Without a minimum number of games, a late call-up with 0 regular-season goals and 1 playoff goal would qualify.'
+  - id: P17
+    source: owner
+    theme: player
+    question: Points breakdown by how the player shoots (left or right)
+    difficulty: easy
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D11]
+    flags: [ambiguous]
+    proposed_wording: What share of all-time NHL regular-season goals, assists and points were scored by left-shooting and by right-shooting skaters?
+    review_note: Could be all time, by season or by position. Skaters only, since goalies are recorded as catching.
+  - id: G07
+    source: owner
+    theme: goalie
+    question: Which country produces the most goaltenders?
+    difficulty: easy
+    needs: [player_bios, goalie_game_stats]
+    answerable_now: false
+    definitions: [D14, D15]
+    flags: [ambiguous]
+    proposed_wording: Which birth country has the most goaltenders who played at least one NHL game?
+    review_note: '"Produces" could mean birth country or nationality (both are in the NHL data), and all time or recently.'
+  - id: T08
+    source: owner
+    theme: team
+    question: Which team has played the most minutes?
+    difficulty: hard
+    needs: [fct_games, game_duration]
+    answerable_now: false
+    definitions: [D03, D11, D19]
+    flags: [ambiguous, partial_history]
+    proposed_wording: Which lineage has played the most minutes of NHL regular-season and playoff hockey, counting regulation and overtime?
+    review_note: Overtime length is not in our tables. It comes from the time of the winning goal (play-by-play) and from the overtime rules of each era (10-minute non-sudden-death regular-season overtime before 1942). Shootouts add no minutes.
+  - id: T09
+    source: owner
+    theme: team
+    question: Which team travels the furthest in a season?
+    difficulty: hard
+    needs: [fct_games, venue_coordinates]
+    answerable_now: false
+    definitions: [D20]
+    flags: [not_in_nhl_data, ambiguous]
+    review_note: The NHL data names venues but has no coordinates, and it does not show where a team flies between games. It needs an outside table of arena coordinates (a hand-made seed with a source per arena) and a travel definition. Split from the owner's two-part question.
+  - id: T10
+    source: owner
+    theme: team
+    question: Which team travels the furthest in their history?
+    difficulty: hard
+    needs: [fct_games, venue_coordinates]
+    answerable_now: false
+    definitions: [D03, D20]
+    flags: [not_in_nhl_data, ambiguous]
+    review_note: Same as T09, across every season. Split from the owner's two-part question.
+  - id: T11
+    source: owner
+    theme: team
+    question: Which team has played the most playoff games?
+    difficulty: easy
+    needs: [fct_games, dim_teams]
+    answerable_now: true
+    definitions: [D03]
+  - id: P18
+    source: owner
+    theme: player
+    question: Which player has the least amount of playing time in their NHL career with a maximum of 10 games played?
+    difficulty: medium
+    needs: [skater_game_stats, goalie_game_stats]
+    answerable_now: false
+    definitions: [D15, D22]
+    flags: [ambiguous, partial_history]
+    proposed_wording: Among skaters who played between 1 and 10 NHL games, all since 1997-98, who has the least total time on ice?
+    review_note: Skater ice time exists only from 1997-98 (goalie ice time goes back to 1917-18), so earlier players cannot be ranked. It is unclear whether goalies are included and whether the 10 games count regular season only or include playoffs.
+  - id: P19
+    source: owner
+    theme: player
+    question: Which player has the most fights & points total combined?
+    difficulty: hard
+    needs: [play_by_play_penalties, skater_game_stats]
+    answerable_now: false
+    definitions: [D11, D17]
+    flags: [ambiguous, partial_history]
+    proposed_wording: Which player has the highest career total of NHL regular-season fighting majors plus points?
+    review_note: '"Combined" is read as fights + points added together. Fights come only from play-by-play penalty events, one request per game, and their completeness in early seasons is unknown.'
+  - id: G08
+    source: owner
+    theme: goalie
+    question: Which goalie has scored the most goals?
+    difficulty: easy
+    needs: [goalie_game_stats]
+    answerable_now: false
+    definitions: [D11]
+    flags: [ambiguous]
+    proposed_wording: Which goalie has been credited with the most NHL goals, regular season and playoffs combined?
+    review_note: Under the default scope (D11) this would count the regular season only; famous goalie goals include playoff ones.

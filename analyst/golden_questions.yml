@@ -252,11 +252,15 @@ questions:
   - id: G01
     source: claude_draft
     theme: goalie
-    question: Which goalie has the best record against teams above .500?
+    question: >-
+      Which goalie has the best record against teams above .500? Defined (D01, 2026-10-14) as opponents whose
+      points percentage before the game is above the league median that day, with at least 10 games played;
+      regular season; credited decisions; ranked by win percentage with points percentage beside it; minimum 50
+      qualifying decisions, also shown at 100. The literal above-.500-by-points-percentage version is a second column.
     difficulty: hard
     needs: [goalie_game_stats, standings_by_date]
-    answerable_now: false
-    definitions: [D01, D02, D04, D05]
+    answerable_now: true
+    definitions: [D01, D02, D04, D05, D23]
   - id: G02
     source: claude_draft
     theme: goalie

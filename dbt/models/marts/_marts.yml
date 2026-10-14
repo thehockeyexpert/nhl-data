@@ -99,24 +99,50 @@ models:
       - name: points_pct_before
         description: Points / (2 x games played) before the game. Empty for a team's first game.
       - name: is_above_500_before
-        description: True if points_pct_before is above .500. False for a team's first game (D01).
+        description: >
+          True if points_pct_before is above .500. False for a team's first game. The second-column
+          definition of D01 (the literal "above .500").
+        data_tests: [not_null]
+      - name: league_median_pct_before
+        description: >
+          The median points % on that date over teams that have played at least one game before it.
+      - name: is_top_half_before
+        description: >
+          The headline definition of D01: points_pct_before is strictly above league_median_pct_before
+          and the team has played at least 10 games that season. Ties at the median do not count.
         data_tests: [not_null]
 
   - name: goalie_records_vs_above_500
     description: >
       DRAFT, not yet verified by the owner (docs/status.md).
-      Question G01. Each goalie's career regular-season record in credited decisions (D04) against
-      opponents above .500 before the game (D01), with win percentage (D23) and points percentage.
-      meets_minimum marks at least 50 such decisions (D05). Any answer must say that from 1999-00 to
-      2003-04 a goalie's overtime loss is recorded as L, and that standings use each era's points rules.
+      Question G01. Each goalie's career regular-season record in credited decisions (D04) against strong
+      opponents. Headline (top_half_*, D01): opponents above the league median by points % before the
+      game, with at least 10 games played. Second column (above_500_*): opponents above .500 by points %
+      before the game. Win percentage is the headline measure, points percentage beside it (D23).
+      meets_minimum_50 and meets_minimum_100 mark 50 and 100 qualifying decisions (D05); answers say which
+      is shown. Any answer must say that from 1999-00 to 2003-04 a goalie's overtime loss is recorded as L,
+      that ties exist only until 2003-04, that standings use each era's points rules, and that strength
+      is measured before each game.
     columns:
       - name: player_id
         description: The NHL's player ID.
         data_tests: [unique, not_null]
-      - name: win_pct
-        description: W / (W + L + T + OTL).
-      - name: points_pct
-        description: (2W + T + OTL) / (2 x decisions).
+      - name: top_half_decisions
+        description: Credited decisions against top-half opponents (headline D01).
+      - name: top_half_win_pct
+        description: W / (W + L + T + OTL) against top-half opponents. Empty if none.
+      - name: top_half_points_pct
+        description: (2W + T + OTL) / (2 x decisions) against top-half opponents.
+      - name: meets_minimum_50
+        description: At least 50 top-half decisions (D05).
+        data_tests: [not_null]
+      - name: meets_minimum_100
+        description: At least 100 top-half decisions, the stricter version reported alongside.
+        data_tests: [not_null]
+      - name: above_500_decisions
+        description: Credited decisions against opponents above .500 by points % (second column).
+      - name: above_500_win_pct
+        description: W / (W + L + T + OTL) against above-.500 opponents. Empty if none.
 
   - name: dim_teams
     description: >

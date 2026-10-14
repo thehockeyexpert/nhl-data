@@ -1,0 +1,344 @@
+# Golden questions for the conversational query layer.
+# Status: DRAFT for the owner's review (2026-10-14). Questions only; no answers yet.
+#
+# Fields:
+#   id              stable identifier
+#   theme           team, season, historical, franchise, player, goalie, head_to_head, streaks, current, awards
+#   question        as a fan or analyst would ask it
+#   difficulty      easy, medium or hard
+#   needs           data the answer requires. "fct_games" and "dim_teams" exist today.
+#   answerable_now  true if today's tables can answer it, "partly" if a definition or small load is still missing
+#   definitions     ids from docs/definitions.md that must be settled first
+#
+# Defaults already decided: team history uses lineage_id (D03); "above .500" means the opponent's
+# points percentage before that game (D01).
+
+status: draft
+questions:
+  # --- team
+  - id: T01
+    theme: team
+    question: How many games did Toronto win in 2025-26, and what was their record?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+  - id: T02
+    theme: team
+    question: Which team scored the most goals in a single regular season?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+  - id: T03
+    theme: team
+    question: What was Boston's home record and road record in 2025-26?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+  - id: T04
+    theme: team
+    question: Which team has the best record in one-goal games since 2005-06?
+    difficulty: medium
+    needs: [fct_games]
+    answerable_now: partly
+    definitions: [D07]
+  - id: T05
+    theme: team
+    question: Which teams averaged the most shots per game in 2025-26?
+    difficulty: easy
+    needs: [team_game_stats]
+    answerable_now: false
+    definitions: []
+  - id: T06
+    theme: team
+    question: Who led the league in power-play percentage in 2025-26?
+    difficulty: easy
+    needs: [team_game_stats]
+    answerable_now: false
+    definitions: []
+
+  # --- season
+  - id: S01
+    theme: season
+    question: Which team finished with the most points in 1995-96?
+    difficulty: easy
+    needs: [fct_games, standings_rules]
+    answerable_now: partly
+    definitions: [D02]
+  - id: S02
+    theme: season
+    question: Where did Montreal stand in its division on 2026-01-01?
+    difficulty: medium
+    needs: [standings_by_date, divisions]
+    answerable_now: false
+    definitions: [D02]
+  - id: S03
+    theme: season
+    question: What is the biggest points lead any team has held during a season?
+    difficulty: hard
+    needs: [standings_by_date]
+    answerable_now: false
+    definitions: [D02]
+  - id: S04
+    theme: season
+    question: How many points did the last-place team have in each season since 1967-68?
+    difficulty: medium
+    needs: [fct_games, standings_rules]
+    answerable_now: partly
+    definitions: [D02]
+  - id: S05
+    theme: season
+    question: Which season had the most games decided in overtime or a shootout?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+
+  # --- historical
+  - id: H01
+    theme: historical
+    question: What is the average goals per game by season, all time?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+  - id: H02
+    theme: historical
+    question: Which season had the most ties?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: []
+  - id: H03
+    theme: historical
+    question: What is the highest-scoring game in NHL history?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+  - id: H04
+    theme: historical
+    question: How many shootouts were there per season since 2005-06?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: []
+
+  # --- franchise
+  - id: F01
+    theme: franchise
+    question: What is Montreal's all-time regular-season record against every opponent?
+    difficulty: medium
+    needs: [fct_games, dim_teams]
+    answerable_now: true
+    definitions: [D03]
+  - id: F02
+    theme: franchise
+    question: Which franchise has won the most playoff series?
+    difficulty: medium
+    needs: [playoff_series, dim_teams]
+    answerable_now: false
+    definitions: [D03]
+  - id: F03
+    theme: franchise
+    question: What is the longest playoff drought for each lineage?
+    difficulty: medium
+    needs: [fct_games, dim_teams]
+    answerable_now: partly
+    definitions: [D03, D10]
+  - id: F04
+    theme: franchise
+    question: How did the Coyotes lineage do in its Winnipeg years compared with Arizona?
+    difficulty: easy
+    needs: [fct_games, dim_teams]
+    answerable_now: true
+    definitions: [D03]
+
+  # --- player
+  - id: P01
+    theme: player
+    question: Who led the NHL in goals in 2025-26?
+    difficulty: easy
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: []
+  - id: P02
+    theme: player
+    question: What is the most points by a player in one game?
+    difficulty: easy
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D11]
+  - id: P03
+    theme: player
+    question: Who has the most career points against Boston?
+    difficulty: medium
+    needs: [skater_game_stats, dim_teams]
+    answerable_now: false
+    definitions: [D03]
+  - id: P04
+    theme: player
+    question: How many career games and points per game does Connor McDavid have?
+    difficulty: easy
+    needs: [skater_game_stats, player_bios]
+    answerable_now: false
+    definitions: [D11]
+  - id: P05
+    theme: player
+    question: Which defencemen averaged the most ice time in 2025-26?
+    difficulty: easy
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D05]
+  - id: P06
+    theme: player
+    question: Which Swedish-born players have scored the most NHL goals?
+    difficulty: medium
+    needs: [skater_game_stats, player_bios]
+    answerable_now: false
+    definitions: []
+  - id: P07
+    theme: player
+    question: What are the highest-scoring rookie seasons?
+    difficulty: hard
+    needs: [skater_game_stats, player_bios]
+    answerable_now: false
+    definitions: [D09]
+  - id: P08
+    theme: player
+    question: Which first-overall draft picks scored the most career points?
+    difficulty: medium
+    needs: [draft, skater_game_stats]
+    answerable_now: false
+    definitions: []
+
+  # --- goalie
+  - id: G01
+    theme: goalie
+    question: Which goalie has the best record against teams above .500?
+    difficulty: hard
+    needs: [goalie_game_stats, standings_by_date]
+    answerable_now: false
+    definitions: [D01, D02, D04, D05]
+  - id: G02
+    theme: goalie
+    question: Who has the most shutouts in a single season?
+    difficulty: easy
+    needs: [goalie_game_stats]
+    answerable_now: false
+    definitions: []
+  - id: G03
+    theme: goalie
+    question: Which goalie had the best save percentage in 2025-26, with a minimum number of games?
+    difficulty: easy
+    needs: [goalie_game_stats]
+    answerable_now: false
+    definitions: [D05]
+  - id: G04
+    theme: goalie
+    question: How do goalies do on the second night of back-to-backs since 2010?
+    difficulty: hard
+    needs: [goalie_game_stats, fct_games]
+    answerable_now: false
+    definitions: [D04, D08]
+  - id: G05
+    theme: goalie
+    question: Which goalies have the most playoff wins all time?
+    difficulty: easy
+    needs: [goalie_game_stats]
+    answerable_now: false
+    definitions: [D04]
+
+  # --- head to head
+  - id: X01
+    theme: head_to_head
+    question: What is the Rangers v Islanders all-time record, including playoffs?
+    difficulty: easy
+    needs: [fct_games, dim_teams]
+    answerable_now: true
+    definitions: [D03]
+  - id: X02
+    theme: head_to_head
+    question: Who has scored the most goals in Montreal v Toronto games?
+    difficulty: medium
+    needs: [skater_game_stats, dim_teams]
+    answerable_now: false
+    definitions: [D03, D11]
+  - id: X03
+    theme: head_to_head
+    question: Since 2005-06, which matchup produced the most overtime games?
+    difficulty: easy
+    needs: [fct_games]
+    answerable_now: true
+    definitions: [D11]
+
+  # --- streaks
+  - id: K01
+    theme: streaks
+    question: What is the longest winning streak in each lineage's history?
+    difficulty: medium
+    needs: [fct_games, dim_teams]
+    answerable_now: partly
+    definitions: [D03, D06]
+  - id: K02
+    theme: streaks
+    question: What is the longest home unbeaten streak ever?
+    difficulty: medium
+    needs: [fct_games]
+    answerable_now: partly
+    definitions: [D06]
+  - id: K03
+    theme: streaks
+    question: What is the longest point streak by a player?
+    difficulty: hard
+    needs: [skater_game_stats]
+    answerable_now: false
+    definitions: [D06]
+
+  # --- current season (2026-27)
+  - id: C01
+    theme: current
+    question: Who leads the league in points right now?
+    difficulty: easy
+    needs: [daily_skater_game_stats]
+    answerable_now: false
+    definitions: [D12]
+  - id: C02
+    theme: current
+    question: What is Toronto's record in its last 10 games?
+    difficulty: easy
+    needs: [daily_schedule]
+    answerable_now: false
+    definitions: [D12]
+  - id: C03
+    theme: current
+    question: Which goalie has been best over the last two weeks?
+    difficulty: medium
+    needs: [daily_goalie_game_stats]
+    answerable_now: false
+    definitions: [D04, D05, D12]
+  - id: C04
+    theme: current
+    question: What do the wild-card standings look like today?
+    difficulty: medium
+    needs: [standings_today]
+    answerable_now: false
+    definitions: [D12]
+
+  # --- awards
+  - id: A01
+    theme: awards
+    question: Who has won the Hart Trophy the most times?
+    difficulty: easy
+    needs: [awards]
+    answerable_now: false
+    definitions: []
+  - id: A02
+    theme: awards
+    question: Which Vezina winners also won the Stanley Cup that season?
+    difficulty: medium
+    needs: [awards, playoff_series]
+    answerable_now: false
+    definitions: []

@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-10-13
+Last updated: 2026-10-14
 
 ## Done
 
@@ -29,12 +29,14 @@ Last updated: 2026-10-13
 ## Next
 
 1. Pilot reviewed (2026-10-14): exceptions approved with sources; labels approved for (1967-68, 4), (2019-20, 4), (2019-20, 12); Jets (1979) lineage override approved.
-2. Full history load (2024-25 back to 1917-18, about 3,300 more requests, 60 to 90 minutes), run by the owner in a separate terminal. Seasons already loaded are skipped. In progress, run by the owner.
-3. After the load: `dbt build` on MotherDuck, then the game type evidence for every remaining pair, and any new exceptions.
+2. Full history load (2024-25 back to 1917-18), run by the owner: done 2026-10-14. 108 seasons in the ingest log, 3,442 requests; all 109 seasons present in raw.
+3. `dbt build` on MotherDuck after the load (2026-10-14): 67 of 67 pass. `check_failures` holds exactly the four approved exceptions and nothing else. Database size 13.5 MiB.
+4. Game type evidence for the 92 unlabelled (season, type) pairs written to `docs/game_type_evidence.md` (2026-10-14).
+5. High-confidence labels approved (2026-10-14): 75 pairs added to the seed. Rebuilt on MotherDuck: 67 of 67 pass, `fct_games` unchanged (same 72,452 rows, same content fingerprint).
 
 ## Open decisions
 
-- **Game type labels.** Approved so far: 1, 2, 3 for all seasons; (20252026, 9) olympics; (19671968, 4) and (20192020, 4) all_star; (20192020, 12) all_star_womens_game. Every other pair stays `unknown type N` until its evidence is reviewed after the full load.
+- **Game type labels.** Approved: 1, 2, 3 for all seasons, and types 4, 9, 10, 13, 19 and 20 wherever the evidence meets the rule in `docs/game_type_evidence.md`. Still unknown: (1948-49, 4), which breaks its rule, and the Medium-confidence types 6, 7, 8, 12 (2023-24), 14 and 18.
 - **Utah.** Kept as the NHL's separate franchise (40). No lineage override.
 - **Tier 2 storage.** Whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be decided before Tier 2 starts.
 

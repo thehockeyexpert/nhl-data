@@ -16,7 +16,7 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 ## Shootouts
 
 - Sampled: weekly schedule responses from 2005-06, 2012-13, 2019-20 and 2020-21 contain games with `last_period_type` = SO. Samples from 2003-04 and earlier contain only REG and OT.
-- To confirm after the full load: the first and last season in which SO appears.
+- Confirmed after the full load (2026-10-14): the first regular-season game with `last_period_type` = SO is in 2005-06. The last regular-season tie is in 2003-04; there are 5,729 ties in total.
 - Scores are the final scores the NHL reports. Observed in 2025-26: a shootout game's scores differ by exactly one.
 
 ## Preseason
@@ -24,6 +24,9 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - From the game list: preseason games (type 1) exist in only 31 seasons. There are none before 1980-81.
 - From 1980-81 to 2003-04 at most 14 preseason games are listed in any season, and many seasons have none. From 2005-06 onward each season lists over 100, except 2012-13 and 2020-21, which list none.
 - Preseason in `fct_games` should be treated as complete only from 2005-06.
+- Observed after the full load (2026-10-14), all unexplained:
+  - Two preseason games are in `fct_games` with `is_final` false: 2022010034 (CAR at TBL, 2022-09-28) and 2024010044 (NSH at TBL, 2024-10-07). The weekly schedule marks both `CNCL` (cancelled); the game list gives game state 1.
+  - Two preseason games are in the game list but not in the weekly schedule, so they are not in `fct_games`: 2021010083 (2021-10-07, teams 2 at 1, state 1, never played) and 1990010214 (1990-09-09, team 22 at team 5560, 8-4, finished). Team 5560 appears in no other game and has no name in our data.
 
 ## The 2004-05 gap
 
@@ -31,7 +34,7 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - The game list has 1,230 games for it, all of game type 13, dated 2004-10-13 to 2005-04-10. Every one has a 0-0 score, no period recorded and game state 6.
 - Sampled: the weekly schedule returns no games for 2005-01-15 and points to September 2005 as the next week with games.
 - Cause (sourced): the 2004-05 season was cancelled on 2005-02-16 and its 1,230 games were not played ([Wikipedia: 2004-05 NHL season](https://en.wikipedia.org/wiki/2004%E2%80%9305_NHL_season)).
-- In our tables: these rows stay in staging, labelled `cancelled` once that label is verified, and never reach `fct_games`. The missing season facts are a documented exception in `dbt/seeds/check_exceptions.csv`.
+- In our tables: these rows stay in staging, labelled `cancelled` (approved 2026-10-14), and never reach `fct_games`. The missing season facts are a documented exception in `dbt/seeds/check_exceptions.csv`.
 
 ## 1917-18 anomalies
 
@@ -59,6 +62,10 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - `dim_teams.lineage_id` equals the NHL franchise unless `dbt/seeds/team_lineage_overrides.csv` says otherwise.
 - **Our lineage differs from the NHL's attribution for the original Winnipeg Jets (1979-80 to 1995-96, team 33).** The NHL treats the Phoenix Coyotes as a 1996 expansion team and attributes the original Jets' records to today's Winnipeg Jets (franchise 35). Their players, coaches and staff moved to Phoenix in 1996 ([Wikipedia: Arizona Coyotes](https://en.wikipedia.org/wiki/Arizona_Coyotes), [Wikipedia: Winnipeg Jets](https://en.wikipedia.org/wiki/Winnipeg_Jets)), so our `lineage_id` puts team 33 with the Coyotes (28). `franchise_id` keeps the NHL's view. Totals grouped by `lineage_id` will therefore not match the NHL's official franchise records for the Jets or the Coyotes.
 - Utah (franchise 40) is kept separate from the Coyotes, as the NHL has it. No override.
+
+## Venue names
+
+- Observed: four venue names arrive garbled from the NHL's weekly schedule, for example `Le Colis√©e` for Le Colisée and `Sportovn√≠ hala` for Sportovní hala. 676 games are affected. They are stored as received.
 
 ## Game types
 

@@ -33,16 +33,25 @@ Last updated: 2026-10-14
 
 ## In progress
 
-- **G01 ("best record against teams above .500"):** the model `goalie_records_vs_above_500` is built (763 goalies)
-  following D01, D04, D05 and D23. **Draft:** its result has not yet been reviewed or verified by the owner, and no
-  answer has been given.
+- **G01 ("best record against teams above .500"):** `goalie_records_vs_above_500` is built under the revised D01
+  (headline: opponent above the league median by points % before the game, with at least 10 games played; second
+  column: above .500 by points %), with D04, D05 (50, and 100 reported) and D23.
+  - **Verified (2026-10-14).** Recomputed independently from the NHL's official standings for the day before each
+    game, it matches game for game: Ken Dryden 1975-76 under the headline (21 qualifying decisions, league median
+    equal on all 60 dates), and Dryden 1975-76 and Braden Holtby 2015-16 under the above-.500 column (24 and 45).
+  - **Still labelled draft** until the owner has checked it.
 
 ## Next
 
-1. Verify G01: review the top of `goalie_records_vs_above_500` and spot-check a few goalies against an outside source.
-2. The daily run (GitHub Actions) for 2026-27. Until it exists, the 2026-27 snapshot goes stale: `past_games_final`
-   will start failing on any build two days after the last schedule load.
-3. Team game stats, then skater game stats (pilot first, then a storage decision).
+1. **Measure one lighter build, then plan the daily run.**
+   - Measure before the MotherDuck Business trial ends on **2026-10-19**: `md_information_schema.query_history`,
+     which shows per-query execution time, is a Business-plan feature and disappears with the trial.
+   - Then plan the daily run (GitHub Actions) for 2026-27. Until it exists, the 2026-27 snapshot goes stale:
+     `past_games_final` will start failing on any build two days after the last schedule load.
+2. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
+   `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
+3. **The conversational query layer,** connecting to MotherDuck with a read-only token, so it can query but never
+   change the data.
 
 ## Storage (2026-10-14)
 
@@ -94,4 +103,4 @@ Last updated: 2026-10-14
 ## Not started
 
 - Team, skater and play-by-play loads; player pages (college and junior seasons); arena coordinates.
-- The conversational query layer, and answers to the golden questions.
+- Answers to the golden questions (beyond G01). The conversational layer itself is item 3 under "Next".

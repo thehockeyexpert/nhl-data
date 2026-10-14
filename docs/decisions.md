@@ -1,0 +1,130 @@
+# Decisions
+
+A log of the owner's decisions that change what we load or model, with the date and the expected cost.
+The newest decision is first.
+
+## 2026-10-14: fights and travel stay in scope
+
+**Decision.** The fight questions (P14, P19) and the travel questions (T09, T10) in
+`analyst/golden_questions.yml` stay in scope. They are marked `in_scope: true`, `load_status: not_started`,
+and their `blocked_on` lists what is missing. Nothing has been loaded for them yet.
+
+### Fights: what it will cost
+
+Fights exist only as penalty events in each game's play-by-play
+(`api-web.nhle.com/v1/gamecenter/{id}/play-by-play`), one request per game. Loading every game would take
+about 72,000 requests (about 20 hours at one request per second).
+
+**The cheaper route.** The stats API's per-game team penalty report
+(`api.nhle.com/stats/rest/en/team/penalties?isGame=true`) says how many major penalties each team took in each
+game. It takes one request per season and game type, about 220 for all history. The same rows also answer
+the bench-minor question, T07. Play-by-play is then loaded only for games with at least one major.
+
+Read-only test on 2026-10-14 (about 300 requests, nothing saved):
+
+| Season | Games with a major | Sampled flagged games with a fight | Fights in sampled unflagged games | Fighting share of majors (sampled) |
+|---|---|---|---|---|
+| 1960-61 | 41 of 210 (20%) | 16 of 25 | 0 of 25 games | 52 of 65 |
+| 1975-76 | 271 of 720 (38%) | 21 of 25 | 0 of 25 games | 57 of 62 |
+| 1990-91 | 509 of 840 (61%) | 23 of 25 | 0 of 25 games | 76 of 84 |
+| 2005-06 | 379 of 1,230 (31%) | 23 of 25 | 0 of 25 games | 56 of 59 |
+| 2018-19 | 213 of 1,271 (17%) | 24 of 25 | 0 of 25 games | 54 of 56 |
+
+What the test shows:
+
+- **No fights are missed in the sample.** None of the 125 sampled unflagged games had a fighting penalty in
+  play-by-play.
+- **The counts agree.** In every sampled game, the play-by-play majors equal the stats API majors, and the
+  play-by-play penalty minutes equal the stats API penalty minutes (250 of 250 games).
+- **Non-fighting majors add some noise, mostly in older seasons.** Flagged games without a fight were 36%
+  of the sample in 1960-61 and 4% in 2018-19. The only cost is a wasted request; nothing is counted wrongly,
+  because the fights themselves are read from play-by-play.
+- **Where labelled fights start: 1947-48 (from a sample).**
+  - In 1917-18, 1930-31, 1945-46 and 1946-47, every sampled major is recorded only as "major", with no type.
+  - From 1947-48 to 1960-61, 4 flagged games were sampled per season, and every season has majors labelled
+    "fighting".
+  - All 440 fighting penalties seen in that follow-up sample have type code MAJ.
+  - Not proven: whether labelling changed partway through 1946-47 or 1947-48, because only 4 flagged games
+    per season were sampled.
+- **Limit.** Both sources are the NHL's own records. A fight the NHL never recorded as a fighting major will
+  not appear in either one.
+
+How reliable the major flag is (first test, 2026-10-14):
+
+- **Fights missed (unflagged games with a fight): 0 of 125.** That is 25 regular-season games in each of
+  1960-61, 1975-76, 1990-91, 2005-06 and 2018-19.
+- **How strong that is:** with 0 found, the miss rate is at most about 12% per era and about 2.4% across all
+  five, at 95% confidence.
+- **Unproven:** playoffs (no playoff games tested), the seasons between the five sampled, and 1947-48 to
+  1959-60.
+
+Exact counts (follow-up run, 2026-10-14, 346 requests). Games with at least one major from the per-game team
+penalty report:
+
+| Era | Regular-season games flagged | Playoff games flagged | Total flagged | Share of games | Play-by-play size per game (sampled) |
+|---|---|---|---|---|---|
+| 1960-61 to 1966-67 | 295 of 1,470 | 25 of 124 | 320 | 20% | about 15 KB |
+| 1967-68 to 1979-80 | 2,923 of 8,096 | 243 of 562 | 3,166 | 37% | about 16 KB |
+| 1980-81 to 1994-95 | 7,291 of 12,844 | 555 of 1,188 | 7,846 | 56% | about 18 KB |
+| 1995-96 to 2006-07 | 5,407 of 12,833 | 122 of 937 | 5,529 | 40% | about 30 KB |
+| 2007-08 to 2025-26 | 6,348 of 22,842 | 207 of 1,700 | 6,555 | 27% | about 112 KB |
+| **1960-61 to 2025-26** | **22,264 of 58,085** | **1,152 of 4,511** | **23,416** | **37.4%** | |
+
+| Step | Requests | Time at 1 per second | Raw size |
+|---|---|---|---|
+| Team penalties per game (flags), 1960-61 to 2025-26, regular season and playoffs | 130 | about 2 minutes | small |
+| Play-by-play for flagged games, 1960-61 to 2025-26 | 23,416 | about 6.5 hours | about 1.1 GB as JSON (each season's sampled average size times its flagged games) |
+| Optional: flagged games 1947-48 to 1959-60 | 609 more | about 10 minutes | about 9 MB |
+| Player pages, for college seasons (P14 only) | about 8,000 | about 2.5 hours | to measure |
+
+The size is an estimate from 2 to 4 sampled games per season, not a measurement. The size estimate matters
+against MotherDuck's 10 GB cap, so it belongs with the Tier 2 storage decision in `CLAUDE.md`. A pilot of
+one or two seasons measures it first.
+
+### Travel: what it will cost
+
+The NHL data names each game's venue but gives no coordinates, and it does not show a team's actual flights.
+
+- **No NHL requests.**
+- **One hand-made reference table**, `dbt/seeds/venue_coordinates.csv`. It has one row per venue name as the
+  NHL writes it, with latitude, longitude, the source for each row, and whether the name is a rename of a
+  building already listed. 217 distinct venue names appear in regular-season and playoff games, including 90
+  neutral-site venues, so the number of distinct buildings is lower.
+- **A decision on D20** (the travel definition) in `docs/definitions.md`.
+
+Candidate sources for the coordinates are in the next section. Building and checking the table is about a day
+of careful work, done in reviewable batches.
+
+### Sources for arena coordinates
+
+| Source | What it covers | Licence | Notes |
+|---|---|---|---|
+| Wikidata (`P625` coordinates; `P115` home venue, with start and end dates) | Current and many demolished arenas; team-to-venue history with dates | CC0 (public domain) | Recommended first source. It can be queried in bulk, and its licence lets us publish the table in a public repo. Each value still needs checking by eye. |
+| Wikipedia arena articles (infobox coordinates) | Nearly every NHL arena, including historic ones | CC BY-SA 4.0 for the text | Good for checking by hand and for the rows Wikidata lacks. Coordinates are facts; cite the article per row. |
+| OpenStreetMap, via Nominatim | Buildings that exist today | ODbL (attribution, share-alike for databases) | Demolished arenas are mostly missing. Nominatim's usage policy allows at most one request per second. The share-alike terms would apply to our table. |
+| GeoNames | Cities, not buildings | CC BY 4.0 | A fallback at city level, within a few kilometres, enough for travel distances. |
+| Natural Earth populated places | Major cities | Public domain | A coarser city-level fallback. |
+
+### Venues that changed name or location
+
+What our own data shows (regular season and playoffs, not counting neutral sites):
+
+- **Several lineages have used 5 to 7 venue names.** Florida, Carolina and Tampa Bay have 7 each; Arizona,
+  Los Angeles, Philadelphia, Calgary and Montreal have 6.
+- **A name change can be a rename or a move, and the data cannot tell which.**
+  - Montreal: Jubilee Rink, then Mount Royal Arena, then Montreal Forum, then Centre Molson and Centre Bell.
+    By general knowledge, Centre Molson and Centre Bell are the same building renamed, while the Forum was a
+    different building. This is to confirm per row against a source.
+  - Vancouver: Pacific Coliseum, then General Motors Place and Rogers Arena (by general knowledge, the
+    latter two are the same building).
+  - So the table needs one row per venue name, plus a building id, so renamed buildings share coordinates.
+- **Franchise moves change a lineage's home city.** Examples: Winnipeg to Phoenix, Quebec to Colorado,
+  Hartford to Carolina, Atlanta to Calgary. The "home" a team returns to must come from the season, not the
+  lineage.
+- **Neutral-site games are common in some seasons.**
+  - 2019-20 has 130 games at Rogers Place and Scotiabank Arena, the two cities where the season resumed.
+  - Others include 1993-94 neutral-site games such as Target Center and O-Rena, early playoff series such as
+    Denman Arena in 1922-23, and 1967-68 games at Le Colisée.
+  - These games use their own venue, not the home team's arena.
+- **Garbled names.** Four venue names arrive garbled from the NHL (see `docs/data_coverage.md`). The table
+  should list them exactly as written, so the join still works.

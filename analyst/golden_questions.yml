@@ -13,6 +13,9 @@
 #   flags           optional: ambiguous, not_in_nhl_data, partial_history
 #   proposed_wording optional: a suggested rewording for the owner to approve; the question itself is unchanged
 #   review_note     optional: why it is flagged and what would be needed
+#   in_scope        optional: true once the owner has decided the question stays in scope
+#   load_status     optional: not_started, in_progress or done, for the data the question is waiting on
+#   blocked_on      optional: exactly what is missing before it can be answered (data or undecided definitions)
 #
 # Defaults already decided: team history uses lineage_id (D03); "above .500" means the opponent's
 # points percentage before that game (D01).
@@ -454,6 +457,13 @@ questions:
     needs: [play_by_play_penalties, player_other_leagues]
     answerable_now: false
     definitions: [D17, D18]
+    in_scope: true
+    load_status: not_started
+    blocked_on:
+      - play_by_play_penalties (fights; see docs/decisions.md)
+      - player_other_leagues (college seasons; one request per player)
+      - D17 fight definition
+      - D18 other-leagues definition
     flags: [ambiguous, partial_history]
     proposed_wording: Among players who played for Boston College (NCAA) and later in the NHL, who had the most NHL fighting majors?
     review_note: Fights come only from play-by-play penalty events, one request per game. Their completeness in early seasons is unknown. College seasons come from each player's page, one request per player. "Most fights" could also include college fights, which the NHL data does not have.
@@ -542,6 +552,11 @@ questions:
     needs: [fct_games, venue_coordinates]
     answerable_now: false
     definitions: [D20]
+    in_scope: true
+    load_status: not_started
+    blocked_on:
+      - venue_coordinates (arena coordinates; see docs/decisions.md)
+      - D20 travel definition
     flags: [not_in_nhl_data, ambiguous]
     review_note: The NHL data names venues but has no coordinates, and it does not show where a team flies between games. It needs an outside table of arena coordinates (a hand-made seed with a source per arena) and a travel definition. Split from the owner's two-part question.
   - id: T10
@@ -552,6 +567,11 @@ questions:
     needs: [fct_games, venue_coordinates]
     answerable_now: false
     definitions: [D03, D20]
+    in_scope: true
+    load_status: not_started
+    blocked_on:
+      - venue_coordinates (arena coordinates; see docs/decisions.md)
+      - D20 travel definition
     flags: [not_in_nhl_data, ambiguous]
     review_note: Same as T09, across every season. Split from the owner's two-part question.
   - id: T11
@@ -581,6 +601,12 @@ questions:
     needs: [play_by_play_penalties, skater_game_stats]
     answerable_now: false
     definitions: [D11, D17]
+    in_scope: true
+    load_status: not_started
+    blocked_on:
+      - play_by_play_penalties (fights; see docs/decisions.md)
+      - skater_game_stats (points)
+      - D17 fight definition
     flags: [ambiguous, partial_history]
     proposed_wording: Which player has the highest career total of NHL regular-season fighting majors plus points?
     review_note: '"Combined" is read as fights + points added together. Fights come only from play-by-play penalty events, one request per game, and their completeness in early seasons is unknown.'

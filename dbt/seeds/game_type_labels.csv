@@ -2,4 +2,7 @@ season,game_type,label,evidence,verified_on
 ,1,preseason,"Season 20252026: 104 games dated 2025-09-20 to 2025-10-04, all before the regular season. Applied to all seasons with the owner's approval.",2026-10-13
 ,2,regular,"Season 20252026: 1312 games, equal to the NHL's own regular-season total. Applied to all seasons with the owner's approval.",2026-10-13
 ,3,playoff,"Season 20252026: 82 finished games, equal to the NHL's own playoff total. Applied to all seasons with the owner's approval.",2026-10-13
-20252026,9,olympics,"30 games dated 2026-02-11 to 2026-02-22 between national teams (SVK FIN SWE ITA SUI FRA CZE CAN LAT USA GER DEN) at Milano Santagiulia Ice Hockey Arena and Fiera Milano Rho.",2026-10-13
+20252026,9,olympics,30 games dated 2026-02-11 to 2026-02-22 between national teams (SVK FIN SWE ITA SUI FRA CZE CAN LAT USA GER DEN) at Milano Santagiulia Ice Hockey Arena and Fiera Milano Rho.,2026-10-13
+19671968,4,all_star,"1 game on 1968-01-16: Toronto Maple Leafs at All-Stars (ALL), Maple Leaf Gardens.",2026-10-14
+20192020,4,all_star,"3 games on 2020-01-25 between the division teams Pacific, Metropolitan, Atlantic and Central, Enterprise Center.",2026-10-14
+20192020,12,all_star_womens_game,"1 game on 2020-01-24: Canadian All-Stars (CWA) at American All-Stars (AWA), Enterprise Center, the day before the type 4 games.",2026-10-14

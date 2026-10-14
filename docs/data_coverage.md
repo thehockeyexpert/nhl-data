@@ -30,20 +30,21 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - The NHL's season facts have no entry for season 20042005.
 - The game list has 1,230 games for it, all of game type 13, dated 2004-10-13 to 2005-04-10. Every one has a 0-0 score, no period recorded and game state 6.
 - Sampled: the weekly schedule returns no games for 2005-01-15 and points to September 2005 as the next week with games.
-- Cause: unexplained here until a source is recorded.
+- Cause (sourced): the 2004-05 season was cancelled on 2005-02-16 and its 1,230 games were not played ([Wikipedia: 2004-05 NHL season](https://en.wikipedia.org/wiki/2004%E2%80%9305_NHL_season)).
 - In our tables: these rows stay in staging, labelled `cancelled` once that label is verified, and never reach `fct_games`. The missing season facts are a documented exception in `dbt/seeds/check_exceptions.csv`.
 
 ## 1917-18 anomalies
 
 - The season facts say 22 games per team and 34 regular-season games in total. From the game list: there are 36 regular-season games and four teams, three with 22 games and one (Montreal Wanderers) with 6.
-- The Wanderers' last two listed games, on 1918-01-02 and 1918-01-05, both have a 1-0 score.
-- Cause: unexplained.
+- The Wanderers' last two listed games, on 1918-01-02 (against the Canadiens) and 1918-01-05 (against Toronto), both have a 1-0 score.
+- Source: the Wanderers withdrew in January 1918 after their arena burned, and two of their games count as wins for the Canadiens and Toronto ([Wikipedia: 1917-18 Montreal Wanderers season](https://en.wikipedia.org/wiki/1917%E2%80%9318_Montreal_Wanderers_season)).
+- The NHL's total of 34 is consistent with excluding those two forfeits, but no source confirms that. Documented as exceptions in `dbt/seeds/check_exceptions.csv`.
 - The playoff total (7) matches the game list.
 
 ## Seasons where teams did not all play the scheduled number of games
 
 - From the game list: besides 1917-18, the only such season is 2019-20, where the facts say 82 games per team and 1,082 games in total, and teams have between 68 and 71 games.
-- Cause: unexplained here until a source is recorded.
+- Cause (sourced): the NHL paused the season on 2020-03-12 after 1,082 of 1,271 scheduled regular-season games ([NHL.com: return-to-play plan](https://nhl.com/news/nhl-announces-return-to-play-plan-317031134)). Documented as an exception.
 
 ## Non-NHL opponents
 
@@ -55,7 +56,9 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 ## Franchises and lineage
 
 - The NHL's franchise IDs group team identities. Observed: franchise 35 holds the Winnipeg Jets (1979), the Atlanta Thrashers and today's Winnipeg Jets. Franchise 28 holds the Phoenix and Arizona Coyotes, 1996-97 to 2023-24. Franchise 40 holds the Utah Hockey Club and Utah Mammoth, from 2024-25.
-- `dim_teams.lineage_id` equals the NHL franchise unless `dbt/seeds/team_lineage_overrides.csv` says otherwise. That file is empty.
+- `dim_teams.lineage_id` equals the NHL franchise unless `dbt/seeds/team_lineage_overrides.csv` says otherwise.
+- **Our lineage differs from the NHL's attribution for the original Winnipeg Jets (1979-80 to 1995-96, team 33).** The NHL treats the Phoenix Coyotes as a 1996 expansion team and attributes the original Jets' records to today's Winnipeg Jets (franchise 35). Their players, coaches and staff moved to Phoenix in 1996 ([Wikipedia: Arizona Coyotes](https://en.wikipedia.org/wiki/Arizona_Coyotes), [Wikipedia: Winnipeg Jets](https://en.wikipedia.org/wiki/Winnipeg_Jets)), so our `lineage_id` puts team 33 with the Coyotes (28). `franchise_id` keeps the NHL's view. Totals grouped by `lineage_id` will therefore not match the NHL's official franchise records for the Jets or the Coyotes.
+- Utah (franchise 40) is kept separate from the Coyotes, as the NHL has it. No override.
 
 ## Game types
 

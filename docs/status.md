@@ -16,24 +16,26 @@ Last updated: 2026-10-13
   - `checks.check_failures`, a view of every failing row, with documented exceptions applied by the tests.
 - `docs/data_coverage.md`: where the data is thin or different by era.
 
-## Next: the pilot run
+## Pilot run (2026-10-14): done and reviewed
 
-1. Load the team and franchise lists: `uv run python -m ingest.teams` (3 requests).
-2. Load the seven pilot seasons (about 170 requests, about 3 minutes):
-   `uv run python -m ingest.backfill --seasons 20202021,20192020,20122013,20042005,19941995,19671968,19171918`
-3. Build on MotherDuck: `uv run dbt build --project-dir dbt --profiles-dir dbt`. This creates the `reference` and `checks` schemas and `dim_teams`.
-4. Review: check failures, game type evidence, proposed exceptions, actual storage used.
+- Team and franchise lists loaded (3 requests).
+- Seven pilot seasons loaded: 20202021, 20192020, 20122013, 20042005, 19941995, 19671968, 19171918. 170 requests in 2.8 minutes, as estimated.
+- `dbt build` on MotherDuck: 65 of 67 pass. The two failures are the expected ones; their exceptions were approved on 2026-10-14 (not yet rebuilt on MotherDuck):
+  - `regular_season_game_count`, 19171918: expected 34, actual 36.
+  - `season_balanced`, 19171918 (teams have 6 to 22 games) and 20192020 (68 to 71 games).
+- Every pilot season's regular-season and playoff counts match the NHL's season facts, apart from 1917-18.
+- MotherDuck storage for the `nhl` database after the pilot: about 5.2 MiB (8 seasons).
 
-After the pilot is reviewed: the full history load (2024-25 back to 1917-18, about 3,470 requests, 60 to 90 minutes), run by the owner in a separate terminal.
+## Next
 
-Until step 1 has run, `dbt build` on MotherDuck fails because the team tables do not exist yet. Until season 20042005 is loaded, `assert_no_stale_exceptions` fails because its exception has nothing to match.
+1. Pilot reviewed (2026-10-14): exceptions approved with sources; labels approved for (1967-68, 4), (2019-20, 4), (2019-20, 12); Jets (1979) lineage override approved.
+2. Full history load (2024-25 back to 1917-18, about 3,300 more requests, 60 to 90 minutes), run by the owner in a separate terminal. Seasons already loaded are skipped. In progress, run by the owner.
+3. After the load: `dbt build` on MotherDuck, then the game type evidence for every remaining pair, and any new exceptions.
 
 ## Open decisions
 
-- **Game type labels.** Types 4, 6, 7, 8, 10, 12, 13, 14, 18, 19 and 20, and type 9 outside 20252026, have proposed labels only. Each (season, game type) pair needs evidence from the weekly schedule (teams, dates, venues) and the owner's confirmation before it goes into `dbt/seeds/game_type_labels.csv`. Until then they show as `unknown type N`.
-- **Winnipeg Jets (1979).** The NHL files this team under franchise 35 with today's Jets. A lineage override to the Coyotes line needs a second, independent source confirming the 1996 move to Phoenix, shown to the owner first.
-- **Utah.** Kept as the NHL's separate franchise (40) for now. No lineage override.
-- **Exception reasons.** The 2004-05 exception reads "unexplained". Sources are still to be recorded for it and for the expected 1917-18 and 2019-20 exceptions.
+- **Game type labels.** Approved so far: 1, 2, 3 for all seasons; (20252026, 9) olympics; (19671968, 4) and (20192020, 4) all_star; (20192020, 12) all_star_womens_game. Every other pair stays `unknown type N` until its evidence is reviewed after the full load.
+- **Utah.** Kept as the NHL's separate franchise (40). No lineage override.
 - **Tier 2 storage.** Whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be decided before Tier 2 starts.
 
 ## Not started

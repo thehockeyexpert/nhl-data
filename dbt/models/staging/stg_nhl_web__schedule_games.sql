@@ -40,11 +40,25 @@ renamed as (
         (game ->> 'startTimeUTC')::timestamptz as start_time_utc,
         (game -> 'homeTeam' ->> 'id')::integer as home_team_id,
         game -> 'homeTeam' ->> 'abbrev' as home_team_abbrev,
-        concat_ws(' ', game -> 'homeTeam' -> 'placeName' ->> 'default', game -> 'homeTeam' -> 'commonName' ->> 'default') as home_team_name,
+        -- Place plus name ("Florida Panthers"), unless the name already holds the place or there is none
+        -- (all-star and national teams give e.g. place "Pacific" and name "Pacific").
+        case
+            when coalesce(game -> 'homeTeam' -> 'placeName' ->> 'default', '') = ''
+                or contains(game -> 'homeTeam' -> 'commonName' ->> 'default', game -> 'homeTeam' -> 'placeName' ->> 'default')
+                then game -> 'homeTeam' -> 'commonName' ->> 'default'
+            else (game -> 'homeTeam' -> 'placeName' ->> 'default') || ' ' || (game -> 'homeTeam' -> 'commonName' ->> 'default')
+        end as home_team_name,
         (game -> 'homeTeam' ->> 'score')::integer as home_score,
         (game -> 'awayTeam' ->> 'id')::integer as away_team_id,
         game -> 'awayTeam' ->> 'abbrev' as away_team_abbrev,
-        concat_ws(' ', game -> 'awayTeam' -> 'placeName' ->> 'default', game -> 'awayTeam' -> 'commonName' ->> 'default') as away_team_name,
+        -- Place plus name ("Florida Panthers"), unless the name already holds the place or there is none
+        -- (all-star and national teams give e.g. place "Pacific" and name "Pacific").
+        case
+            when coalesce(game -> 'awayTeam' -> 'placeName' ->> 'default', '') = ''
+                or contains(game -> 'awayTeam' -> 'commonName' ->> 'default', game -> 'awayTeam' -> 'placeName' ->> 'default')
+                then game -> 'awayTeam' -> 'commonName' ->> 'default'
+            else (game -> 'awayTeam' -> 'placeName' ->> 'default') || ' ' || (game -> 'awayTeam' -> 'commonName' ->> 'default')
+        end as away_team_name,
         (game -> 'awayTeam' ->> 'score')::integer as away_score,
         game ->> 'gameState' as game_state,
         game ->> 'gameScheduleState' as game_schedule_state,

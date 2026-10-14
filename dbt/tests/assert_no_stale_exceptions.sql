@@ -8,4 +8,5 @@ where not exists (
     where failures.check_name = exceptions.check_name
       and failures.season = exceptions.season
       and (exceptions.game_id is null or exceptions.game_id = failures.game_id)
+      and (exceptions.team_id is null or exceptions.team_id = failures.team_id)
 )

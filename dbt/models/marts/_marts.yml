@@ -56,9 +56,71 @@ models:
           True if a finished game ended level. Only possible in seasons that allowed ties
           (docs/data_coverage.md, "Ties").
 
+  - name: fct_goalie_games
+    description: >
+      One row per goalie per game, regular season and playoffs. The team comes from the game
+      (home team for H rows, away team for R rows), because the API's team abbreviations are reused
+      across eras. Shots and saves only from 1955-56 (docs/data_coverage.md, "Goalie stats").
+    columns:
+      - name: goalie_game_key
+        description: game_id and player_id joined.
+        data_tests: [unique, not_null]
+      - name: team_id
+        description: The goalie's team in that game. Joins to dim_teams.
+      - name: decision
+        description: >
+          The credited decision (docs/definitions.md, D04): W, L, T or OTL, or empty if none.
+          From 1999-00 to 2003-04 a goalie's overtime loss is recorded as L.
+      - name: is_starter
+        description: True if the goalie started the game.
+
+  - name: fct_team_games
+    description: >
+      One row per team per finished regular-season or playoff game, with the result under that
+      era's standings rules (docs/definitions.md, D02): OTL only in seasons with a point for an
+      overtime loss, otherwise L. Points W 2, T 1, OTL 1, L 0.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: result
+        description: W, L, T or OTL.
+        data_tests: [not_null]
+
+  - name: fct_team_standings_by_game
+    description: >
+      Standings as of each regular-season game: each team's totals from its earlier games that
+      season, the game itself excluded (docs/definitions.md, D01 and D02). Season-end totals are
+      checked against the NHL's official totals (check standings_match_official).
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: points_pct_before
+        description: Points / (2 x games played) before the game. Empty for a team's first game.
+      - name: is_above_500_before
+        description: True if points_pct_before is above .500. False for a team's first game (D01).
+        data_tests: [not_null]
+
+  - name: goalie_records_vs_above_500
+    description: >
+      DRAFT, not yet verified by the owner (docs/status.md).
+      Question G01. Each goalie's career regular-season record in credited decisions (D04) against
+      opponents above .500 before the game (D01), with win percentage (D23) and points percentage.
+      meets_minimum marks at least 50 such decisions (D05). Any answer must say that from 1999-00 to
+      2003-04 a goalie's overtime loss is recorded as L, and that standings use each era's points rules.
+    columns:
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [unique, not_null]
+      - name: win_pct
+        description: W / (W + L + T + OTL).
+      - name: points_pct
+        description: (2W + T + OTL) / (2 x decisions).
+
   - name: dim_teams
     description: >
-      One row per team identity that appears in our games. A club that was renamed or moved
+      One row per team identity that appears in our games, plus the NHL's two placeholder teams. A club that was renamed or moved
       usually has several rows, tied together by franchise_id and lineage_id.
     columns:
       - name: team_id
@@ -73,6 +135,11 @@ models:
         description: >
           False for opponents that are not in the NHL's team list
           (docs/data_coverage.md, "Non-NHL opponents").
+        data_tests: [not_null]
+      - name: is_placeholder
+        description: >
+          True for the NHL's two placeholder teams ("To be determined" and "NHL"), which future
+          playoff games can name before the bracket is known. Never a real opponent.
         data_tests: [not_null]
       - name: first_season
         description: >

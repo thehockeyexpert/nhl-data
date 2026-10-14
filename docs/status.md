@@ -4,46 +4,58 @@ Last updated: 2026-10-14
 
 ## Done
 
-- Project scaffold, conventions (`CLAUDE.md`) and a `.gitignore` that blocks secrets and data files.
-- Ingest for one season of schedule and results into the `raw` schema: season facts, game list and weekly schedule, paced at one request per second and safe to rerun.
-- Season 20252026 loaded end to end in MotherDuck: 1,312 regular-season games, 82 per team, 82 playoff games, all checks passing.
-- dbt project: staging models, `fct_games`, and season-aware data checks that compare against the NHL's own season facts.
-- Checks proven to fail on damaged local copies of the data.
-- Code for the history load, tested but not yet run against the NHL API or MotherDuck:
-  - `ingest/backfill.py` (many seasons, newest first, resumable) and `ingest/teams.py` (team and franchise lists).
-  - `dim_teams` with the NHL's `franchise_id` and our `lineage_id`.
-  - Reference tables in `dbt/seeds/`: game type labels, lineage overrides (empty), check exceptions.
-  - `checks.check_failures`, a view of every failing row, with documented exceptions applied by the tests.
-- `docs/data_coverage.md`: where the data is thin or different by era.
+- **Foundations.** Project scaffold, conventions (`CLAUDE.md`), and a `.gitignore` that blocks secrets and data files.
+- **Data use.** Decided 2026-10-14 (`docs/decisions.md`): the NHL endpoints are unofficial and unlicensed, and used for
+  personal use only. No NHL data files go in the public repo, and nothing from the NHL is printed in logs.
+- **Schedule and results, Tier 1 history.** 1917-18 to 2025-26 are loaded in MotherDuck (109 seasons; 2004-05 has no
+  games). `fct_games` holds 72,452 games before 2026-27, fingerprint `cae7e79c…`, unchanged since the history load.
+- **Game type labels.** Approved for every (season, type) pair except (1948-49, 4), which breaks its rule. Evidence is
+  in `docs/game_type_evidence.md`, trimmed to one summary line per pair.
+- **Load 1: records and standings rules** (6 requests, 2026-10-14).
+  - Players, draft picks, trophies, award results, playoff series games, and the standings rules per season.
+  - Known facts checked against outside sources: McDavid's birth and draft, Hart winners, Stanley Cup gaps, the
+    first draft, 2024-25 series, and the start seasons of the standings rules. The ROW and regulation-wins start
+    seasons are unverified (`docs/data_coverage.md`).
+- **Load 2: 2026-27** (32 requests, 2026-10-14). A one-off snapshot: 1,344 regular-season games scheduled, 105 final
+  on the day of the load.
+- **Checks for a season in progress.** `checks.season_status` decides when a season counts as finished. Recent games
+  have a two-day lag. `checks.season_in_progress_notes` lists postponed and pending games and never fails.
+- **Load 3: goalie games, all history** (220 requests, 2026-10-14), plus the official team season totals (1 request).
+  - `fct_goalie_games` (150,751 rows), `fct_team_games`, and `fct_team_standings_by_game` (standings before every
+    regular-season game, under each era's rules).
+  - The derived standings match the official season totals for 1,788 of 1,791 team-seasons. The 3 differences are
+    pinned to single games and excepted. A spot-check of 4 games against the NHL's standings matched exactly.
+  - Career-win sanity check: Brodeur 691 and Roy 551 match our data.
+- **Exceptions.** 81 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
+  single team (`team_id`). From 2022-23, an era rule in `goalie_saves_add_up` allows saves that are exactly 1 too
+  high, watched by `checks.goalie_saves_plus_one_by_season` with a 2% limit.
+- **Latest `dbt build` on MotherDuck (2026-10-14):** 141 of 141 pass. No failure is left without an approved exception.
 
-## Pilot run (2026-10-14): done and reviewed
+## In progress
 
-- Team and franchise lists loaded (3 requests).
-- Seven pilot seasons loaded: 20202021, 20192020, 20122013, 20042005, 19941995, 19671968, 19171918. 170 requests in 2.8 minutes, as estimated.
-- `dbt build` on MotherDuck: 65 of 67 pass. The two failures are the expected ones; their exceptions were approved on 2026-10-14 (not yet rebuilt on MotherDuck):
-  - `regular_season_game_count`, 19171918: expected 34, actual 36.
-  - `season_balanced`, 19171918 (teams have 6 to 22 games) and 20192020 (68 to 71 games).
-- Every pilot season's regular-season and playoff counts match the NHL's season facts, apart from 1917-18.
-- MotherDuck storage for the `nhl` database after the pilot: about 5.2 MiB (8 seasons).
+- **G01 ("best record against teams above .500"):** the model `goalie_records_vs_above_500` is built (763 goalies)
+  following D01, D04, D05 and D23. **Draft:** its result has not yet been reviewed or verified by the owner, and no
+  answer has been given.
 
 ## Next
 
-1. Pilot reviewed (2026-10-14): exceptions approved with sources; labels approved for (1967-68, 4), (2019-20, 4), (2019-20, 12); Jets (1979) lineage override approved.
-2. Full history load (2024-25 back to 1917-18), run by the owner: done 2026-10-14. 108 seasons in the ingest log, 3,442 requests; all 109 seasons present in raw.
-3. `dbt build` on MotherDuck after the load (2026-10-14): 67 of 67 pass. `check_failures` holds exactly the four approved exceptions and nothing else. Database size 13.5 MiB.
-4. Game type evidence for the 92 unlabelled (season, type) pairs written to `docs/game_type_evidence.md` (2026-10-14).
-5. High-confidence labels approved (2026-10-14): 75 pairs added to the seed. Rebuilt on MotherDuck: 67 of 67 pass, `fct_games` unchanged (same 72,452 rows, same content fingerprint).
-6. Sourced labels for the 16 Medium-confidence pairs approved (2026-10-14). Discrepancies between the NHL's data and the sources are recorded in `docs/data_coverage.md`.
+1. Verify G01: review the top of `goalie_records_vs_above_500` and spot-check a few goalies against an outside source.
+2. The daily run (GitHub Actions) for 2026-27. Until it exists, the 2026-27 snapshot goes stale: `past_games_final`
+   will start failing on any build two days after the last schedule load.
+3. Team game stats, then skater game stats (pilot first, then a storage decision).
 
 ## Open decisions
 
-- **Game type labels.** Approved: 1, 2, 3 for all seasons, and types 4, 9, 10, 13, 19 and 20 wherever the evidence meets the rule in `docs/game_type_evidence.md`. The Medium-confidence types 6, 7, 8, 12 (2023-24), 14 and 18 were approved later the same day, with outside sources (16 pairs). The only pair still unknown is (1948-49, 4), which breaks its rule.
-- **Utah.** Kept as the NHL's separate franchise (40). No lineage override.
-- **Tier 2 storage.** Whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be decided before Tier 2 starts.
+- **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13, D14 and D17 to D20.
+  Proposed defaults await confirmation: D02, D08, D11, D12, D15, D16, D21 and D22.
+- **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
+- **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
+  fights, and the storage decision for play-by-play.
+- **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
+- **Tier 2 storage:** whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be
+  decided before Tier 2 starts.
 
 ## Not started
 
-- Season 20262027 (in progress) and the daily run.
-- Per-game statistics (the rest of Tier 1).
-- Tier 2: play-by-play and shifts.
-- The conversational query layer and golden questions.
+- Team, skater and play-by-play loads; player pages (college and junior seasons); arena coordinates.
+- The conversational query layer, and answers to the golden questions.

@@ -1,6 +1,7 @@
-"""Load many seasons of schedule and results, newest first.
+"""Load many seasons, newest first: schedule and results (default) or goalie games.
 
 Run it with:  uv run python -m ingest.backfill --from 20242025 --to 19171918
+              uv run python -m ingest.backfill --job goalies --from 20262027 --to 19171918
 
 Safe to stop (Ctrl+C) and restart with the same command: seasons that already
 finished are skipped without any requests, and a half-finished season is redone
@@ -11,9 +12,13 @@ import argparse
 import sys
 import time
 
+from ingest import goalies, schedule
 from ingest.nhl_api import NhlApiClient, NhlApiError
 from ingest.raw_loader import connect, ensure_log, is_season_done, log_season_done
-from ingest.schedule import JOB, run, season_id, totals
+from ingest.schedule import season_id, totals
+
+# --job name -> module with JOB and run(season, client, con, verbose)
+JOBS = {"schedule": schedule, "goalies": goalies}
 
 
 def seasons_between(newest, oldest):
@@ -27,21 +32,21 @@ def season_list(text):
     return [season_id(part.strip()) for part in text.split(",") if part.strip()]
 
 
-def backfill(seasons, client, con, force=False, clock=time.monotonic):
+def backfill(seasons, client, con, force=False, clock=time.monotonic, job=schedule):
     """Load each season in order. Returns (seasons loaded, seasons skipped, requests made)."""
     ensure_log(con)
     started = clock()
     loaded = skipped = requests = 0
     for position, season in enumerate(seasons, start=1):
         prefix = f"[{position:>3}/{len(seasons)}] {season}"
-        if not force and is_season_done(con, JOB, season):
+        if not force and is_season_done(con, job.JOB, season):
             skipped += 1
             print(f"{prefix}  already loaded, skipped")
             continue
         print(f"{prefix}  loading...", flush=True)
-        counts = run(season, client, con, verbose=False)
+        counts = job.run(season, client, con, verbose=False)
         season_requests, season_new_rows = totals(counts)
-        log_season_done(con, JOB, season, season_requests, season_new_rows)
+        log_season_done(con, job.JOB, season, season_requests, season_new_rows)
         loaded += 1
         requests += season_requests
         minutes = (clock() - started) / 60
@@ -55,6 +60,7 @@ def backfill(seasons, client, con, force=False, clock=time.monotonic):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--job", choices=sorted(JOBS), default="schedule", help="what to load (default: schedule)")
     parser.add_argument("--from", dest="newest", type=season_id, help="newest season, for example 20242025")
     parser.add_argument("--to", dest="oldest", type=season_id, help="oldest season, for example 19171918")
     parser.add_argument("--seasons", type=season_list, help="a comma-separated list instead of a range")
@@ -71,7 +77,7 @@ def main():
     con = connect()
     client = NhlApiClient()
     try:
-        loaded, skipped, requests = backfill(seasons, client, con, force=args.force)
+        loaded, skipped, requests = backfill(seasons, client, con, force=args.force, job=JOBS[args.job])
     except KeyboardInterrupt:
         print("\nStopped. Nothing is lost: run the same command again to carry on where it left off.")
         sys.exit(130)

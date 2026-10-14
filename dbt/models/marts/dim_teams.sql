@@ -1,13 +1,22 @@
--- One row per team identity that appears in our games.
+-- One row per team identity that appears in our games, plus the NHL's two placeholder teams.
 -- NHL teams carry two groupings: the NHL's official franchise, and a lineage that follows
 -- the club through its moves. The two are the same unless seeds/team_lineage_overrides.csv says otherwise.
 
 with nhl_teams as (
 
-    -- The NHL team list also holds two placeholders with no franchise ("To be determined", "NHL").
     select *
     from {{ ref('stg_nhl_stats__teams') }}
     where franchise_id is not null
+
+),
+
+placeholders as (
+
+    -- The NHL team list also holds two placeholders with no franchise ("To be determined", "NHL").
+    -- Future playoff games can name them before the bracket is known.
+    select *
+    from {{ ref('stg_nhl_stats__teams') }}
+    where franchise_id is null
 
 ),
 
@@ -75,6 +84,7 @@ other_opponents as (
         max(season) as last_season
     from game_teams
     where team_id not in (select team_id from nhl_teams)
+      and team_id not in (select team_id from placeholders)
     group by team_id
 
 )
@@ -84,6 +94,7 @@ select
     nhl.team_name,
     nhl.team_abbrev,
     nhl.is_nhl_team,
+    false as is_placeholder,
     nhl.first_season,
     nhl.last_season,
     nhl.is_active,
@@ -101,6 +112,7 @@ select
     team_name,
     team_abbrev,
     false as is_nhl_team,
+    false as is_placeholder,
     first_season,
     last_season,
     null as is_active,
@@ -109,3 +121,20 @@ select
     null as lineage_id,
     null as lineage_name
 from other_opponents
+
+union all
+
+select
+    team_id,
+    team_name,
+    team_abbrev,
+    false as is_nhl_team,
+    true as is_placeholder,
+    null as first_season,
+    null as last_season,
+    null as is_active,
+    null as franchise_id,
+    null as franchise_name,
+    null as lineage_id,
+    null as lineage_name
+from placeholders

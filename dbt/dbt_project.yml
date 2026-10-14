@@ -49,6 +49,7 @@ seeds:
         check_name: varchar
         season: integer
         game_id: bigint
+        team_id: integer
         reason: varchar
         evidence: varchar
         approved_on: date

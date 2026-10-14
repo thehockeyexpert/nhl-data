@@ -92,6 +92,152 @@ models:
         description: The NHL's ID for this team identity.
         data_tests: [not_null]
 
+  - name: stg_nhl_records__players
+    description: >
+      One row per player from records.nhl.com, biographical columns only. Birthplace is as the
+      NHL records it; the state or province is only recorded for some countries.
+    columns:
+      - name: player_id
+        description: The NHL's player ID, the same ID used in game-level stats.
+        data_tests: [unique, not_null]
+      - name: full_name
+        description: The player's name as the NHL writes it.
+        data_tests: [not_null]
+      - name: birth_date
+        description: Date of birth. Empty where the NHL has none.
+      - name: shoots_catches
+        description: L or R. For goalies this is the catching hand.
+      - name: is_deleted
+        description: The NHL's own flag for a deleted player record.
+
+  - name: stg_nhl_records__draft_picks
+    description: One row per NHL draft pick from records.nhl.com. Drafts start in 1963.
+    columns:
+      - name: draft_pick_id
+        description: The NHL's ID for the pick.
+        data_tests: [unique, not_null]
+      - name: draft_year
+        description: Calendar year of the draft.
+        data_tests: [not_null]
+      - name: player_id
+        description: The NHL's player ID. Empty for picks who never received one.
+
+  - name: stg_nhl_records__trophies
+    description: One row per trophy or award listed by records.nhl.com.
+    columns:
+      - name: trophy_id
+        description: The NHL's ID for the trophy.
+        data_tests: [unique, not_null]
+      - name: trophy_name
+        description: Full name of the trophy.
+        data_tests: [not_null]
+
+  - name: stg_nhl_records__award_results
+    description: >
+      One row per award result from records.nhl.com: a winner, runner-up or finalist for a trophy
+      in a season. Some trophies go to teams, coaches or general managers instead of players.
+      Shared awards have more than one winner.
+    columns:
+      - name: award_result_id
+        description: The NHL's ID for the result row.
+        data_tests: [unique, not_null]
+      - name: trophy_id
+        description: Joins to stg_nhl_records__trophies.
+        data_tests: [not_null]
+      - name: season
+        description: Eight-digit season ID the award belongs to.
+        data_tests: [not_null]
+      - name: status
+        description: WINNER, RUNNER_UP or FINALIST.
+        data_tests: [not_null]
+
+  - name: stg_nhl_records__playoff_series_games
+    description: >
+      One row per playoff game from records.nhl.com, with its round, series and the series score
+      after that game. Team IDs are not included; join game_id to the game tables for them.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [unique, not_null]
+      - name: season
+        description: Eight-digit season ID.
+        data_tests: [not_null]
+
+  - name: stg_nhl_web__standings_rules
+    description: >
+      One row per season with the standings rules the NHL used (ties, a point for an overtime loss,
+      tie-breakers, wild cards, conferences and divisions). Used for points by era (docs/definitions.md, D02).
+    columns:
+      - name: season
+        description: Eight-digit season ID.
+        data_tests: [unique, not_null]
+
+  - name: stg_nhl_stats__goalie_games
+    description: >
+      One row per goalie per game, regular season and playoffs, from the NHL stats API. Shots against
+      and saves are recorded from 1955-56; goalie overtime losses only from 2005-06, so 1999-00 to
+      2003-04 goalie overtime losses appear as losses (docs/data_coverage.md, "Goalie stats").
+    columns:
+      - name: goalie_game_key
+        description: game_id and player_id joined, one per goalie per game.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [not_null]
+      - name: home_road
+        description: H if the goalie played for the home team, R for the away team.
+        data_tests: [not_null]
+
+  - name: stg_nhl_stats__team_seasons
+    description: >
+      The NHL's official regular-season totals for every team-season (games, wins, losses, ties,
+      overtime losses, points, shots, team shutouts). Used to check derived standings and goalie totals.
+    columns:
+      - name: team_season_key
+        description: season and team_id joined.
+        data_tests: [unique, not_null]
+      - name: points
+        description: Official standings points.
+
+  - name: season_status
+    description: >
+      One row per season with season facts, saying whether the data checks treat it as finished:
+      the NHL's planned end date has passed and no regular-season or playoff game is still scheduled.
+    columns:
+      - name: season
+        description: Eight-digit season ID.
+        data_tests: [unique, not_null]
+      - name: is_finished
+        description: True once count and completeness checks apply to the season.
+        data_tests: [not_null]
+
+  - name: season_in_progress_notes
+    description: >
+      Games in a season that is not finished that need a look but are not failures: postponed,
+      suspended or cancelled games, and past games not final yet. Never fails the build.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [unique, not_null]
+      - name: note
+        description: postponed, suspended, cancelled, or dated before today and not final yet.
+
+  - name: goalie_saves_plus_one_by_season
+    description: >
+      Monitoring for the saves era rule: from 2022-23, per season, how many goalie rows have saves +
+      goals against exactly one more than shots against (observed, unexplained; docs/data_coverage.md,
+      "Goalie stats"). Check goalie_saves_plus_one_rate fails if the share exceeds 2% in a season with
+      at least 500 goalie rows.
+    columns:
+      - name: season
+        description: Eight-digit season ID, 2022-23 onward.
+        data_tests: [unique, not_null]
+      - name: plus_one_share
+        description: plus_one_rows / goalie_rows_with_shots.
+
   - name: check_failures
     description: >
       Every row that breaks a data check, before documented exceptions are removed.
@@ -106,3 +252,5 @@ models:
         description: The game concerned, for checks about single games.
       - name: detail
         description: What was expected and what was found.
+      - name: team_id
+        description: The team concerned, for checks about a team or a team's season.

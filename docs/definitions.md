@@ -5,11 +5,11 @@ Each one must be settled by the owner before the models or answers that depend o
 
 | id | Definition | Status | Proposed default |
 |---|---|---|---|
-| D01 | Above .500 | **Decided** | The opponent's points percentage was above .500 in its standings before that game (that game excluded). The opponent's first game of the season counts as not above .500. |
+| D01 | Above .500 | **Decided 2026-10-14** | The opponent's points percentage was above .500 in its standings before that game (that game excluded). The opponent's first game of the season counts as not above .500. |
 | D02 | Standings points by era | Proposed | Taken from the NHL's `standings-season` flags for each season: 2 for a win, 1 for a tie, and 1 for an overtime or shootout loss where `pointForOTlossInUse` is true. |
 | D03 | Team in history questions | **Decided** | Group by `lineage_id`. Answers say when the NHL's `franchise_id` differs, for example for the Winnipeg Jets (1979). |
-| D04 | A goalie's record | Open | The goalie's credited decision (W, L, T, OTL) as the NHL reports it, not the team's result. To decide: only games the goalie started, or every game he played? |
-| D05 | Minimums for rate leaders | Open | For example, save percentage needs 25 games or 750 shots against, and points per game needs 40 games. The numbers are to be set. |
+| D04 | A goalie's record | **Decided 2026-10-14** | The goalie's credited decisions (W, L, T, OTL) as the NHL reports them, whoever started the game. In samples, every finished team-game has exactly one credited decision. Caveat: from 1999-00 to 2003-04 a goalie's overtime loss is recorded as L, while the team gets an OTL. |
+| D05 | Minimums for rate leaders | Partly decided | **G01 (decided 2026-10-14):** at least 50 career regular-season decisions against above-.500 teams. Other rate leaders: still open (for example, save percentage needs 25 games or 750 shots against, and points per game needs 40 games). |
 | D06 | Streaks | Open | Does an overtime or shootout loss, or a tie, end a winning streak? Does a player's point streak skip games he missed? |
 | D07 | One-goal game | Open | A final margin of one goal. To decide: include shootout games (scored as a one-goal win) or exclude them? |
 | D08 | Back-to-back | Proposed | The team also played on the previous calendar day (`game_date`). |
@@ -27,6 +27,7 @@ Each one must be settled by the owner before the models or answers that depend o
 | D20 | Travel distance | Open | The straight-line (great-circle) distance between the venues of a team's consecutive games, from the season's first game to its last, as if the team always flew from one game venue to the next. Needs an outside table of arena coordinates, since the NHL data has venue names only. Neutral-site games use their own venue. Travel is in scope; see `docs/decisions.md` for sources and venue-history issues. |
 | D21 | "Since <year>" | Proposed | "Since 1990" means seasons starting in that year or later (1990-91 onward). |
 | D22 | Playing time (player) | Proposed | Total time on ice. Skater time on ice exists from 1997-98 and goalie time on ice from 1917-18, so skater questions about playing time cover 1997-98 onward only. |
+| D23 | "Best record" (goalie) | **Decided 2026-10-14** | Win percentage of decisions, W / (W + L + T + OTL), shown with points percentage, (2W + T + OTL) / (2 x decisions), as a second column. Used by G01. |
 
 Notes:
 

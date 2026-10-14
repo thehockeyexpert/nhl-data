@@ -8,13 +8,16 @@ The owner is new to Python and dbt: explain changes in plain language.
 - The MotherDuck token lives in the env var `motherduck_token`. Never print, log, or write it.
 - Use uv for everything Python (`uv add`, `uv run`). No pip, no manual venvs.
 - No MoneyPuck data for now.
+- No NHL data files in the public repo: no API responses, extracts or exports, in any format. The repo holds code, docs and our own decisions (seeds) only.
+- Nothing from the NHL is printed in logs: ingest output reports counts, timings and status only, never response content.
+- The NHL endpoints are unofficial and unlicensed, used for personal use only. Public content is facts and figures only: no NHL logos, photos or video. See `docs/decisions.md` (2026-10-14).
 
 ## Layers (schemas in the single MotherDuck database `nhl`)
 - `raw`: JSON exactly as received, plus `source_url` and `loaded_at`. Append-only. Written only by `ingest/`.
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.
 - `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`).
 - `reference`: dbt seeds, small hand-written CSVs in `dbt/seeds/` holding our own decisions (labels, overrides, exceptions). Never NHL data.
-- `checks`: `check_failures`, a view listing every row that breaks a data check.
+- `checks`: `check_failures` (every row that breaks a data check), `season_status` (which seasons count as finished) and `season_in_progress_notes` (postponed or pending games; never fails).
 
 ## Data tiers
 - Tier 1: all-history schedule, results, game-level stats. Small.
@@ -52,7 +55,9 @@ The owner is new to Python and dbt: explain changes in plain language.
 ## Data checks (dbt/tests)
 - Each rule is written once in `dbt/models/checks/check_failures.sql`. The files in `dbt/tests/` are thin: one check each, minus documented exceptions.
 - Never hardcode a count. Compare against `stg_nhl_stats__seasons` so the same check works for every season.
-- Count and completeness checks apply only to seasons whose `season_end_date` has passed, so a season in progress does not fail.
+- Count and completeness checks apply only to finished seasons (`checks.season_status`): the NHL's planned `season_end_date` has passed AND the weekly schedule has no regular-season or playoff game still scheduled.
+- A season in progress: checks on recent games use a two-day lag (`game_date <= current_date - 2`), so games that have just ended or are still running do not fail. Postponed, suspended and cancelled games are listed in `checks.season_in_progress_notes`, which never fails the build. Every scheduled regular-season game must already be in the game list.
+- Checks depend on the date the build runs, so the same data can pass one day and fail the next (for example a game postponed two days ago with no new date). Rerun before investigating.
 - Regular-season games must equal `total_regular_season_games`; played playoff games must equal `total_playoff_games`.
 - Every finished season must be balanced (total games x 2 = teams x games per team). In a balanced season every team must have `scheduled_games_per_team` games.
 - Level scores are allowed only where `is_ties_in_use` is true.
@@ -65,5 +70,6 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest one season: `uv run python -m ingest.schedule --season 20252026`
 - Ingest many seasons, newest first, resumable: `uv run python -m ingest.backfill --from 20242025 --to 19171918`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
+- Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`

@@ -3,6 +3,43 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-14: proceed with the NHL's unofficial endpoints, for personal use
+
+**Decision.** The owner decided to keep collecting data from `api-web.nhle.com`, `api.nhle.com/stats` and
+`records.nhl.com`.
+
+- **Unofficial and unlicensed.** These endpoints are not an official, documented or licensed API. No published
+  API terms were found for them; they have no `robots.txt`, and the NHL publishes no documentation for them.
+  The absence of terms is not taken as permission.
+- **Risk accepted.** The owner understands the risk.
+- **Use.** The project is for the owner's personal use.
+- **Public content.** Anything public contains facts and figures only, with no NHL logos, photos or video.
+
+What the NHL Terms of Service say ([nhl.com/info/terms-of-service](https://www.nhl.com/info/terms-of-service),
+last updated 29 October 2025, read on 2026-10-14):
+
+- **Section 1 (scope).** The terms govern "the digital platforms, websites and online services", including
+  "nhl.com, and NHL mobile applications". The API hosts are not named, and it is unclear whether they count as
+  "the Services".
+- **Section 2 (prohibited conduct).** "Engage in unauthorized spidering, scraping, or harvesting of content or
+  information … or use any other unauthorized automated means to compile information."
+- **Section 7 (NHL Content).**
+  - Use is allowed "only for non-commercial, informational, personal use", "without modification or alteration".
+  - "Unless expressly permitted by an authorized person in writing or as permitted by applicable law, you may
+    not copy, reproduce, distribute, publish … create derivative works from, transmit, or in any way use or
+    exploit any part of the NHL Content."
+- **Statistics.** The terms do not mention statistics, scores or game data specifically.
+
+Related: the [NHL Online Transmission Policy](https://www.nhl.com/info/online-transmission-policy) (undated)
+says the NHL owns the copyrights in "accounts and descriptions of NHL games", and limits play-by-play in
+game reports. That matters for any public use of play-by-play data (fights, Tier 2).
+
+What follows from the decision:
+- **Repo:** no NHL data files in the public repo.
+- **Logs:** nothing from the NHL printed in logs.
+
+Both rules are in `CLAUDE.md`.
+
 ## 2026-10-14: fights and travel stay in scope
 
 **Decision.** The fight questions (P14, P19) and the travel questions (T09, T10) in

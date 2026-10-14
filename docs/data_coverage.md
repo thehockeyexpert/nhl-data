@@ -63,6 +63,84 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - **Our lineage differs from the NHL's attribution for the original Winnipeg Jets (1979-80 to 1995-96, team 33).** The NHL treats the Phoenix Coyotes as a 1996 expansion team and attributes the original Jets' records to today's Winnipeg Jets (franchise 35). Their players, coaches and staff moved to Phoenix in 1996 ([Wikipedia: Arizona Coyotes](https://en.wikipedia.org/wiki/Arizona_Coyotes), [Wikipedia: Winnipeg Jets](https://en.wikipedia.org/wiki/Winnipeg_Jets)), so our `lineage_id` puts team 33 with the Coyotes (28). `franchise_id` keeps the NHL's view. Totals grouped by `lineage_id` will therefore not match the NHL's official franchise records for the Jets or the Coyotes.
 - Utah (franchise 40) is kept separate from the Coyotes, as the NHL has it. No override.
 
+## Goalie stats
+
+Status: observed in samples and on a local copy, 2026-10-14. To be confirmed after the full goalie load.
+
+- **Shots:** goalie shots against and saves are recorded from 1955-56. The official team shots per season start
+  in 1959-60.
+- **Credited decisions:** every finished team-game sampled has exactly one credited goalie decision, and it
+  matches the result.
+- **OT losses:**
+  - Goalie OT losses are recorded from 2005-06.
+  - From 1999-00 to 2003-04 a goalie's overtime loss is recorded as L, while the team gets an OTL. Answers about
+    goalie records in those seasons must say so.
+- **Shutouts:** team shutouts can exceed goalie shutouts. That is consistent with shared shutouts, which are
+  credited to neither goalie. Shutouts are also credited in some games won in overtime or a shootout.
+- **Saves:** observed, unexplained. From 2022-23 on, about 0.5% to 0.9% of goalie rows per season have saves
+  exactly one more than shots against minus goals against. There are none before 2022-23. They are spread over
+  all teams and goalies, so they cluster by era, not by team or goalie.
+  - An era rule in `goalie_saves_add_up` allows exactly this +1 from 2022-23 (approved 2026-10-14). Any other
+    difference still fails.
+  - `checks.goalie_saves_plus_one_by_season` shows the share per season. `goalie_saves_plus_one_rate` fails if
+    it exceeds 2% in a season with at least 500 goalie rows.
+- **Other saves differences:**
+  - 1956-57 and 1958-59: shots against recorded as 0 with goals allowed.
+  - 1979-80: one playoff game where two goalies are off by +2 and -2.
+
+  All are excepted, observed, unexplained.
+- **1917-18:**
+  - No goalie rows for the two forfeit games.
+  - No goalie rows for the five playoff games against the Vancouver Millionaires (team 7288), 1918-03-20 to
+    1918-03-30.
+- **Shots on an empty net:** per game, the opponent's team shots usually exceed the goalie's shots against by
+  0 to 2. That is consistent with shots on an empty net, which count for the team but against no goalie.
+
+## Standings derived from games
+
+`fct_team_standings_by_game` derives the standings before every regular-season game from `fct_games`, under each
+season's points rules.
+
+- **Official totals:** at season end they equal the NHL's official totals for 1,788 of 1,791 team-seasons
+  (games, W, L, T, OTL and points).
+- **The 3 differences:** each is one game that ended in overtime, which the NHL's official record counts as a
+  regulation loss for the home team, while our rule counts it as an OT loss. Observed, unexplained.
+  - Game 1999021129 (2000-04-07, team 23 lost 4-5 in OT)
+  - Game 2002021141 (2003-03-25, team 26 lost 1-2 in OT)
+  - Game 2023021166 (2024-03-30, team 30 lost 1-2 in OT)
+
+  The NHL's per-game team report confirms all three. For the 2023-24 game the goalie is also credited with L.
+- **Spot-check:** the standings before 4 games on 3 dates (1968-02-03, 1996-01-16, and two games on 2026-01-15)
+  matched the NHL's standings for the previous day exactly, for all 8 teams.
+
+## Standings rules by season
+
+The NHL's standings rules come from `api-web.nhle.com/v1/standings-season` (`stg_nhl_web__standings_rules`).
+What we checked on 2026-10-14:
+
+- **Point for an overtime loss:** observed from 1999-00 onward, in every season since. Confirmed by
+  [Wikipedia: Overtime (ice hockey)](https://en.wikipedia.org/wiki/Overtime_(ice_hockey)), which says that
+  "since 1999–00" the team losing in overtime gets one point.
+- **Ties:** observed in use through 2003-04, in agreement with the season facts. The same page says the shootout
+  ended regular-season ties from 2005-06.
+- **Wild card:**
+  - Observed in use from 2013-14, matching the realignment approved for that season
+    ([NBC Sports, 2013-03-14](https://nhl.nbcsports.com/2013/03/14/its-official-nhl-realignment-approved-for-next-season/)).
+  - **Observed gap:** the wild card is marked not in use in 2019-20 and 2020-21, and in use again from 2021-22.
+    Unexplained. It is consistent with the special formats of those two seasons, but no source has been checked for it.
+- **Regulation wins (tiebreaker):**
+  - Observed in use from 2019-20 onward.
+  - **Start season unverified.** A fan blog,
+    [Blueline Station (2019-11-09)](https://bluelinestation.com/2019/11/09/new-york-rangers-rule-change-worth-watching/),
+    says the change to put regulation wins first took effect that season. It is not a league source, and no NHL
+    source was found.
+- **Regulation plus overtime wins (ROW):**
+  - Observed in use from 2010-11 onward.
+  - **Start season unverified.** The sources found
+    ([Blueline Station](https://bluelinestation.com/2019/11/09/new-york-rangers-rule-change-worth-watching/),
+    [hockeyanswered.com](https://hockeyanswered.com/what-is-the-row-stat-in-hockey/)) explain what ROW is and
+    that it was the first tiebreaker before 2019-20, but neither gives the season it was introduced.
+
 ## Venue names
 
 - Observed: four venue names arrive garbled from the NHL's weekly schedule, for example `Le Colis√©e` for Le Colisée and `Sportovn√≠ hala` for Sportovní hala. 676 games are affected. They are stored as received.

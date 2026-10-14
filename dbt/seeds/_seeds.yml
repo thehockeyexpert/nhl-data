@@ -55,6 +55,10 @@ seeds:
         data_tests: [not_null]
       - name: game_id
         description: The single game it applies to. Empty for a whole-season exception.
+      - name: team_id
+        description: >
+          The single team it applies to, for checks about a team's season. Empty when the
+          exception is not about one team.
       - name: reason
         description: >
           The cause, only if a source confirms it. Otherwise it starts with 'unexplained'

@@ -15,6 +15,12 @@ clean-targets: ["target", "dbt_packages"]
 
 models:
   nhl_data:
+    # Copy each model's and column's description into MotherDuck as a comment, so tools that only see
+    # the database (such as the MotherDuck MCP server) can read them. Costs one statement per model and
+    # per described column on every build of that model.
+    +persist_docs:
+      relation: true
+      columns: true
     staging:
       +schema: staging
       +materialized: view   # staging is light reshaping, so it is stored as a saved query

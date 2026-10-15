@@ -29,7 +29,20 @@ Last updated: 2026-10-15
 - **Exceptions.** 81 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
   single team (`team_id`). From 2022-23, an era rule in `goalie_saves_add_up` allows saves that are exactly 1 too
   high, watched by `checks.goalie_saves_plus_one_by_season` with a 2% limit.
-- **Latest `dbt build` on MotherDuck (2026-10-14):** 141 of 141 pass. No failure is left without an approved exception.
+- **Daily run started (2026-10-15).** `.github/workflows/daily.yml`, 11:00 UTC daily, full build on Sundays.
+  - First manual run passed: schedule 32 requests, 22 new rows; goalies 2 requests, 1 new row. All checks pass.
+  - 20 of the 21 changed schedule weeks differed only in `ticketsLink` / `ticketsLinkFr`. The loader now ignores
+    those two fields when deciding whether a response changed (`compare_hash`); the response is still stored as
+    received.
+  - Actions on Node.js 24 (`actions/checkout@v7.0.1`, `astral-sh/setup-uv@v10.2.0`), runner `ubuntu-24.04`.
+- **Conversational query layer connected (2026-10-15).** MotherDuck's remote MCP server, signed in with the owner's
+  own account (OAuth).
+  - `.claude/settings.json` blocks the 18 tools that write, delete, run or share. `query` is read-only on
+    MotherDuck's side: a `CREATE SCHEMA` through it was refused ("Query is not read-only").
+  - Read scaling tokens (server-side read-only) are a Business-plan feature, so they were not used.
+  - `persist_docs` copies model and column descriptions into MotherDuck as comments, so the MCP tools see them.
+  - The text for a MotherDuck guide is in `docs/motherduck_guide.md`; the owner creates the guide by hand.
+- **Latest `dbt build` on MotherDuck (2026-10-15):** 144 of 144 pass. No failure is left without an approved exception.
 
 ## In progress
 
@@ -40,21 +53,33 @@ Last updated: 2026-10-15
     game, it matches game for game: Ken Dryden 1975-76 under the headline (21 qualifying decisions, league median
     equal on all 60 dates), and Dryden 1975-76 and Braden Holtby 2015-16 under the above-.500 column (24 and 45).
   - **Still labelled draft** until the owner has checked it.
+- **Golden-question test of the query layer (2026-10-15).** Five questions (H03, T11, X01, S05, G01), with
+  reference answers computed by direct SQL and checked against outside sources where they exist:
+  - H03: 21 goals, MTL 14-TSP 7 (1920-01-10) and EDM 12-CHI 9 (1985-12-11); playoffs 18, LAK 10-EDM 8
+    (1982-04-07). Matches Hockey Reference and NHL.com.
+  - T11: Montréal Canadiens lineage, 805 playoff games through 2025-26. Through 2019-20, 759 games and 434 wins,
+    matching the Ice Hockey Wiki.
+  - X01: regular season 302 games, Rangers 143-130-19-10 (W-L-T-OTL); playoffs 39 games, Islanders 20-19,
+    matching outside sources.
+  - S05: 2025-26, 326 of 1,312 regular-season games decided in OT or a shootout (2013-14 has the highest share,
+    25.0%). Counting OT games that ended tied wrongly puts 2003-04 and 2002-03 near the top.
+  - G01: the mart matches an independent recomputation for every goalie.
+  - **Blind run** (a fresh agent using only the MCP tools, before the guide existed): every figure was right, and it
+    excluded OT ties. Two misses, both from definitions not yet in MotherDuck: S05 included playoffs (348), and G01
+    led with the literal above-.500 column instead of the D01 headline. Records were given as three unlabelled
+    numbers.
+  - **Cost:** each answer query ran in about 20 ms; five questions cost at most about 8 CU-seconds (worst case).
+  - **To do:** the owner creates the MotherDuck guide, then the blind run of S05 and G01 is repeated.
 
 ## Next
 
-1. **Start the daily run** (`.github/workflows/daily.yml`, built 2026-10-15, see "Daily run" below).
-   - The owner creates the GitHub-only MotherDuck token, adds it as the secret `MOTHERDUCK_TOKEN` and sets the
-     variable `CURRENT_SEASON` to `20262027`.
-   - One run started by hand from the Actions tab, checked, before the schedule takes over.
-   - Until it runs, the 2026-27 snapshot goes stale: `past_games_final` will start failing on any build two days after
-     the last schedule load.
-   - After the first nights on the free plan (from 2026-10-19): compare the Billing page with the estimate below, and
-     check in `raw.ingest_log` how many responses change each night.
-2. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
+1. **Finish the query-layer test.** The owner creates the MotherDuck guide from `docs/motherduck_guide.md`; then
+   the blind run of S05 and G01 is repeated, before query history disappears with the trial on 2026-10-19.
+2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
+   the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
+   ignored.
+3. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
    `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
-3. **The conversational query layer,** connecting to MotherDuck with a read-only token, so it can query but never
-   change the data.
 
 ## Storage (2026-10-14)
 
@@ -98,7 +123,7 @@ Last updated: 2026-10-15
   documented. Ingest is not included. To confirm: the Billing page after the first nights on Lite. Incremental marts
   remain a separate, held proposal.
 
-## Daily run (built 2026-10-15, not yet started)
+## Daily run (started 2026-10-15)
 
 - **Workflow:** `.github/workflows/daily.yml`. Every day at 11:00 UTC, and by hand from the Actions tab.
   1. Install the locked packages and run `uv run pytest` (no network, no database).
@@ -123,8 +148,12 @@ Last updated: 2026-10-15
     about 700 to 900.
   - In all, **about 1.4 to 1.7 CU-hours a month of the free 10**, before querying: about $0 (budget in
     `docs/decisions.md`).
-  - The ingest figures come from the 2026-27 load of 2026-10-14 (73 statements, 1.4 s of execution, all new). How
-    many responses change on a normal night is not measured yet.
+  - `persist_docs` (from 2026-10-15) adds about 53 comment statements per nightly build and about 120 per full build:
+    about 0.6 CU-hours a month more, worst case. With it, about 2.0 to 2.3 CU-hours a month.
+  - Ignoring ticket links should save about 20 inserts a night, and the loader adds about 4 statements (one
+    `ADD COLUMN IF NOT EXISTS` per raw table it prepares).
+  - The ingest figures come from the 2026-27 load of 2026-10-14 (73 statements, 1.4 s of execution, all new). The
+    first nightly-style run (2026-10-15) found 23 changed responses of 34.
 - **Raw growth:** each changed response is stored again in full (game list about 0.35 MB, a schedule week about
   0.09 MB): about 0.5 to 3 MB a night.
 - **Possible saving, not applied:** fetch only recent and upcoming weeks instead of the whole season (about 25 fewer
@@ -133,7 +162,7 @@ Last updated: 2026-10-15
 ## Open decisions
 
 - **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13, D14 and D17 to D20.
-  Proposed defaults await confirmation: D02, D08, D11, D12, D15, D16, D21 and D22.
+  Proposed defaults await confirmation: D02, D08, D12, D15, D16, D21 and D22.
 - **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
 - **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
   fights, and the storage decision for play-by-play.

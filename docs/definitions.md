@@ -15,7 +15,7 @@ Each one must be settled by the owner before the models or answers that depend o
 | D08 | Back-to-back | Proposed | The team also played on the previous calendar day (`game_date`). |
 | D09 | Rookie | Open | The NHL's rookie definition, or a player's first season with any NHL games? |
 | D10 | Playoff appearance and drought | Open | A lineage appears in the playoffs if it played any playoff game that season. To decide: how to treat seasons before the NHL had a fixed playoff format. |
-| D11 | Default scope | Proposed | Regular season only unless the question says playoffs or preseason. Special events (game types 4 and up) are never included. |
+| D11 | Default scope | **Decided 2026-10-15** | Regular season only unless the question says playoffs or preseason. Special events (game types 4 and up) are never included. |
 | D12 | "Today" in the daily run | Proposed | The North American date the NHL lists games under (`game_date`). The run computes it in Eastern time. |
 | D13 | Winning record (goalie or team) | Open | More wins than losses, where losses include overtime and shootout losses and ties are ignored. The alternative is to count only regulation losses. |
 | D14 | Where a player is "from" | Open | Birthplace as the NHL records it (birth city, state or province code, country code), not nationality or hometown. A city is identified by city plus state or province plus country, so towns that share a name stay separate. |

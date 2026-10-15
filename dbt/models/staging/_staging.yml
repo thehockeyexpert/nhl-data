@@ -28,8 +28,8 @@ models:
         description: True once the game is finished.
       - name: last_period_type
         description: >
-          How the game ended. REG = regulation, OT = overtime, SO = shootout
-          (docs/data_coverage.md, "Shootouts").
+          The last period played. REG = regulation, OT = overtime, SO = shootout. An OT game up to
+          2003-04 can still have ended tied (docs/data_coverage.md, "Ties" and "Shootouts").
 
   - name: stg_nhl_stats__games
     description: >

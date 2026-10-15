@@ -45,8 +45,10 @@ models:
         description: True once the game is finished.
       - name: last_period_type
         description: >
-          How the game ended. REG = regulation, OT = overtime, SO = shootout.
-          SO only exists in some seasons (docs/data_coverage.md, "Shootouts").
+          The last period played. REG = regulation, OT = overtime, SO = shootout.
+          OT does not mean the game was decided in overtime: up to 2003-04, 3,086 regular-season games
+          went to overtime and still ended tied (is_tie). For games decided in overtime or a shootout,
+          add NOT is_tie. SO only exists from 2005-06 (docs/data_coverage.md, "Ties" and "Shootouts").
       - name: winner_team_id
         description: >
           The winning team. Empty if the game is not finished or ended in a tie

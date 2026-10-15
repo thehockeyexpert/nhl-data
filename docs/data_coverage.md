@@ -12,6 +12,7 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - The NHL's season facts mark ties as possible (`tiesInUse` = 1) in 87 seasons, from 1917-18 to 2003-04, and as not possible from 2005-06 onward.
 - From the game list: no season marked as having no ties contains a regular-season game with a level score.
 - In `fct_games`, a tied game has `is_tie` true and an empty `winner_team_id`. Any "wins and losses" question about seasons up to 2003-04 has to account for ties.
+- Observed 2026-10-15: 3,086 regular-season games have `last_period_type` = OT and `is_tie` true: they went to overtime and still ended level. `last_period_type` = OT therefore does not mean "decided in overtime"; add `NOT is_tie`.
 
 ## Shootouts
 

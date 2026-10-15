@@ -3,6 +3,10 @@
 -- Expected counts always come from the NHL's season facts, never from a hardcoded number.
 -- Rules for a season in progress use a two-day lag (game_date <= current_date - 2), so games that
 -- have just ended, or late games still running after midnight Eastern, do not fail a check.
+-- Stored as a table, not a view, so the checks read it once instead of each recomputing it from the
+-- raw JSON. Rebuild it before running the checks: it holds the failures as of its last build.
+
+{{ config(materialized='table') }}
 
 with seasons as (
 

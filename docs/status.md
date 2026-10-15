@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-10-14
+Last updated: 2026-10-15
 
 ## Done
 
@@ -43,11 +43,9 @@ Last updated: 2026-10-14
 
 ## Next
 
-1. **Measure one lighter build, then plan the daily run.**
-   - Measure before the MotherDuck Business trial ends on **2026-10-19**: `md_information_schema.query_history`,
-     which shows per-query execution time, is a Business-plan feature and disappears with the trial.
-   - Then plan the daily run (GitHub Actions) for 2026-27. Until it exists, the 2026-27 snapshot goes stale:
-     `past_games_final` will start failing on any build two days after the last schedule load.
+1. **Plan and build the daily run** (GitHub Actions) for 2026-27, using the nightly build chosen on 2026-10-15 (see
+   "Compute for a nightly run"). Until it exists, the 2026-27 snapshot goes stale: `past_games_final` will start
+   failing on any build two days after the last schedule load.
 2. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
    `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
 3. **The conversational query layer,** connecting to MotherDuck with a read-only token, so it can query but never
@@ -64,7 +62,7 @@ Last updated: 2026-10-14
 - **Proposed, not applied:** build `fct_goalie_games`, `fct_team_games` and `fct_team_standings_by_game` (and
   possibly `fct_games`) incrementally, so the daily run rewrites only the current season.
 
-## Compute for a nightly run (measured 2026-10-14)
+## Compute for a nightly run (measured 2026-10-14 and 2026-10-15)
 
 - **A full `dbt build` on MotherDuck** (3 seeds, 6 tables, 18 views, 114 tests) took **61 s** (67 s wall clock
   including start-up). dbt sent **235 SQL statements**, one at a time. The trial runs on a Standard instance.
@@ -76,18 +74,24 @@ Last updated: 2026-10-14
     queries about as fast as the trial's Standard instance (not verified).
   - A nightly full build: about **2.1 to 2.5 CU-hours a month** of the 10 included, before ingest and any querying.
   - To confirm: the Billing page after the first nights on Lite.
-- **Proposed lighter daily build (not applied):**
-  1. **Skip seeds:** `--exclude resource_type:seed`. Seeds change only when the owner approves something; a full
-     build runs then.
-  2. **Skip re-creating views:** views only change when their SQL changes, so the nightly run rebuilds tables only
-     (`dbt run --select config.materialized:table`, 6 tables).
-  3. **Run the data checks every night** (the `dbt/tests` files on `check_failures`, about 30). Run the 80 or so
-     generic key tests on the staging views weekly and after any code change: they scan the raw JSON and are the
-     slowest part.
-  4. **A full `dbt build`** weekly, and whenever models, seeds or exceptions change.
+- **Nightly build, chosen 2026-10-15** (`docs/decisions.md`): one `dbt build` that rebuilds the 7 tables and runs the
+  24 data checks, with `checks.check_failures` now a table:
+  `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`
+- **Weekly, and after any change to models, seeds or exceptions:** a full `dbt build`. It also runs the 28 key tests
+  the nightly build leaves out (uniqueness, not-null and relationships on the 7 tables) and the staging tests.
+- **Measured 2026-10-15** (three runs in separate time windows, from query history and dbt's log):
 
-  Expected: about 40 to 50 queries a night instead of 235. That is about 60 to 100 CU-seconds, or 0.5 to 0.8
-  CU-hours a month (estimate). Incremental marts remain a separate, held proposal.
+  | | 1. Two commands, `check_failures` a view | 2. Two commands, a table | 3. One `dbt build`, a table (chosen) |
+  |---|---|---|---|
+  | Statements dbt sent | 119 | 131 | 113 |
+  | Statements in query history | 82 | 89 | 88 |
+  | Execution time | 28.7 s | 9.5 s | 9.6 s |
+  | Worst case per night (1 CU-second minimum each) | 89 CU-s | 93 CU-s | 92 CU-s |
+  | Worst case per month, of 10 CU-hours | 0.74 (7.4%) | 0.77 (7.7%) | 0.77 (7.7%) |
+
+  BEGIN and catalog lookups never appear in query history; whether the near-instant statements are billed is not
+  documented. Ingest is not included. To confirm: the Billing page after the first nights on Lite. Incremental marts
+  remain a separate, held proposal.
 
 ## Open decisions
 

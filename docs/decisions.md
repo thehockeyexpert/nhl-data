@@ -3,6 +3,52 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-15: the nightly build, and `check_failures` as a table
+
+**Decision (owner, 2026-10-15).**
+- **Nightly:** one command, which rebuilds the 7 tables and runs the 24 data checks:
+  `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`
+- **`checks.check_failures` is a table**, not a view. The 24 checks read it once instead of each working it out
+  again from the raw JSON. It shows the failures as of its last build, so it must be rebuilt before the checks run;
+  the nightly command does this.
+- **Weekly, and after any change to models, seeds or exceptions:** a full `dbt build`. It reloads the seeds,
+  re-creates the views, and runs the 28 key tests the nightly run leaves out (uniqueness, not-null and relationship
+  tests on the 7 tables), plus the generic tests on the staging views.
+
+**Measured 2026-10-15** on the Business trial (Standard instance). Three runs, each in its own time window, read from
+`md_information_schema.query_history` and dbt's log:
+
+| | 1. Two commands, `check_failures` a view | 2. Two commands, a table | 3. One `dbt build`, a table (chosen) |
+|---|---|---|---|
+| Statements dbt sent (its log) | 119 | 131 | 113 |
+| Statements in query history | 82 | 89 | 88 |
+| Execution time in query history | 28.7 s | 9.5 s | 9.6 s |
+| of which the 24 checks | 19.4 s | 0.2 s | 0.2 s |
+| Statements over 1 s | 18 | 4 | 4 |
+| Worst case per night (every recorded statement at 1 CU-second minimum) | 89 CU-s | 93 CU-s | 92 CU-s |
+| Worst case per month (30 nights) | 0.74 CU-h | 0.77 CU-h | 0.77 CU-h |
+| Share of the free plan's 10 CU-hours | 7.4% | 7.7% | 7.7% |
+
+**What the measurement shows.**
+- **Only 31 statements do real work:** 7 table builds and 24 checks. The rest is dbt bookkeeping: per table, a build
+  under a temporary name, two renames, a drop, an index lookup and a transaction; per check, a BEGIN and a ROLLBACK.
+- **Query history never records** BEGIN or dbt's catalog and index lookups. It does record ROLLBACK, COMMIT, rename,
+  drop and `create schema`, each taking milliseconds. Run 3 saves only statements that query history does not record.
+- **Billing of those statements is unknown.** The [pricing page](https://motherduck.com/docs/about-motherduck/billing/pricing/)
+  says Pulse is metered "on a per-query basis, with a minimum of 1 Compute Unit (CU) second" and names no
+  exemptions. The worst case above counts every recorded statement as billed.
+- **The table change cuts execution time, not the worst case.** At the 1 CU-second minimum, 24 tiny checks still
+  count 24 CU-seconds.
+- **Not verified:** whether Pulse runs these as fast as the trial's Standard instance. Ingest and querying are extra.
+
+**Avoidable bookkeeping, not applied.** Replacing dbt's rename-and-drop table build with a single
+`create or replace table` would save about 5 statements per table (about 35 a night). It needs a project override of
+dbt-duckdb's table materialization, which is extra code to maintain.
+
+**To confirm after the trial:** the [Billing page](https://motherduck.com/docs/about-motherduck/billing/managing-billing/)
+shows compute in CU-hours per user and service account, and the current month's invoice so far. Its docs describe no
+daily breakdown, and do not say whether a free-plan account sees usage below the allowance.
+
 ## 2026-10-14: MotherDuck plan, Business trial until 2026-10-19, then the free Lite plan
 
 **Fact (from the owner, read on the Plans page).** The account is on a MotherDuck Business trial that ends on

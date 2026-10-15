@@ -241,7 +241,8 @@ models:
   - name: check_failures
     description: >
       Every row that breaks a data check, before documented exceptions are removed.
-      Query it to see what is failing and why.
+      Query it to see what is failing and why. Stored as a table, so it shows the failures as of
+      its last build; it is rebuilt before the checks on every run.
     columns:
       - name: check_name
         description: Which check the row breaks.

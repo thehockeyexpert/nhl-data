@@ -172,6 +172,23 @@ models:
         description: Eight-digit season ID.
         data_tests: [unique, not_null]
 
+  - name: stg_nhl_stats__skater_seasons
+    description: >
+      One row per skater per season and game type (2 regular season, 3 playoffs), from the NHL stats API's
+      skater summary. A player who played for several teams in a season has one row, with team_abbrevs listing
+      them (for example "TOR,BOS"); the totals are not split by team. Ice time, shots, plus-minus and faceoffs
+      are empty in early seasons (docs/data_coverage.md, "Skater stats").
+    columns:
+      - name: skater_season_key
+        description: season, game_type and player_id joined.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [not_null]
+      - name: game_type
+        description: 2 regular season, 3 playoffs, taken from the request.
+        data_tests: [not_null]
+
   - name: stg_nhl_stats__goalie_games
     description: >
       One row per goalie per game, regular season and playoffs, from the NHL stats API. Shots against

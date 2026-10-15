@@ -71,8 +71,9 @@ The owner is new to Python and dbt: explain changes in plain language.
 ## Commands
 - Ingest one season: `uv run python -m ingest.schedule --season 20252026`
 - Ingest many seasons, newest first, resumable: `uv run python -m ingest.backfill --from 20242025 --to 19171918`
+- Ingest skater season totals, many seasons, resumable: `uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
-- Nightly transform (7 tables and the 24 data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`
+- Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`

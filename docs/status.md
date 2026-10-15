@@ -26,7 +26,7 @@ Last updated: 2026-10-15
   - The derived standings match the official season totals for 1,788 of 1,791 team-seasons. The 3 differences are
     pinned to single games and excepted. A spot-check of 4 games against the NHL's standings matched exactly.
   - Career-win sanity check: Brodeur 691 and Roy 551 match our data.
-- **Exceptions.** 81 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
+- **Exceptions.** 92 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
   single team (`team_id`). From 2022-23, an era rule in `goalie_saves_add_up` allows saves that are exactly 1 too
   high, watched by `checks.goalie_saves_plus_one_by_season` with a 2% limit.
 - **Daily run started (2026-10-15).** `.github/workflows/daily.yml`, 11:00 UTC daily, full build on Sundays.
@@ -42,7 +42,15 @@ Last updated: 2026-10-15
   - Read scaling tokens (server-side read-only) are a Business-plan feature, so they were not used.
   - `persist_docs` copies model and column descriptions into MotherDuck as comments, so the MCP tools see them.
   - The text for a MotherDuck guide is in `docs/motherduck_guide.md`; the owner creates the guide by hand.
-- **Latest `dbt build` on MotherDuck (2026-10-15):** 144 of 144 pass. No failure is left without an approved exception.
+- **Skater season totals, all history (2026-10-15).** `ingest.skaters` (216 requests, 31.6 MB raw, 220 responses);
+  nightly in the daily run (2 requests).
+  - `fct_skater_seasons`: 69,635 rows, 7,947 skaters, regular season and playoffs. 4,110 rows are players who
+    changed teams (totals not split by team; `bridge_skater_season_teams` lists the teams).
+  - New dimensions: `dim_players` (23,575 people, 8,826 NHL players under D15), `dim_seasons`, `dim_games`.
+  - New checks: `skater_team_resolves`, `skater_games_within_team`, `skater_goals_add_up`, each proven to fail on a
+    local copy or on real data. Exceptions: early playoffs against non-NHL teams, the 1917-18 forfeits, and the
+    suspended 1988 Final game (`docs/data_coverage.md`, "Skater stats").
+- **Latest `dbt build` on MotherDuck (2026-10-15):** 172 of 172 pass; the nightly build 39 of 39 (12 tables, 27 data checks). No failure is left without an approved exception.
 
 ## In progress
 
@@ -89,6 +97,30 @@ Last updated: 2026-10-15
    ignored.
 3. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
    `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
+4. **Parked, not started: `fct_skater_games`** (one row per skater per game, all history, same keys).
+   - Recommended source: the stats API skater summary with `isGame=true`, in date windows under its 10,000-row cap
+     (1980-81 and 2025-26 both reach the cap). About 2.3 to 2.5 million rows, 300 to 450 requests, about 1.2 GB
+     raw JSON (estimates). Whether the API filters by date is not yet verified. Nightly: one request per game date.
+   - Alternative: the box score, one request per game (70,459 games, about 20 hours); about 0.8 GB raw. Sampled
+     back to 1917-18.
+   - Must be an incremental model (re-reading 1.2 GB of JSON every build could cost an estimated 7 to 20 CU-hours a
+     month, more than the free 10). With it: about 0.2 CU-hours once, $0 a month.
+5. **Parked, not started: `fct_shots`** (play-by-play, Tier 2; needs the owner's go-ahead and the Tier 2 storage
+   decision first).
+   - 24,542 games from 2007-08 to 2025-26, one request each (about 7 to 10 hours). Sampled sizes: about 35 KB per
+     game in 2007-09, 100 to 150 KB from 2009-10; about 2.8 GB raw JSON in all. About 2.6 million shot attempts.
+   - Shot coordinates: present in every sampled game from 2009-10 on, absent in the sampled games of 2007-08 and
+     2008-09 (one game per season; to confirm).
+   - Raw JSON in MotherDuck would mean about 49,000 statements (about 13.6 CU-hours, over the monthly allowance).
+     Recommended: raw play-by-play as compressed files on the laptop (about 0.3 to 0.4 GB), shots bulk-loaded into
+     MotherDuck (a handful of statements, $0). Nightly: 8 to 15 games, about 2 MB, small enough for `raw`.
+6. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
+   - Terms: free for non-commercial use, credit MoneyPuck.com wherever shown; ask before scraping anything not
+     offered for download ([moneypuck.com/data.htm](https://moneypuck.com/data.htm)).
+   - About 2.08 million shots, 2007-08 to 2024-25 plus the current season nightly; no blocked shots; CSV in zip.
+   - IDs not verified (the data dictionary could not be read automatically): check by hand that its game number and
+     player IDs match `fct_games` and `dim_players` before any load.
+   - Estimate: 150 to 300 MB as a table, a few statements per load, $0 a month.
 
 ## Storage (2026-10-14)
 
@@ -113,8 +145,8 @@ Last updated: 2026-10-15
     queries about as fast as the trial's Standard instance (not verified).
   - A nightly full build: about **2.1 to 2.5 CU-hours a month** of the 10 included, before ingest and any querying.
   - To confirm: the Billing page after the first nights on Lite.
-- **Nightly build, chosen 2026-10-15** (`docs/decisions.md`): one `dbt build` that rebuilds the 7 tables and runs the
-  24 data checks, with `checks.check_failures` now a table:
+- **Nightly build, chosen 2026-10-15** (`docs/decisions.md`): one `dbt build` that rebuilds the tables (7 when chosen, 12 since the skater load) and runs the
+  data checks (24 then, 27 now), with `checks.check_failures` now a table:
   `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`
 - **Weekly, and after any change to models, seeds or exceptions:** a full `dbt build`. It also runs the 28 key tests
   the nightly build leaves out (uniqueness, not-null and relationships on the 7 tables) and the staging tests.

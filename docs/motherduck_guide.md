@@ -18,18 +18,22 @@ other tables.
 - Standings before every regular-season game, under each era's rules: `fct_team_standings_by_game`.
 - Goalie games, regular season and playoffs, all history: `fct_goalie_games` (decisions, shutouts, goals against;
   shots and saves from 1955-56).
-- Teams, franchises and lineages: `dim_teams`.
+- **Skater season totals**, regular season and playoffs, all history: `fct_skater_seasons` (games, goals, assists,
+  points, penalty minutes, power-play and short-handed scoring; shots, plus-minus, ice time and faceoffs only in
+  later eras). One row per player, season and game type; a player who changed teams has one row, not one per team
+  (`bridge_skater_season_teams` lists his teams).
+- Players, with birthplace and `is_nhl_player`: `dim_players`. Seasons: `dim_seasons`. Games: `dim_games`.
+  Teams, franchises and lineages: `dim_teams`.
 
 **Loaded, in `staging` only (usable, not yet modelled):**
-- Player biographies (birth date, birth city, state or province, country, nationality, position, shoots):
-  `staging.stg_nhl_records__players`. Includes people who never played an NHL game; there is no flag for that yet.
 - Draft picks, trophies and award results, playoff series: `staging.stg_nhl_records__draft_picks`,
   `stg_nhl_records__trophies`, `stg_nhl_records__award_results`, `stg_nhl_records__playoff_series_games`.
 - Official team season totals: `staging.stg_nhl_stats__team_seasons`.
 
 **Not loaded:**
-- **Skater statistics of any kind** (goals, assists, points, games played, ice time, by season or by game). So no
-  question about skaters' scoring can be answered yet, including "most goals by birthplace".
+- **Skater statistics per game** (box scores) and **shots** (play-by-play). Season totals answer "most in a
+  season" and career questions; "most in one game", streaks and anything per game cannot be answered yet.
+- Skater totals split by team for players who changed teams mid-season.
 - Team game statistics (shots, power play, penalties), play-by-play, shifts, fights, game duration.
 - Players' seasons in other leagues (junior, college), arena locations and travel.
 
@@ -41,7 +45,21 @@ other tables.
 - `marts.fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
 - `marts.fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
 - `marts.dim_teams`: one row per team identity, with `franchise_id` (the NHL's) and `lineage_id` (ours).
+- `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
+- `marts.dim_players`: one row per person. Use `is_nhl_player` (D15): the list also holds people who never played.
+- `marts.dim_seasons`, `marts.dim_games`: season facts and rules; game date, type, teams and venue.
 - `marts.goalie_records_vs_above_500`: question G01, still a DRAFT.
+
+## Players and scoring
+- **"Most goals" (or points) includes goalies' goals** (D15): add `fct_goalie_games.goals` to the skater totals.
+- **Where a player is from (D14):** birthplace as the NHL records it. Identify a city by `birth_city`,
+  `birth_state_province` and `birth_country` together, so towns that share a name stay separate. Countries are
+  three-letter codes (CAN, USA, SWE).
+- **Playoffs before 1926-27:** games against non-NHL teams (Vancouver, Seattle, Victoria, Edmonton, Calgary) have
+  no credited skater or goalie statistics. Say so when early playoff totals matter.
+- **1987-88 playoffs:** the suspended Final game of 1988-05-24 counts in player statistics but is not in the games
+  tables, so Edmonton and Boston players have one more game than their team.
+- A shootout goal is not a goal in player totals.
 
 ## Default scope (D11, decided)
 - **Regular season only** (`game_type = 2`) unless the question says playoffs or preseason. If a question

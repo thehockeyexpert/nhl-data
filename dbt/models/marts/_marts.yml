@@ -76,6 +76,100 @@ models:
       - name: is_starter
         description: True if the goalie started the game.
 
+  - name: fct_skater_seasons
+    description: >
+      One row per skater per season and game type (2 regular season, 3 playoffs) with season totals, from the
+      NHL stats API. Totals are not split by team: a player who changed teams has one row, with team_id empty
+      and the teams in team_abbrevs and bridge_skater_season_teams. Goalies are not here (see fct_goalie_games;
+      "most goals" questions add goalies' goals, docs/definitions.md D15). Ice time, shots, plus-minus and
+      faceoffs are empty in early seasons (docs/data_coverage.md, "Skater stats").
+    columns:
+      - name: skater_season_key
+        description: season, game_type and player_id joined.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The NHL's player ID. Joins to dim_players.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_players')
+                field: player_id
+      - name: season
+        description: Eight-digit season ID. Joins to dim_seasons.
+        data_tests: [not_null]
+      - name: game_type
+        description: 2 regular season, 3 playoffs.
+        data_tests: [not_null]
+      - name: team_id
+        description: The skater's team when he played for one team that season and game type; empty otherwise. Joins to dim_teams.
+      - name: team_count
+        description: How many teams the skater played for that season and game type.
+      - name: team_abbrevs
+        description: The teams as the API lists them, for example "TOR,BOS".
+      - name: games_played
+        description: Games played in that season and game type.
+      - name: goals
+        description: Goals. A shootout goal is not a goal here (the extra goal a shootout adds to the final score is credited to nobody).
+      - name: time_on_ice_per_game_seconds
+        description: Average time on ice per game, in seconds. Empty before 1997-98 (docs/data_coverage.md, "Skater stats").
+
+  - name: bridge_skater_season_teams
+    description: >
+      Which teams a skater played for in a season and game type, one row per team, without statistics. Each
+      abbreviation is matched to the team that used it in that season's games, since abbreviations are reused
+      across eras (check skater_team_resolves).
+    columns:
+      - name: skater_season_team_key
+        description: skater_season_key and team_abbrev joined.
+        data_tests: [unique, not_null]
+      - name: team_id
+        description: The team. Joins to dim_teams.
+
+  - name: dim_players
+    description: >
+      One row per person in the NHL's player list, plus anyone in our skater or goalie stats who is missing from
+      it. The list also holds people who never played an NHL game: use is_nhl_player (docs/definitions.md, D15).
+      Birthplace is as the NHL records it (D14); identify a city by birth_city, birth_state_province and
+      birth_country together.
+    columns:
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [unique, not_null]
+      - name: is_nhl_player
+        description: True if the person played at least one NHL regular-season or playoff game (D15).
+        data_tests: [not_null]
+      - name: birth_city
+        description: Birth city as the NHL records it (D14).
+      - name: birth_state_province
+        description: State or province code, recorded only for players born in Canada or the United States.
+      - name: birth_country
+        description: Three-letter country code, for example CAN, USA, SWE.
+      - name: first_nhl_season
+        description: First season with an NHL regular-season or playoff game.
+      - name: is_in_player_list
+        description: False for the few players found only in the stats, not in the NHL's player list.
+
+  - name: dim_seasons
+    description: >
+      One row per season the NHL has season facts for (2004-05 has none; it was not played): dates, scheduled
+      games, the season's standings rules, and whether our checks treat it as finished.
+    columns:
+      - name: season
+        description: Eight-digit season ID, for example 20252026.
+        data_tests: [unique, not_null]
+      - name: is_finished
+        description: True once the season is over (checks.season_status).
+
+  - name: dim_games
+    description: >
+      One row per game in fct_games: what the game was (date, type, teams, venue), without the result.
+      fct_games has the same columns plus the result.
+    columns:
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [unique, not_null]
+
   - name: fct_team_games
     description: >
       One row per team per finished regular-season or playoff game, with the result under that

@@ -61,6 +61,9 @@ jobs:
       - name: Load the season's goalie games
         run: uv run python -m ingest.goalies --season "$SEASON"
 
+      - name: Load the season's skater totals
+        run: uv run python -m ingest.skaters --season "$SEASON"
+
       - name: Choose the dbt build
         id: choose
         run: |
@@ -74,7 +77,7 @@ jobs:
           echo "build=$build" >> "$GITHUB_OUTPUT"
           echo "dbt build: $build"
 
-      - name: Nightly dbt build (7 tables and the 24 data checks)
+      - name: Nightly dbt build (all tables and the data checks)
         if: steps.choose.outputs.build == 'nightly'
         run: >
           uv run dbt build --project-dir dbt --profiles-dir dbt

@@ -707,6 +707,100 @@ standings_match_official as (
        or derived.ot_losses != coalesce(official.ot_losses, 0)
        or derived.points != official.points
 
+),
+
+skater_seasons as (
+
+    select * from {{ ref('fct_skater_seasons') }}
+
+),
+
+skater_team_resolves as (
+
+    -- Every team abbreviation in the skater totals matches a team that played that season.
+    select
+        'skater_team_resolves' as check_name,
+        season,
+        null::bigint as game_id,
+        'abbreviation ' || team_abbrev || ' (game type ' || game_type || ') matches no team that season' as detail,
+        null::integer as team_id
+    from {{ ref('bridge_skater_season_teams') }}
+    where team_id is null
+
+),
+
+team_games_per_season as (
+
+    select season, game_type, team_id, count(*) as games
+    from {{ ref('fct_team_games') }}
+    group by season, game_type, team_id
+
+),
+
+skater_team_games as (
+
+    -- The games the skater's teams played that season and game type: one team's games, or for a player who
+    -- changed teams, the total of his teams' games.
+    select
+        bridge.skater_season_key,
+        sum(coalesce(team_games.games, 0)) as team_games
+    from {{ ref('bridge_skater_season_teams') }} as bridge
+    left join team_games_per_season as team_games
+        on team_games.season = bridge.season
+        and team_games.game_type = bridge.game_type
+        and team_games.team_id = bridge.team_id
+    group by bridge.skater_season_key
+
+),
+
+skater_games_within_team as (
+
+    -- No skater can play more games than his teams played that season and game type.
+    select
+        'skater_games_within_team' as check_name,
+        skater_seasons.season,
+        null::bigint as game_id,
+        'player ' || skater_seasons.player_id || ' has ' || skater_seasons.games_played || ' games (game type '
+            || skater_seasons.game_type || '), his teams ' || coalesce(teams.team_games, 0) as detail,
+        skater_seasons.team_id
+    from skater_seasons
+    left join skater_team_games as teams on teams.skater_season_key = skater_seasons.skater_season_key
+    where skater_seasons.games_played > coalesce(teams.team_games, 0)
+
+),
+
+skater_goals_add_up as (
+
+    -- In a finished season, skater goals plus goalie goals equal the goals in the final scores, minus one per
+    -- shootout game: the extra goal a shootout adds to the final score is credited to no player.
+    select
+        'skater_goals_add_up' as check_name,
+        scored.season,
+        null::bigint as game_id,
+        'game type ' || scored.game_type || ': skater ' || coalesce(skaters.goals, 0) || ' + goalie '
+            || coalesce(goalies.goals, 0) || ' goals, final scores ' || scored.goals || ' minus '
+            || scored.shootouts || ' shootouts' as detail,
+        null::integer as team_id
+    from (
+        select season, game_type, sum(home_score + away_score) as goals,
+               count(*) filter (where last_period_type = 'SO') as shootouts
+        from games
+        where game_type in (2, 3) and is_final
+        group by season, game_type
+    ) as scored
+    inner join (
+        select season, game_type, sum(goals) as goals
+        from skater_seasons
+        group by season, game_type
+    ) as skaters on skaters.season = scored.season and skaters.game_type = scored.game_type
+    left join (
+        select season, game_type, sum(goals) as goals
+        from {{ ref('fct_goalie_games') }}
+        group by season, game_type
+    ) as goalies on goalies.season = scored.season and goalies.game_type = scored.game_type
+    where scored.season in (select season from finished_seasons)
+      and coalesce(skaters.goals, 0) + coalesce(goalies.goals, 0) != scored.goals - scored.shootouts
+
 )
 
 select * from season_facts_present
@@ -754,3 +848,9 @@ union all
 select * from goalie_shots_within_team
 union all
 select * from standings_match_official
+union all
+select * from skater_team_resolves
+union all
+select * from skater_games_within_team
+union all
+select * from skater_goals_add_up

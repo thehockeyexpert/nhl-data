@@ -97,6 +97,39 @@ Status: observed in samples and on a local copy, 2026-10-14. To be confirmed aft
 - **Shots on an empty net:** per game, the opponent's team shots usually exceed the goalie's shots against by
   0 to 2. That is consistent with shots on an empty net, which count for the team but against no goalie.
 
+## Skater stats
+
+Status: all seasons loaded, 2026-10-15 (69,635 rows, 7,947 skaters).
+
+- **Source:** the stats API's skater summary, one row per player, season and game type. Goalies are not in it.
+- **Players who changed teams:** one row, with the teams listed together ("TOR,BOS"). The totals are not split
+  by team. Observed: 6 of 39 rows in 1917-18, 81 of 940 in the 2025-26 regular season.
+  - Such a player can have more games than any one team played: in 2025-26 one player has 83 regular-season games
+    over three teams.
+  - In 15 player-seasons (1924-25 to 2023-24) the same team appears twice in the list. That is consistent with a
+    player who left a team and came back the same season; not checked against a source. The bridge table keeps
+    each team once.
+- **Thin early data:** in 1917-18, ice time, shots, plus-minus and faceoffs are empty for every row. Skater ice
+  time and faceoffs start in 1997-98 (sampled, `docs/definitions.md`).
+- **Goals against the final scores** (check `skater_goals_add_up`):
+  - 1917-18 regular season: 342 credited goals against 344 in the final scores. The difference of 2 matches the
+    two Montreal Wanderers forfeits recorded as 1-0 (see "1917-18 anomalies").
+  - 1917-18 playoffs: 17 credited goals. They equal the goals in the two games between NHL teams (7-3 and 4-3);
+    the five games against the Vancouver Millionaires (18 goals by Toronto) have no credited skater goals.
+    Observed, unexplained. The goalie data has no rows for those games either.
+  - The same holds in every playoff from 1918-19 to 1925-26 except 1919-20: credited skater goals equal exactly the
+    goals in games between NHL teams, and games against non-NHL teams (Seattle, Vancouver, Edmonton, Calgary,
+    Victoria) have none. In 1919-20 the only playoff series was against Seattle, and there are no playoff skater rows.
+    Observed, unexplained. The opponents are sourced as champions of other leagues for 1922, 1923 and 1924
+    ([1922](https://en.wikipedia.org/wiki/1922_Stanley_Cup_Final),
+    [1923](https://en.wikipedia.org/wiki/1923_Stanley_Cup_playoffs),
+    [1924](https://en.wikipedia.org/wiki/1924_Stanley_Cup_Final)).
+  - 1987-88 playoffs: 628 credited goals against 622 in the final scores, and 15 Edmonton and 11 Boston skaters have
+    one more game than their team. Source: game 4 of the Final (Boston Garden, 1988-05-24) was suspended at 3-3 after
+    a power failure and replayed; its result does not count, but the players' statistics do
+    ([Wikipedia](https://en.wikipedia.org/wiki/1988_Stanley_Cup_Final), [CBC](https://www.cbc.ca/1.5579029)). The
+    suspended game is not in our games.
+
 ## Standings derived from games
 
 `fct_team_standings_by_game` derives the standings before every regular-season game from `fct_games`, under each

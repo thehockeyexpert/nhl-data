@@ -57,6 +57,28 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - In `dim_teams` these have `is_nhl_team` false, no franchise and no lineage. Their name and seasons come only from the games they appear in.
 - Special events (all-star games, international tournaments) use further team IDs that are not NHL clubs. Those games are not in `fct_games`.
 
+## Birthplaces
+
+Observed 2026-10-15 in the NHL's player list (`stg_nhl_records__players`).
+
+- **Spellings:** 168 places appear under more than one spelling within the same country and province (capitals,
+  accents, punctuation, Saint and St.). In 16 of them a second spelling belongs to NHL players. Those 16, plus
+  local and English names of the same city (Göteborg and Gothenburg, Praha and Prague, Moskva and Moscow), are
+  merged in `dbt/seeds/birth_city_spellings.csv` (22 rows, 38 NHL players). The other 152 groups affect only people
+  with no NHL game and are left as recorded.
+- **No birth city:** 278 people, none with an NHL game.
+- **Former names and suburbs are separate places** in the NHL's data: Fort William, Port Arthur (now Thunder Bay),
+  Berlin (now Kitchener), South Porcupine and Schumacher (now Timmins), Rouyn and Noranda (now Rouyn-Noranda),
+  Leningrad (now St. Petersburg), and Scarborough, Etobicoke, North York, Weston, Verdun or Lachine. We keep them
+  separate (D14).
+- **Compared with QuantHockey's city totals** (regular season, top 50 cities pasted by the owner, 2026-10-15):
+  - QuantHockey counts goalies among players and groups by today's municipality. Timmins matches exactly once
+    Timmins, South Porcupine, Schumacher and Porcupine are combined (39 players, 12,529 games, 3,057 goals); Thunder
+    Bay's 97 players equal Thunder Bay, Fort William and Port Arthur combined.
+  - Four cities match exactly on players, games, goals and assists; most others are within a few goals.
+  - Not explained without their per-player lists: Toronto (ours 446 players and 19,073 goals, theirs 434 and
+    17,558), Montréal (272 and 14,153; 271 and 14,272), Edmonton and Calgary.
+
 ## Franchises and lineage
 
 - The NHL's franchise IDs group team identities. Observed: franchise 35 holds the Winnipeg Jets (1979), the Atlanta Thrashers and today's Winnipeg Jets. Franchise 28 holds the Phoenix and Arizona Coyotes, 1996-97 to 2023-24. Franchise 40 holds the Utah Hockey Club and Utah Mammoth, from 2024-25.

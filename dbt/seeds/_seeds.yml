@@ -42,6 +42,33 @@ seeds:
         description: The date the owner approved it.
         data_tests: [not_null]
 
+  - name: birth_city_spellings
+    description: >
+      Spellings of the same birth city that the NHL's player list records differently (accents, Saint and St.,
+      punctuation, English and local names). dim_players.birth_city_standard uses the city column. Former names
+      of a place are not spellings and are not listed. Checked by birth_city_spellings_valid.
+    columns:
+      - name: country
+        description: The NHL's three-letter birth country code.
+        data_tests: [not_null]
+      - name: state_province
+        description: State or province code; empty outside Canada and the United States.
+      - name: recorded_city
+        description: The spelling as the NHL records it, to be replaced.
+        data_tests: [not_null]
+      - name: city
+        description: The spelling to use instead, also one the NHL records.
+        data_tests: [not_null]
+      - name: reason
+        description: Why the two are the same place, with the player counts behind the chosen spelling.
+        data_tests: [not_null]
+      - name: source
+        description: '"Spelling only" when the names differ only in spelling; otherwise a source for the place.'
+        data_tests: [not_null]
+      - name: approved_on
+        description: The date the owner approved it.
+        data_tests: [not_null]
+
   - name: check_exceptions
     description: >
       Known, documented cases where a data check is allowed to fail. The checks themselves are

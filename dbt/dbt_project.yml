@@ -59,3 +59,12 @@ seeds:
         reason: varchar
         evidence: varchar
         approved_on: date
+    birth_city_spellings:
+      +column_types:
+        country: varchar
+        state_province: varchar
+        recorded_city: varchar
+        city: varchar
+        reason: varchar
+        source: varchar
+        approved_on: date

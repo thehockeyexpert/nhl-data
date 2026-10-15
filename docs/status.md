@@ -50,7 +50,11 @@ Last updated: 2026-10-15
   - New checks: `skater_team_resolves`, `skater_games_within_team`, `skater_goals_add_up`, each proven to fail on a
     local copy or on real data. Exceptions: early playoffs against non-NHL teams, the 1917-18 forfeits, and the
     suspended 1988 Final game (`docs/data_coverage.md`, "Skater stats").
-- **Latest `dbt build` on MotherDuck (2026-10-15):** 172 of 172 pass; the nightly build 39 of 39 (12 tables, 27 data checks). No failure is left without an approved exception.
+- **Birth city spellings (2026-10-15).** `dbt/seeds/birth_city_spellings.csv` (22 rows, approved) merges spellings
+  of the same place into `dim_players.birth_city_standard` (38 NHL players change city); checked by
+  `birth_city_spellings_valid`. Former names stay separate (D14). Compared with QuantHockey's city totals in
+  `docs/data_coverage.md`, "Birthplaces"; "New York" and "New York City" are deliberately left separate.
+- **Latest `dbt build` on MotherDuck (2026-10-15):** 180 of 180 pass; the nightly build 40 of 40 (12 tables, 28 data checks). No failure is left without an approved exception.
 
 ## In progress
 

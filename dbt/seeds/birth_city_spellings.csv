@@ -1,0 +1,23 @@
+country,state_province,recorded_city,city,reason,source,approved_on
+CAN,NL,St. Johns,St. John's,"Spelling only (apostrophe). St. John's has 11 NHL players under this spelling, St. Johns 2.",Spelling only,2026-10-15
+CAN,ON,La Salle,LaSalle,"Spelling only (space). 1 NHL player under each spelling; LaSalle has more people in the player list (2 to 1).",Spelling only,2026-10-15
+CAN,QC,Lac St. Charles,Lac-St-Charles,"Spelling only (hyphens, St.). 1 NHL player under each spelling; the hyphenated form is chosen.",Spelling only,2026-10-15
+CAN,QC,Lac St. Jean,Lac-St-Jean,"Spelling only (hyphens, St.). 1 NHL player under each spelling; the hyphenated form is chosen.",Spelling only,2026-10-15
+CAN,QC,Sainte-Anne-de-Bellevue,Ste-Anne-de-Bellevue,"Spelling only (Sainte, Ste). Ste-Anne-de-Bellevue has 3 NHL players, Sainte-Anne-de-Bellevue 2.",Spelling only,2026-10-15
+CAN,QC,Ste. Foy,Ste-Foy,"Spelling only (punctuation). Ste-Foy has 2 NHL players, Ste. Foy 1.",Spelling only,2026-10-15
+CAN,QC,Sainte-Foy,Ste-Foy,"Spelling only (Sainte, Ste). Ste-Foy has 2 NHL players, Sainte-Foy none (1 person).",Spelling only,2026-10-15
+CAN,QC,St. Esprit,St-Esprit,"Spelling only (punctuation). 1 NHL player under each spelling; the hyphenated form is chosen.",Spelling only,2026-10-15
+CAN,QC,Saint-Georges-De-Beauce,St-Georges De Beauce,"Spelling only (Saint, St, hyphens). 1 NHL player under each spelling; the shorter St form is chosen to match the other Quebec St- spellings.",Spelling only,2026-10-15
+CAN,QC,Saint-Hyacinthe,St-Hyacinthe,"Spelling only (Saint, St). St-Hyacinthe has 8 NHL players, Saint-Hyacinthe 1.",Spelling only,2026-10-15
+CAN,QC,Saint-Léonard,St. Leonard,"Spelling only (Saint, St., accent). 1 NHL player under each spelling; St. Leonard has more people (2 to 1).",Spelling only,2026-10-15
+CAN,QC,Saint-Leonard,St. Leonard,"Spelling only (Saint, St.). No NHL players under this spelling (1 person).",Spelling only,2026-10-15
+FIN,,Hameenlinna,Hämeenlinna,"Spelling only (accents). Hämeenlinna has 4 NHL players, Hameenlinna 1.",Spelling only,2026-10-15
+FIN,,Jyvaskyla,Jyväskylä,"Spelling only (accents). Jyväskylä has 7 NHL players, Jyvaskyla 1.",Spelling only,2026-10-15
+SWE,,Jarfalla,Järfälla,"Spelling only (accents). 1 NHL player under each spelling; the Swedish spelling with accents is chosen.",Spelling only,2026-10-15
+SWE,,Upplands Vasby,Upplands Väsby,"Spelling only (accent). 1 NHL player under each spelling; Upplands Väsby has more people (3 to 1).",Spelling only,2026-10-15
+SWE,,Vasteras,Västerås,"Spelling only (accents). Västerås has 9 NHL players, Vasteras 1.",Spelling only,2026-10-15
+USA,MN,Saint Paul,St. Paul,"Spelling only (Saint, St.). St. Paul has 34 NHL players, Saint Paul 2.",Spelling only,2026-10-15
+SWE,,Göteborg,Gothenburg,"Same city: Göteborg is the Swedish name, Gothenburg the English one. Gothenburg has 24 NHL players, Göteborg 2.",https://en.wikipedia.org/wiki/Gothenburg,2026-10-15
+CZE,,Praha,Prague,"Same city: Praha is the Czech name, Prague the English one. Prague has 24 NHL players, Praha 9.",https://en.wikipedia.org/wiki/Prague,2026-10-15
+RUS,,Moskva,Moscow,"Same city: Moskva is the Russian name, Moscow the English one. Moscow has 82 NHL players, Moskva none (3 people).",https://en.wikipedia.org/wiki/Moscow,2026-10-15
+RUS,,Saint Petersburg,St. Petersburg,"Spelling only (Saint, St.). St. Petersburg has 9 NHL players, Saint Petersburg none (1 person). Leningrad, the city's former name, is not a spelling and is not included.",Spelling only,2026-10-15

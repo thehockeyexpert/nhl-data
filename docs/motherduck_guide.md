@@ -53,9 +53,14 @@ other tables.
 
 ## Players and scoring
 - **"Most goals" (or points) includes goalies' goals** (D15): add `fct_goalie_games.goals` to the skater totals.
-- **Where a player is from (D14):** birthplace as the NHL records it. Identify a city by `birth_city`,
-  `birth_state_province` and `birth_country` together, so towns that share a name stay separate. Countries are
-  three-letter codes (CAN, USA, SWE).
+- **Where a player is from (D14):** birthplace as the NHL records it. Group by **`birth_city_standard`**, which
+  merges spellings of the same place (Göteborg and Gothenburg, Saint Paul and St. Paul), together with
+  `birth_state_province` and `birth_country`, so towns that share a name stay separate. Countries are three-letter
+  codes (CAN, USA, SWE).
+- **Former names count as separate places:** Fort William and Port Arthur are not Thunder Bay, Berlin is not
+  Kitchener, South Porcupine is not Timmins, Leningrad is not St. Petersburg, and suburbs such as Scarborough or
+  Verdun are not Toronto or Montréal. Say so in city rankings: sites that group by today's municipality (for
+  example QuantHockey) give different totals.
 - **Playoffs before 1926-27:** games against non-NHL teams (Vancouver, Seattle, Victoria, Edmonton, Calgary) have
   no credited skater or goalie statistics. Say so when early playoff totals matter.
 - **1987-88 playoffs:** the suspended Final game of 1988-05-24 counts in player statistics but is not in the games

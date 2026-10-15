@@ -140,7 +140,13 @@ models:
         description: True if the person played at least one NHL regular-season or playoff game (D15).
         data_tests: [not_null]
       - name: birth_city
-        description: Birth city as the NHL records it (D14).
+        description: Birth city exactly as the NHL records it (D14). The same place can appear under more than one spelling.
+      - name: birth_city_standard
+        description: >
+          Birth city with spellings of the same place merged (accents, Saint and St., English and local names),
+          from dbt/seeds/birth_city_spellings.csv. Use this, with birth_state_province and birth_country, to group by
+          city. Former names of a place (Fort William, Berlin, Leningrad) are separate places, not spellings.
+          Empty when the NHL records no birth city (278 people, all with no NHL game).
       - name: birth_state_province
         description: State or province code, recorded only for players born in Canada or the United States.
       - name: birth_country

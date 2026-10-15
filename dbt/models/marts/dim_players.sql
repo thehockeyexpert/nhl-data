@@ -1,11 +1,19 @@
 -- One row per person in the NHL's player list, plus anyone who appears in our skater or goalie stats but not in it.
 -- is_nhl_player (D15): at least one regular-season or playoff game, as a skater (a season with games played above 0)
 -- or as a goalie (a goalie game). The player list also holds people who never played an NHL game.
--- Birthplace is as the NHL records it (D14).
+-- Birthplace is as the NHL records it (D14). birth_city_standard merges spellings of the same place (accents,
+-- Saint and St., English and local names) listed in dbt/seeds/birth_city_spellings.csv; use it to group by city.
 
 with players as (
 
     select * from {{ ref('stg_nhl_records__players') }}
+
+),
+
+spellings as (
+
+    select country, coalesce(state_province, '') as province_key, recorded_city, city
+    from {{ ref('birth_city_spellings') }}
 
 ),
 
@@ -55,6 +63,7 @@ select
     players.shoots_catches,
     players.birth_date,
     players.birth_city,
+    coalesce(spellings.city, players.birth_city) as birth_city_standard,
     players.birth_state_province,
     players.birth_country,
     players.nationality,
@@ -68,3 +77,7 @@ select
     players.player_id is not null as is_in_player_list
 from players
 full outer join nhl_careers on nhl_careers.player_id = players.player_id
+left join spellings
+    on spellings.country = players.birth_country
+    and spellings.province_key = coalesce(players.birth_state_province, '')
+    and spellings.recorded_city = players.birth_city

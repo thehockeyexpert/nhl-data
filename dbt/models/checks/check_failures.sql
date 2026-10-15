@@ -801,6 +801,56 @@ skater_goals_add_up as (
     where scored.season in (select season from finished_seasons)
       and coalesce(skaters.goals, 0) + coalesce(goalies.goals, 0) != scored.goals - scored.shootouts
 
+),
+
+birth_places as (
+
+    select distinct birth_country, coalesce(birth_state_province, '') as birth_state_province, birth_city
+    from {{ ref('stg_nhl_records__players') }}
+    where birth_city is not null
+
+),
+
+birth_city_spellings as (
+
+    select *, coalesce(state_province, '') as province_key from {{ ref('birth_city_spellings') }}
+
+),
+
+birth_city_spellings_valid as (
+
+    -- Each row of the birth city spellings seed maps one spelling the NHL actually uses to another spelling the NHL
+    -- actually uses for the same country and province, once. A row whose spelling disappears from the data fails,
+    -- so the seed is kept clean.
+    select
+        'birth_city_spellings_valid' as check_name,
+        null::integer as season,
+        null::bigint as game_id,
+        problem || ': ' || spellings.country || ' ' || spellings.province_key || ' ' || spellings.recorded_city
+            || ' -> ' || spellings.city as detail,
+        null::integer as team_id
+    from (
+        select *,
+            case
+                when count(*) over (partition by country, province_key, recorded_city) > 1 then 'listed more than once'
+                when recorded_city = city then 'maps a spelling to itself'
+                when not exists (
+                    select 1 from birth_places
+                    where birth_places.birth_country = birth_city_spellings.country
+                      and birth_places.birth_state_province = birth_city_spellings.province_key
+                      and birth_places.birth_city = birth_city_spellings.recorded_city
+                ) then 'spelling not used by anyone in the player list'
+                when not exists (
+                    select 1 from birth_places
+                    where birth_places.birth_country = birth_city_spellings.country
+                      and birth_places.birth_state_province = birth_city_spellings.province_key
+                      and birth_places.birth_city = birth_city_spellings.city
+                ) then 'target spelling not used by the NHL'
+            end as problem
+        from birth_city_spellings
+    ) as spellings
+    where problem is not null
+
 )
 
 select * from season_facts_present
@@ -854,3 +904,5 @@ union all
 select * from skater_games_within_team
 union all
 select * from skater_goals_add_up
+union all
+select * from birth_city_spellings_valid

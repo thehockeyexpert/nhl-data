@@ -1,8 +1,9 @@
 # NHL database (`nhl`): definitions and pitfalls
 
-This is the text of the MotherDuck guide for the conversational query layer. The owner creates and updates the
-guide in MotherDuck by hand (the MCP tools that write guides are blocked); this file is the source. Keep the two in
-step: change this file first, then paste it into MotherDuck. Definitions come from `docs/definitions.md`.
+This is the text of the MotherDuck guide for the conversational query layer, and the master copy. Change this file
+first, then publish it: `uv run python -m analyst.publish_guide` (add `--dry-run` to see what it would do). Guides
+cannot be created in the MotherDuck web UI, and the MCP tools that write guides are blocked. Also paste the text
+below the line into the Claude.ai Project instructions. Definitions come from `docs/definitions.md`.
 
 ---
 

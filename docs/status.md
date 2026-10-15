@@ -80,9 +80,10 @@ Last updated: 2026-10-15
     MCP, see below): S05, G01 and a new question, G02 (most shutouts in a season), all correct. S05 was regular
     season only (326); G01 led with the D01 headline and labelled records W-L-T-OTL; G02 gave George Hainsworth,
     22 in 1928-29. So the guide's content fixes both misses.
-  - **The guide is not visible through MCP.** The owner created it in MotherDuck with organization access and it
-    shows in the UI, but `list_guides` and `get_query_guide` return no guides, also after reconnecting. Not yet
-    explained.
+  - **The guide in MotherDuck (resolved 2026-10-15).** MCP saw no guides because none existed: Guides cannot be
+    created in the MotherDuck web UI, only with SQL (`MD_CREATE_GUIDE`) or the MCP tools, which are blocked here.
+    `analyst/publish_guide.py` now publishes `docs/motherduck_guide.md` (text below its `---` line) as a private
+    (`user`) Guide, topic `nhl`; version 1 published 2026-10-15 and readable through MCP.
   - **Cost:** each answer query ran in about 20 ms. Query history is incomplete for MCP queries: it holds 26 MCP
     entries after 12:48 UTC, fewer than the two blind runs alone made, none of their marker queries, and no entry
     for a full dbt build at 12:46. So per-question costs of the blind runs could not be measured. Estimate: at most 3 to 4 CU-seconds per question (worst case, 3 or 4
@@ -90,8 +91,9 @@ Last updated: 2026-10-15
 
 ## Next
 
-1. **Make the guide readable through MCP.** The owner sends the guide's UUID to try `get_guide` directly, or asks
-   MotherDuck support why an organization guide is not listed. Then one blind run that reads the guide itself.
+1. **Blind run that reads the guide itself** through MCP (S05, G01, G02). When the guide changes: edit
+   `docs/motherduck_guide.md`, run `uv run python -m analyst.publish_guide`, and paste the same text into the
+   Claude.ai Project instructions.
 2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
    the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
    ignored.

@@ -1,0 +1,85 @@
+# The daily run: load the current season from the NHL, then rebuild and check the data in MotherDuck.
+# Nightly it runs the light dbt build chosen on 2026-10-15; on Sundays it runs the full build instead,
+# which also reloads the seeds, re-creates the views and runs the key tests. See docs/decisions.md.
+#
+# This repo is public, so these logs are public. The ingest prints counts and status only, never
+# NHL content, and nothing from dbt's target/ or logs/ folders is uploaded.
+
+name: daily
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 11:00 UTC (07:00 Eastern in summer time), after the last West Coast games
+  workflow_dispatch:       # "Run workflow" button on the Actions tab
+    inputs:
+      build:
+        description: "Which dbt build to run"
+        type: choice
+        options: [nightly, full]
+        default: nightly
+
+# Read the code only; the job never writes to the repo.
+permissions:
+  contents: read
+
+# Never two runs at once: a second one waits for the first to finish.
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Repository secret holding the GitHub-only MotherDuck token. Never printed.
+      motherduck_token: ${{ secrets.MOTHERDUCK_TOKEN }}
+      # Repository variable, for example 20262027. Change it when a new season starts.
+      SEASON: ${{ vars.CURRENT_SEASON }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install the locked package versions
+        run: uv sync --frozen
+
+      - name: Check the settings
+        run: |
+          if [ -z "$motherduck_token" ]; then echo "The MOTHERDUCK_TOKEN secret is not set."; exit 1; fi
+          if [ -z "$SEASON" ]; then echo "The CURRENT_SEASON variable is not set."; exit 1; fi
+          echo "Season $SEASON"
+
+      - name: Python tests (no network, no database)
+        run: uv run pytest
+
+      - name: Load the season's schedule and results
+        run: uv run python -m ingest.schedule --season "$SEASON"
+
+      - name: Load the season's goalie games
+        run: uv run python -m ingest.goalies --season "$SEASON"
+
+      - name: Choose the dbt build
+        id: choose
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            build="${{ inputs.build }}"
+          elif [ "$(date -u +%u)" = "7" ]; then
+            build=full   # Sunday
+          else
+            build=nightly
+          fi
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "dbt build: $build"
+
+      - name: Nightly dbt build (7 tables and the 24 data checks)
+        if: steps.choose.outputs.build == 'nightly'
+        run: >
+          uv run dbt build --project-dir dbt --profiles-dir dbt
+          --select config.materialized:table test_type:singular
+          --indirect-selection empty --no-populate-cache
+
+      - name: Full dbt build (seeds, views, tables and every test)
+        if: steps.choose.outputs.build == 'full'
+        run: uv run dbt build --project-dir dbt --profiles-dir dbt

@@ -3,6 +3,31 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-15: running-cost budget
+
+**Decision (owner, 2026-10-15).** Total running costs (MotherDuck, GitHub and anything added later) aim for about
+**$10 a month** and must **never exceed $30 a month**. Before adding anything that could cost money (a new
+service, a paid plan, a heavier schedule, a larger load), estimate its monthly cost and ask the owner first.
+
+**Estimate today (2026-10-15):** $0 a month.
+- MotherDuck free Lite plan after 2026-10-19: the daily run is estimated at 1.4 to 1.7 of the 10 included CU-hours a
+  month (`docs/status.md`), and storage is about 33 MB of the 10 GB included. Extra Pulse compute is billed at
+  $0.60 per CU-hour ([pricing](https://motherduck.com/docs/about-motherduck/billing/pricing/)), so even 10 CU-hours
+  over the allowance would cost about $6.
+- GitHub Actions: free for public repositories on standard runners.
+
+## 2026-10-15: the daily run on GitHub Actions
+
+**Decision (owner, 2026-10-15).**
+- `.github/workflows/daily.yml` runs every day at **11:00 UTC**: the schedule and goalie ingest for the season in the
+  repository variable `CURRENT_SEASON`, then the nightly dbt build. On **Sundays** it runs the full `dbt build`.
+- **Token:** a separate MotherDuck access token on the owner's own user, used only by GitHub, stored as the repository
+  secret `MOTHERDUCK_TOKEN`. It can be revoked on its own. Its usage is not separated from the owner's on the Billing
+  page.
+- **Not chosen:** a MotherDuck service account. Shares are read-only
+  ([sharing](https://motherduck.com/docs/key-tasks/sharing-data/sharing-overview/)), and the docs do not describe
+  giving another user write access to a database the owner holds, so the service account would have to own the data.
+
 ## 2026-10-15: the nightly build, and `check_failures` as a table
 
 **Decision (owner, 2026-10-15).**

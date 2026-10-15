@@ -11,6 +11,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - No NHL data files in the public repo: no API responses, extracts or exports, in any format. The repo holds code, docs and our own decisions (seeds) only.
 - Nothing from the NHL is printed in logs: ingest output reports counts, timings and status only, never response content.
 - The NHL endpoints are unofficial and unlicensed, used for personal use only. Public content is facts and figures only: no NHL logos, photos or video. See `docs/decisions.md` (2026-10-14).
+- Budget: total running costs aim for about $10 a month and never exceed $30. Before adding anything that could cost money (a service, a paid plan, a heavier schedule, a larger load), estimate its monthly cost and ask the owner first. See `docs/decisions.md` (2026-10-15).
 
 ## Layers (schemas in the single MotherDuck database `nhl`)
 - `raw`: JSON exactly as received, plus `source_url` and `loaded_at`. Append-only. Written only by `ingest/`.
@@ -30,7 +31,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `tests/`: Python tests for the ingest code.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
 - `analyst/`: golden questions for checking the conversational query layer.
-- `.github/workflows/`: reserved for a future daily run.
+- `.github/workflows/`: `daily.yml`, the daily run (11:00 UTC: ingest the current season, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
 
 ## Conventions
@@ -73,3 +74,4 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
+- Nightly transform (7 tables and the 24 data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`

@@ -43,9 +43,14 @@ Last updated: 2026-10-15
 
 ## Next
 
-1. **Plan and build the daily run** (GitHub Actions) for 2026-27, using the nightly build chosen on 2026-10-15 (see
-   "Compute for a nightly run"). Until it exists, the 2026-27 snapshot goes stale: `past_games_final` will start
-   failing on any build two days after the last schedule load.
+1. **Start the daily run** (`.github/workflows/daily.yml`, built 2026-10-15, see "Daily run" below).
+   - The owner creates the GitHub-only MotherDuck token, adds it as the secret `MOTHERDUCK_TOKEN` and sets the
+     variable `CURRENT_SEASON` to `20262027`.
+   - One run started by hand from the Actions tab, checked, before the schedule takes over.
+   - Until it runs, the 2026-27 snapshot goes stale: `past_games_final` will start failing on any build two days after
+     the last schedule load.
+   - After the first nights on the free plan (from 2026-10-19): compare the Billing page with the estimate below, and
+     check in `raw.ingest_log` how many responses change each night.
 2. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
    `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
 3. **The conversational query layer,** connecting to MotherDuck with a read-only token, so it can query but never
@@ -92,6 +97,38 @@ Last updated: 2026-10-15
   BEGIN and catalog lookups never appear in query history; whether the near-instant statements are billed is not
   documented. Ingest is not included. To confirm: the Billing page after the first nights on Lite. Incremental marts
   remain a separate, held proposal.
+
+## Daily run (built 2026-10-15, not yet started)
+
+- **Workflow:** `.github/workflows/daily.yml`. Every day at 11:00 UTC, and by hand from the Actions tab.
+  1. Install the locked packages and run `uv run pytest` (no network, no database).
+  2. Ingest the season in the repository variable `CURRENT_SEASON`: `ingest.schedule`, then `ingest.goalies`. The
+     goalie load is needed nightly, or `goalie_games_covered` fails for newly finished games.
+  3. The nightly dbt build; on Sundays the full `dbt build` instead. A manual run can choose either.
+- **Token:** the repository secret `MOTHERDUCK_TOKEN`, a separate token on the owner's own MotherDuck user, used only
+  by GitHub (`docs/decisions.md`).
+- **Safety in a public repo:** no pull-request trigger, read-only repo access, one run at a time, 20-minute limit.
+  Logs are public: they hold counts, status and our request URLs only.
+- **GitHub pauses scheduled workflows** in a public repo after 60 days without commits; it emails the owner.
+- **Estimated compute** (worst case, every recorded statement at the 1 CU-second minimum):
+
+  | Per night | CU-seconds |
+  |---|---|
+  | Schedule ingest: 8 setup, 32 lookups, an insert per changed response, 1 log row | about 45 to 75 |
+  | Goalie ingest (2 requests) | about 11 |
+  | Nightly dbt build | 92 |
+  | **Total** | **about 150 to 180** |
+
+  - Per month: 30 nights is about 4,400 to 5,300 CU-seconds. The Sunday full build (about 250 to 300 instead of 92) adds
+    about 700 to 900.
+  - In all, **about 1.4 to 1.7 CU-hours a month of the free 10**, before querying: about $0 (budget in
+    `docs/decisions.md`).
+  - The ingest figures come from the 2026-27 load of 2026-10-14 (73 statements, 1.4 s of execution, all new). How
+    many responses change on a normal night is not measured yet.
+- **Raw growth:** each changed response is stored again in full (game list about 0.35 MB, a schedule week about
+  0.09 MB): about 0.5 to 3 MB a night.
+- **Possible saving, not applied:** fetch only recent and upcoming weeks instead of the whole season (about 25 fewer
+  NHL requests and statements a night). A code change.
 
 ## Open decisions
 

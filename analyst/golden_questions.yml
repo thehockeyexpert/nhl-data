@@ -267,8 +267,12 @@ questions:
     question: Who has the most shutouts in a single season?
     difficulty: easy
     needs: [goalie_game_stats]
-    answerable_now: false
-    definitions: []
+    answerable_now: true
+    definitions: [D11]
+    review_note: >-
+      Answerable from fct_goalie_games (2026-10-15). Reference by direct SQL: George Hainsworth, 22 regular-season
+      shutouts in 1928-29 (44 games), the well-known record; then four goalie-seasons with 15 (Connell 1925-26 and
+      1927-28, Winkler 1927-28, Esposito 1969-70). The blind MCP test with the guide matched.
   - id: G03
     source: claude_draft
     theme: goalie

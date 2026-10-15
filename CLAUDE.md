@@ -38,6 +38,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Python does fetching and loading only; all cleaning happens in dbt SQL.
 - All HTTP goes through `ingest/nhl_api.py`; all raw writes go through `ingest/raw_loader.py`.
 - Ingest jobs are safe to rerun and are polite to the NHL API (pacing, retries).
+- Before answering any question about NHL data through MotherDuck (the MCP tools or any query), read `docs/motherduck_guide.md` and follow it.
 - Naming: snake_case; staging models `stg_<source>__<entity>`; marts `fct_` / `dim_`.
 - Seasons use the NHL's 8-digit ID, e.g. `20252026`. The first season being built end to end is `20252026`.
 - Every dbt model has a description and at least a uniqueness and not-null test on its key.

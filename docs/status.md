@@ -68,13 +68,22 @@ Last updated: 2026-10-15
     excluded OT ties. Two misses, both from definitions not yet in MotherDuck: S05 included playoffs (348), and G01
     led with the literal above-.500 column instead of the D01 headline. Records were given as three unlabelled
     numbers.
-  - **Cost:** each answer query ran in about 20 ms; five questions cost at most about 8 CU-seconds (worst case).
-  - **To do:** the owner creates the MotherDuck guide, then the blind run of S05 and G01 is repeated.
+  - **Second blind run, with the guide text** given in the agent's instructions (the guide could not be read through
+    MCP, see below): S05, G01 and a new question, G02 (most shutouts in a season), all correct. S05 was regular
+    season only (326); G01 led with the D01 headline and labelled records W-L-T-OTL; G02 gave George Hainsworth,
+    22 in 1928-29. So the guide's content fixes both misses.
+  - **The guide is not visible through MCP.** The owner created it in MotherDuck with organization access and it
+    shows in the UI, but `list_guides` and `get_query_guide` return no guides, also after reconnecting. Not yet
+    explained.
+  - **Cost:** each answer query ran in about 20 ms. Query history is incomplete for MCP queries: it holds 26 MCP
+    entries after 12:48 UTC, fewer than the two blind runs alone made, none of their marker queries, and no entry
+    for a full dbt build at 12:46. So per-question costs of the blind runs could not be measured. Estimate: at most 3 to 4 CU-seconds per question (worst case, 3 or 4
+    calls each).
 
 ## Next
 
-1. **Finish the query-layer test.** The owner creates the MotherDuck guide from `docs/motherduck_guide.md`; then
-   the blind run of S05 and G01 is repeated, before query history disappears with the trial on 2026-10-19.
+1. **Make the guide readable through MCP.** The owner sends the guide's UUID to try `get_guide` directly, or asks
+   MotherDuck support why an organization guide is not listed. Then one blind run that reads the guide itself.
 2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
    the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
    ignored.

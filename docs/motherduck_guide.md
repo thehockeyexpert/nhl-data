@@ -9,6 +9,30 @@ step: change this file first, then paste it into MotherDuck. Definitions come fr
 Read this before answering any question from the `nhl` database. Use the `marts` schema. Table and column
 comments in MotherDuck carry more detail.
 
+## Coverage: what is and is not loaded (2026-10-15)
+If a question needs data that is not loaded, say so plainly and name what is missing. Never estimate it from
+other tables.
+
+**Loaded and modelled (`marts`):**
+- Games and results, 1917-18 to today (2004-05 was not played): `fct_games`, `fct_team_games`.
+- Standings before every regular-season game, under each era's rules: `fct_team_standings_by_game`.
+- Goalie games, regular season and playoffs, all history: `fct_goalie_games` (decisions, shutouts, goals against;
+  shots and saves from 1955-56).
+- Teams, franchises and lineages: `dim_teams`.
+
+**Loaded, in `staging` only (usable, not yet modelled):**
+- Player biographies (birth date, birth city, state or province, country, nationality, position, shoots):
+  `staging.stg_nhl_records__players`. Includes people who never played an NHL game; there is no flag for that yet.
+- Draft picks, trophies and award results, playoff series: `staging.stg_nhl_records__draft_picks`,
+  `stg_nhl_records__trophies`, `stg_nhl_records__award_results`, `stg_nhl_records__playoff_series_games`.
+- Official team season totals: `staging.stg_nhl_stats__team_seasons`.
+
+**Not loaded:**
+- **Skater statistics of any kind** (goals, assists, points, games played, ice time, by season or by game). So no
+  question about skaters' scoring can be answered yet, including "most goals by birthplace".
+- Team game statistics (shots, power play, penalties), play-by-play, shifts, fights, game duration.
+- Players' seasons in other leagues (junior, college), arena locations and travel.
+
 ## Tables
 - `marts.fct_games`: one row per game (types 1 preseason, 2 regular season, 3 playoffs). Final scores as the NHL
   reports them: a shootout win counts as one goal.

@@ -170,8 +170,8 @@ Last updated: 2026-10-15
 
 ## Open decisions
 
-- **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13, D14 and D17 to D20.
-  Proposed defaults await confirmation: D02, D08, D12, D15, D16, D21 and D22.
+- **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13 and D17 to D20.
+  Proposed defaults await confirmation: D02, D08, D12, D16, D21 and D22.
 - **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
 - **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
   fights, and the storage decision for play-by-play.

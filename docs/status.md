@@ -84,6 +84,11 @@ Last updated: 2026-10-15
     created in the MotherDuck web UI, only with SQL (`MD_CREATE_GUIDE`) or the MCP tools, which are blocked here.
     `analyst/publish_guide.py` now publishes `docs/motherduck_guide.md` (text below its `---` line) as a private
     (`user`) Guide, topic `nhl`; version 1 published 2026-10-15 and readable through MCP.
+  - **Third blind run, reading the guide from MotherDuck itself** (2026-10-15): a fresh agent with only the MCP
+    tools found it (`get_query_guide`, then `list_guides` on topic `nhl`, then `get_guide`) and applied its rules.
+    S05 (2025-26, 326), G01 (top-half headline first: Samsonov .653 at 50, Holtby .600 at 100; then above .500) and
+    G02 (Hainsworth, 22 in 1928-29) all match the references. 12 MCP calls in all (3 to find the guide, 3 per
+    question).
   - **Cost:** each answer query ran in about 20 ms. Query history is incomplete for MCP queries: it holds 26 MCP
     entries after 12:48 UTC, fewer than the two blind runs alone made, none of their marker queries, and no entry
     for a full dbt build at 12:46. So per-question costs of the blind runs could not be measured. Estimate: at most 3 to 4 CU-seconds per question (worst case, 3 or 4
@@ -91,9 +96,8 @@ Last updated: 2026-10-15
 
 ## Next
 
-1. **Blind run that reads the guide itself** through MCP (S05, G01, G02). When the guide changes: edit
-   `docs/motherduck_guide.md`, run `uv run python -m analyst.publish_guide`, and paste the same text into the
-   Claude.ai Project instructions.
+1. **Keep the guide in step.** When it changes: edit `docs/motherduck_guide.md`, run
+   `uv run python -m analyst.publish_guide`, and paste the same text into the Claude.ai Project instructions.
 2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
    the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
    ignored.

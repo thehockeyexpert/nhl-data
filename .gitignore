@@ -235,6 +235,8 @@ data/
 # Exception: dbt seeds are small reference tables we write by hand, not NHL data
 !dbt/seeds/*.csv
 *.json
+# Exception: Claude Code's project settings (the MotherDuck tool block list), not NHL data
+!.claude/settings.json
 *.json.gz
 *.ndjson
 

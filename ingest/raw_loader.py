@@ -5,6 +5,7 @@ together with where it came from and when we loaded it.
 """
 
 import hashlib
+import json
 import os
 import re
 
@@ -15,6 +16,13 @@ RAW_SCHEMA = "raw"
 LOG_TABLE = f"{RAW_SCHEMA}.ingest_log"
 
 _TABLE_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
+
+# Fields that change without the data changing. They are still stored, exactly as received, but a response
+# that differs only in these fields does not count as new. The weekly schedule's ticket links change almost
+# every day (20 of 21 changed weeks on 2026-10-15) and no dbt model reads them.
+IGNORED_WHEN_COMPARING = {
+    "nhl_web__schedule": frozenset({"ticketsLink", "ticketsLinkFr"}),
+}
 
 
 def connect(database=DATABASE):
@@ -51,34 +59,71 @@ def ensure_table(con, table, seasonal=True):
             loaded_at    TIMESTAMPTZ NOT NULL,
             season       INTEGER{' NOT NULL' if seasonal else ''},
             payload      JSON NOT NULL,
-            payload_hash VARCHAR NOT NULL
+            payload_hash VARCHAR NOT NULL,
+            compare_hash VARCHAR
         )
         """
     )
+    # Tables created before compare_hash existed get the column; their older rows leave it empty.
+    con.execute(f"ALTER TABLE {_qualified(table)} ADD COLUMN IF NOT EXISTS compare_hash VARCHAR")
+
+
+def _sha256(text):
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _without(value, ignored):
+    """A copy of parsed JSON with the ignored field names removed at every level."""
+    if isinstance(value, dict):
+        return {key: _without(item, ignored) for key, item in value.items() if key not in ignored}
+    if isinstance(value, list):
+        return [_without(item, ignored) for item in value]
+    return value
+
+
+def compare_hash(table, body):
+    """The hash used to decide whether a response changed.
+
+    For most tables it is the hash of the response exactly as received (the same as payload_hash).
+    For tables in IGNORED_WHEN_COMPARING it is the hash of the response without those fields,
+    written with sorted keys so the same content always gives the same hash.
+    """
+    ignored = IGNORED_WHEN_COMPARING.get(table)
+    if not ignored:
+        return _sha256(body)
+    cleaned = _without(json.loads(body), ignored)
+    return _sha256(json.dumps(cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
 
 
 def load_response(con, table, source_url, season, body):
     """Store one API response. Returns True if a row was added.
 
-    If the newest row we already hold for this URL has identical content,
+    If the newest row we already hold for this URL has the same content (see compare_hash),
     nothing is added. That is what makes reruns safe. If the content changed,
     a new row is added and the old one is kept as history.
     """
-    payload_hash = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    payload_hash = _sha256(body)
+    new_compare_hash = compare_hash(table, body)
+    # The stored payload is only fetched for an older row that has no compare_hash yet.
     latest = con.execute(
         f"""
-        SELECT payload_hash FROM {_qualified(table)}
+        SELECT payload_hash, compare_hash, CASE WHEN compare_hash IS NULL THEN payload::VARCHAR END
+        FROM {_qualified(table)}
         WHERE source_url = ?
         ORDER BY loaded_at DESC
         LIMIT 1
         """,
         [source_url],
     ).fetchone()
-    if latest is not None and latest[0] == payload_hash:
-        return False
+    if latest is not None:
+        old_payload_hash, old_compare_hash, old_payload = latest
+        if old_compare_hash is None:
+            old_compare_hash = compare_hash(table, old_payload) if table in IGNORED_WHEN_COMPARING else old_payload_hash
+        if old_compare_hash == new_compare_hash:
+            return False
     con.execute(
-        f"INSERT INTO {_qualified(table)} VALUES (?, now(), ?, ?, ?)",
-        [source_url, season, body, payload_hash],
+        f"INSERT INTO {_qualified(table)} VALUES (?, now(), ?, ?, ?, ?)",
+        [source_url, season, body, payload_hash, new_compare_hash],
     )
     return True
 

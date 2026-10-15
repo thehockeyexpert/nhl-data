@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "mcp__MotherDuck__query_rw",
+      "mcp__MotherDuck__save_dive",
+      "mcp__MotherDuck__update_dive",
+      "mcp__MotherDuck__edit_dive_content",
+      "mcp__MotherDuck__delete_dive",
+      "mcp__MotherDuck__share_dive_data",
+      "mcp__MotherDuck__set_guide_access",
+      "mcp__MotherDuck__create_flight",
+      "mcp__MotherDuck__update_flight",
+      "mcp__MotherDuck__edit_flight_source",
+      "mcp__MotherDuck__delete_flight",
+      "mcp__MotherDuck__run_flight",
+      "mcp__MotherDuck__cancel_flight_run",
+      "mcp__MotherDuck__create_guide",
+      "mcp__MotherDuck__update_guide",
+      "mcp__MotherDuck__update_guide_metadata",
+      "mcp__MotherDuck__edit_guide_content",
+      "mcp__MotherDuck__delete_guide"
+    ]
+  }
+}

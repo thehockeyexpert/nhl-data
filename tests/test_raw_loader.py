@@ -1,3 +1,4 @@
+import hashlib
 import json
 
 import duckdb
@@ -46,6 +47,59 @@ def test_changed_content_adds_a_new_version_and_keeps_the_old(con):
 def test_same_content_from_a_different_url_is_stored(con):
     load_response(con, "nhl_web__schedule", URL, 20252026, '{"a": 1}')
     assert load_response(con, "nhl_web__schedule", URL + "x", 20252026, '{"a": 1}') is True
+
+
+def week(tickets="https://tickets.test/a", score=1):
+    """A tiny weekly schedule response with one game."""
+    return json.dumps({"gameWeek": [{"games": [{"id": 1, "homeTeam": {"score": score}, "ticketsLink": tickets,
+                                                "ticketsLinkFr": tickets + "/fr"}]}]})
+
+
+def test_a_change_only_in_ticket_links_adds_nothing(con):
+    assert load_response(con, "nhl_web__schedule", URL, 20252026, week(tickets="https://tickets.test/a")) is True
+    assert load_response(con, "nhl_web__schedule", URL, 20252026, week(tickets="https://tickets.test/b")) is False
+    assert row_count(con) == 1
+
+
+def test_a_changed_score_next_to_new_ticket_links_is_stored(con):
+    load_response(con, "nhl_web__schedule", URL, 20252026, week(tickets="https://tickets.test/a", score=1))
+    assert load_response(con, "nhl_web__schedule", URL, 20252026, week(tickets="https://tickets.test/b", score=2)) is True
+    assert row_count(con) == 2
+
+
+def test_ticket_links_still_count_in_other_tables(con):
+    ensure_table(con, "nhl_stats__game")
+    load_response(con, "nhl_stats__game", URL, 20252026, week(tickets="https://tickets.test/a"))
+    assert load_response(con, "nhl_stats__game", URL, 20252026, week(tickets="https://tickets.test/b")) is True
+
+
+def test_an_older_row_without_compare_hash_is_compared_by_its_payload(con):
+    # A row stored before compare_hash existed: only payload_hash is set.
+    body = week(tickets="https://tickets.test/a")
+    con.execute(
+        "INSERT INTO raw.nhl_web__schedule VALUES (?, now(), 20252026, ?, 'old-style-hash', NULL)", [URL, body]
+    )
+    assert load_response(con, "nhl_web__schedule", URL, 20252026, week(tickets="https://tickets.test/b")) is False
+    assert load_response(con, "nhl_web__schedule", URL, 20252026, week(score=5)) is True
+
+
+def test_ensure_table_adds_compare_hash_to_an_older_table():
+    con = duckdb.connect(":memory:")
+    con.execute("CREATE SCHEMA raw")
+    con.execute(
+        "CREATE TABLE raw.nhl_stats__game (source_url VARCHAR NOT NULL, loaded_at TIMESTAMPTZ NOT NULL, "
+        "season INTEGER NOT NULL, payload JSON NOT NULL, payload_hash VARCHAR NOT NULL)"
+    )
+    body = '{"a": 1}'
+    con.execute(
+        "INSERT INTO raw.nhl_stats__game VALUES ('u', now(), 20252026, ?, ?)",
+        [body, hashlib.sha256(body.encode("utf-8")).hexdigest()],
+    )
+    ensure_table(con, "nhl_stats__game")
+    assert con.execute("SELECT compare_hash FROM raw.nhl_stats__game").fetchall() == [(None,)]
+    # The old row is matched through its payload_hash, so identical content still adds nothing.
+    assert load_response(con, "nhl_stats__game", "u", 20252026, body) is False
+    assert load_response(con, "nhl_stats__game", "u", 20252026, '{"a": 2}') is True
 
 
 def test_rejects_unsafe_table_names(con):

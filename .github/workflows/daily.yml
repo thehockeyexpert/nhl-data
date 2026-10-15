@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   daily:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned, so the runner only changes when we change it
     timeout-minutes: 20
     env:
       # Repository secret holding the GitHub-only MotherDuck token. Never printed.
@@ -38,9 +38,10 @@ jobs:
       SEASON: ${{ vars.CURRENT_SEASON }}
 
     steps:
-      - uses: actions/checkout@v4
+      # Exact releases that run on Node.js 24 (checked in each action's action.yml, 2026-10-15).
+      - uses: actions/checkout@v7.0.1
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v10.2.0
 
       - name: Install the locked package versions
         run: uv sync --frozen

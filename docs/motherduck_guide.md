@@ -67,6 +67,23 @@ other tables.
   tables, so Edmonton and Boston players have one more game than their team.
 - A shootout goal is not a goal in player totals.
 
+## Stat terms (full list in the repo's `docs/definitions.md`, "Stat terms")
+- **Strength:** "even strength" follows the NHL and includes 4-on-4 and 3-on-3; it is not 5-on-5. Say which one an
+  answer uses.
+- **Rates and percentages:** sum the totals first, then divide; never average percentages. State the minimum sample
+  used.
+- **When stats begin:** strength split (even-strength, power-play, short-handed) from 1933-34; skater shots and
+  plus-minus from 1959-60; goalie shots and saves from 1955-56; ice time and faceoffs from 1997-98. Leave earlier
+  seasons out of "best ever" rate questions; don't count them as zero.
+- **Formulas:** save % = saves / shots against; GAA = goals against x 3,600 / `time_on_ice_seconds`.
+- **Faceoff %** is empty for players who took no faceoffs, and there are no raw win and loss counts.
+- **Not in the data:** primary and secondary assists, the number of penalties, penalties drawn.
+- **Not loaded, never estimate:** shot attempts (Corsi/SAT), unblocked attempts (Fenwick/USAT), missed and blocked
+  shots, expected goals and anything built on them, shifts, zone starts, hits, takeaways, giveaways, Game Score.
+  Say they are not loaded.
+- **Other sites' seasons:** a single year such as "2018" means 2018-19. Convert with
+  `start_year * 10000 + start_year + 1`.
+
 ## Default scope (D11, decided)
 - **Regular season only** (`game_type = 2`) unless the question says playoffs or preseason. If a question
   includes playoffs, report them separately as well as combined. Never include special events (all-star games and

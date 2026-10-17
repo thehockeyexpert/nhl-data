@@ -57,6 +57,29 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - In `dim_teams` these have `is_nhl_team` false, no franchise and no lineage. Their name and seasons come only from the games they appear in.
 - Special events (all-star games, international tournaments) use further team IDs that are not NHL clubs. Those games are not in `fct_games`.
 
+## Records data: drafts, awards, playoff series, official team totals
+
+Observed 2026-10-17 while building `fct_draft_picks`, `fct_award_results`, `fct_playoff_series` and `fct_team_seasons`.
+
+- **Draft:** 13,152 picks, 1963 to 2026. 790 have no NHL player ID; 5,658 drafted players later played an NHL game.
+- **Awards:** several winners in one season are normal for some trophies. The Stanley Cup results list every player
+  engraved on the Cup (up to 32 a season); the Vezina, Jennings, Rocket Richard and a few others have been shared.
+  One 1925-26 Stanley Cup runner-up row uses a team ID that is not in our teams (4814).
+- **Playoff series list:** includes the 7 knockout games of the 2004 World Cup of Hockey (game type 7), filed as
+  2003-04 series with letters that overlap the NHL first round. `fct_playoff_series` and `bridge_playoff_series_games`
+  keep NHL playoff games (type 3) only.
+  - `games_needed_to_win` is 0 for 37 series from 1917-18 to 1935-36, consistent with series decided on total goals;
+    the winner is then the team with more goals when wins are level.
+  - 1919 Final (Seattle v the Canadiens): stopped at 2-2-1 by the flu epidemic and never finished; no Cup awarded
+    ([Wikipedia](https://en.wikipedia.org/wiki/1919_Stanley_Cup_Final)). No winner in `fct_playoff_series`.
+  - 1927 Final (Ottawa v Boston): Ottawa won 2-0-2 in a series where ties were allowed, although the NHL's list says
+    3 wins were needed ([Wikipedia](https://en.wikipedia.org/wiki/1927_Stanley_Cup_Final)).
+- **Official team totals:** from 2005-06 the official goals for and against equal our games' totals minus one per
+  shootout won (for) or lost (against), for every team-season (check `team_season_goals_match_games`). That is
+  consistent with the official totals leaving out the extra goal a shootout win adds to the final score. 1917-18: the
+  two Wanderers forfeits recorded as 1-0 are in our games but not in the official goals (Toronto and the Canadiens
+  +1 goal for, the Wanderers +2 against).
+
 ## Birthplaces
 
 Observed 2026-10-15 in the NHL's player list (`stg_nhl_records__players`).

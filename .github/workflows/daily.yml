@@ -82,7 +82,7 @@ jobs:
         run: >
           uv run dbt build --project-dir dbt --profiles-dir dbt
           --select config.materialized:table test_type:singular
-          --indirect-selection empty --no-populate-cache
+          --exclude tag:records --indirect-selection empty --no-populate-cache
 
       - name: Full dbt build (seeds, views, tables and every test)
         if: steps.choose.outputs.build == 'full'

@@ -2,7 +2,8 @@
 # Status: DRAFT for the owner's review (2026-10-14). Questions only; no answers yet.
 #
 # Fields:
-#   id              stable identifier
+#   id              stable identifier. Season questions are SE01 to SE05 (renamed from S01 to S05 on 2026-10-17,
+#                   so they do not clash with the stat terms S01 to S36 in docs/definitions.md)
 #   theme           team, season, historical, franchise, player, goalie, head_to_head, streaks, current, awards
 #   question        as a fan or analyst would ask it
 #   difficulty      easy, medium or hard
@@ -73,15 +74,18 @@ questions:
     definitions: []
 
   # --- season
-  - id: S01
+  - id: SE01
     source: claude_draft
     theme: season
     question: Which team finished with the most points in 1995-96?
     difficulty: easy
-    needs: [fct_games, standings_rules]
-    answerable_now: partly
+    needs: [fct_team_seasons]
+    answerable_now: true
     definitions: [D02]
-  - id: S02
+    review_note: >-
+      Golden question for fct_team_seasons (2026-10-17). Reference by direct SQL from the NHL's official totals:
+      Detroit Red Wings, 131 points (62 W, 13 L, 7 T); then Colorado 104 and Philadelphia 103.
+  - id: SE02
     source: claude_draft
     theme: season
     question: Where did Montreal stand in its division on 2026-01-01?
@@ -89,7 +93,7 @@ questions:
     needs: [standings_by_date, divisions]
     answerable_now: false
     definitions: [D02]
-  - id: S03
+  - id: SE03
     source: claude_draft
     theme: season
     question: What is the biggest points lead any team has held during a season?
@@ -97,7 +101,7 @@ questions:
     needs: [standings_by_date]
     answerable_now: false
     definitions: [D02]
-  - id: S04
+  - id: SE04
     source: claude_draft
     theme: season
     question: How many points did the last-place team have in each season since 1967-68?
@@ -105,7 +109,7 @@ questions:
     needs: [fct_games, standings_rules]
     answerable_now: partly
     definitions: [D02]
-  - id: S05
+  - id: SE05
     source: claude_draft
     theme: season
     question: Which season had the most games decided in overtime or a shootout?
@@ -162,9 +166,13 @@ questions:
     theme: franchise
     question: Which franchise has won the most playoff series?
     difficulty: medium
-    needs: [playoff_series, dim_teams]
-    answerable_now: false
+    needs: [fct_playoff_series, dim_teams]
+    answerable_now: true
     definitions: [D03]
+    review_note: >-
+      Golden question for fct_playoff_series (2026-10-17). Reference by direct SQL, by lineage (D03): Montréal
+      Canadiens 98 series won, then Detroit 68, Boston 64, Toronto 60. Includes early series against non-NHL teams;
+      the 1919 Final has no winner.
   - id: F03
     source: claude_draft
     theme: franchise
@@ -244,9 +252,13 @@ questions:
     theme: player
     question: Which first-overall draft picks scored the most career points?
     difficulty: medium
-    needs: [draft, skater_game_stats]
-    answerable_now: false
-    definitions: []
+    needs: [fct_draft_picks, fct_skater_seasons]
+    answerable_now: true
+    definitions: [D11]
+    review_note: >-
+      Golden question for fct_draft_picks (2026-10-17). Reference by direct SQL, regular season: Sidney Crosby
+      (2005) 1,766 points, Mario Lemieux (1984) 1,723, Alex Ovechkin (2004) 1,690, Joe Thornton (1997) 1,539, Dale
+      Hawerchuk (1981) 1,409. Crosby and Ovechkin are still active, so the order can change.
 
   # --- goalie
   - id: G01
@@ -390,9 +402,12 @@ questions:
     theme: awards
     question: Who has won the Hart Trophy the most times?
     difficulty: easy
-    needs: [awards]
-    answerable_now: false
+    needs: [fct_award_results, dim_trophies]
+    answerable_now: true
     definitions: []
+    review_note: >-
+      Golden question for fct_award_results and dim_trophies (2026-10-17). Reference by direct SQL: Wayne Gretzky 9,
+      Gordie Howe 6, Eddie Shore 4, Howie Morenz 3.
   - id: A02
     source: claude_draft
     theme: awards

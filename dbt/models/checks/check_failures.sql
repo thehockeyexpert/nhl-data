@@ -851,6 +851,101 @@ birth_city_spellings_valid as (
     ) as spellings
     where problem is not null
 
+),
+
+draft_pick_unique as (
+
+    -- Each overall pick number is used once per draft.
+    select
+        'draft_pick_unique' as check_name,
+        any_value(season) as season,
+        null::bigint as game_id,
+        'draft ' || draft_year || ': overall pick ' || overall_pick || ' listed ' || count(*) || ' times' as detail,
+        null::integer as team_id
+    from {{ ref('fct_draft_picks') }}
+    group by draft_year, overall_pick
+    having count(*) > 1
+
+),
+
+playoff_series_score_matches as (
+
+    -- The series score counted from our games equals the NHL's own series score, and a series that needs a set number
+    -- of wins was won with exactly that number.
+    select
+        'playoff_series_score_matches' as check_name,
+        season,
+        null::bigint as game_id,
+        'series ' || playoff_series_key || ': our games ' || coalesce(team_a_wins, 0) || '-' || coalesce(team_b_wins, 0)
+            || ', NHL ' || coalesce(nhl_winner_wins, 0) || '-' || coalesce(nhl_loser_wins, 0)
+            || ', needs ' || coalesce(games_needed_to_win, 0)
+            || case when not has_winner then ', no winner' else '' end as detail,
+        team_a_id as team_id
+    from {{ ref('fct_playoff_series') }}
+    where season in (select season from finished_seasons)
+      and (team_a_wins is distinct from nhl_winner_wins
+           or team_b_wins is distinct from nhl_loser_wins
+           or (games_needed_to_win > 0 and team_a_wins != games_needed_to_win)
+           or not has_winner)
+
+),
+
+stanley_cup_winner_matches_final as (
+
+    -- The team named on the season's Stanley Cup winner results is the winner of the season's last playoff series.
+    select
+        'stanley_cup_winner_matches_final' as check_name,
+        coalesce(cup.season, final.season) as season,
+        null::bigint as game_id,
+        'Stanley Cup winner team ' || coalesce(cup.team_ids, 'none') || ', last series won by '
+            || coalesce(final.winner_team_id::varchar, 'none') as detail,
+        final.winner_team_id as team_id
+    from (
+        select season, string_agg(distinct team_id::varchar, ',' order by team_id::varchar) as team_ids
+        from {{ ref('fct_award_results') }}
+        where trophy_id = 1 and is_winner and team_id is not null
+        group by season
+    ) as cup
+    full outer join (
+        select season, winner_team_id from {{ ref('fct_playoff_series') }} where is_final_round
+    ) as final on final.season = cup.season
+    where coalesce(cup.season, final.season) in (select season from finished_seasons)
+      and cup.team_ids is distinct from final.winner_team_id::varchar
+
+),
+
+shootout_results as (
+
+    select
+        season,
+        team_id,
+        sum(goals_for) as goals_for,
+        sum(goals_against) as goals_against,
+        count(*) filter (where last_period_type = 'SO' and result = 'W') as shootout_wins,
+        count(*) filter (where last_period_type = 'SO' and result != 'W') as shootout_losses
+    from {{ ref('fct_team_games') }}
+    where game_type = 2
+    group by season, team_id
+
+),
+
+team_season_goals_match_games as (
+
+    -- The NHL's official goals for and against equal our games' totals, minus one for each shootout won (for) or lost
+    -- (against): the official totals leave out the extra goal a shootout win adds to the final score.
+    select
+        'team_season_goals_match_games' as check_name,
+        official.season,
+        null::bigint as game_id,
+        'official GF-GA ' || official.goals_for || '-' || official.goals_against || ', our games minus shootouts '
+            || (ours.goals_for - ours.shootout_wins) || '-' || (ours.goals_against - ours.shootout_losses) as detail,
+        official.team_id
+    from {{ ref('fct_team_seasons') }} as official
+    inner join shootout_results as ours on ours.season = official.season and ours.team_id = official.team_id
+    where official.season in (select season from finished_seasons)
+      and (official.goals_for != ours.goals_for - ours.shootout_wins
+           or official.goals_against != ours.goals_against - ours.shootout_losses)
+
 )
 
 select * from season_facts_present
@@ -906,3 +1001,11 @@ union all
 select * from skater_goals_add_up
 union all
 select * from birth_city_spellings_valid
+union all
+select * from draft_pick_unique
+union all
+select * from playoff_series_score_matches
+union all
+select * from stanley_cup_winner_matches_final
+union all
+select * from team_season_goals_match_games

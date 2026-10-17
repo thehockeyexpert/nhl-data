@@ -156,6 +156,144 @@ models:
       - name: is_in_player_list
         description: False for the few players found only in the stats, not in the NHL's player list.
 
+  - name: fct_draft_picks
+    description: >
+      One row per NHL draft pick, 1963 onward, from the NHL records site. player_id is empty for picks who never
+      received an NHL player ID. season is the season that ends in the draft's year (the 2015 draft is 20142015).
+    columns:
+      - name: draft_pick_id
+        description: The NHL records site's ID for the pick.
+        data_tests: [unique, not_null]
+      - name: overall_pick
+        description: The pick's number in the whole draft (1 = first overall).
+        data_tests: [not_null]
+      - name: player_id
+        description: The drafted player. Joins to dim_players. Empty for picks with no NHL player ID.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_players')
+                field: player_id
+      - name: team_id
+        description: The team that made the pick. Joins to dim_teams.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
+      - name: is_nhl_player
+        description: True if the drafted player later played an NHL game (D15).
+
+  - name: dim_trophies
+    description: One row per NHL trophy or award in the NHL records site's list.
+    columns:
+      - name: trophy_id
+        description: The NHL records site's trophy ID.
+        data_tests: [unique, not_null]
+      - name: trophy_name
+        description: The trophy's name, for example Hart Memorial Trophy.
+
+  - name: fct_award_results
+    description: >
+      One row per award result (winner, runner-up or finalist) for a trophy in a season, from the NHL records site.
+      Names a player, a coach, a general manager or only a team. Several winners in one season are normal for some
+      trophies: the Stanley Cup lists every player engraved on it, and the Vezina, Jennings and Rocket Richard have
+      been shared.
+    columns:
+      - name: award_result_id
+        description: The NHL records site's ID for the result.
+        data_tests: [unique, not_null]
+      - name: trophy_id
+        description: Joins to dim_trophies.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_trophies')
+                field: trophy_id
+      - name: status
+        description: WINNER, RUNNER_UP or FINALIST.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['WINNER', 'RUNNER_UP', 'FINALIST']
+      - name: player_id
+        description: The player, when the award names one. Joins to dim_players.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_players')
+                field: player_id
+      - name: team_id
+        description: The player's or the winning team. One 1925-26 Stanley Cup runner-up uses a team ID that is not in dim_teams.
+
+  - name: bridge_playoff_series_games
+    description: >
+      Which playoff series each NHL playoff game belongs to. Joins fct_games (game_id) to fct_playoff_series. The
+      2004 World Cup of Hockey knockout games in the NHL's series list (game type 7) are left out.
+    columns:
+      - name: game_id
+        description: The game. Joins to fct_games.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+      - name: playoff_series_key
+        description: season, playoff_round and series_letter joined.
+        data_tests: [not_null]
+
+  - name: fct_playoff_series
+    description: >
+      One row per NHL playoff series: round, title, the two teams and the winner, taken from our games because the
+      NHL's series list does not name the teams. The winner has more wins; with level wins, more goals only where
+      games_needed_to_win is 0 (37 early series, 1917-18 to 1935-36). The 1919 Final, stopped by the flu epidemic,
+      has no winner. Series against non-NHL teams include a non-NHL team (dim_teams.is_nhl_team). Answer "series
+      won" questions by lineage (D03).
+    columns:
+      - name: playoff_series_key
+        description: season, playoff_round and series_letter joined.
+        data_tests: [unique, not_null]
+      - name: team_a_id
+        description: The series leader by wins (then goals). Joins to dim_teams.
+        data_tests: [not_null]
+      - name: team_b_id
+        description: The other team. Joins to dim_teams.
+        data_tests: [not_null]
+      - name: winner_team_id
+        description: The team that won the series. Empty when the series had no winner (the 1919 Final).
+      - name: loser_team_id
+        description: The team that lost the series. Empty when the series had no winner.
+      - name: has_winner
+        description: False when the series ended without a winner.
+      - name: is_final_round
+        description: True for the season's last round (the Stanley Cup Final in the NHL era).
+      - name: nhl_winner_wins
+        description: The NHL's own series score after the last game, for the winner (check playoff_series_score_matches).
+
+  - name: fct_team_seasons
+    description: >
+      One row per team per regular season: the NHL's official totals from the NHL stats API, not totals of our games.
+      From 2005-06 the official goals for and against leave out the extra goal a shootout win adds to the final score
+      (check team_season_goals_match_games). Shots per game from 1959-60.
+    columns:
+      - name: team_season_key
+        description: season and team_id joined.
+        data_tests: [unique, not_null]
+      - name: team_id
+        description: Joins to dim_teams.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
+      - name: points_pct
+        description: Points / (2 x games played).
+
   - name: dim_seasons
     description: >
       One row per season the NHL has season facts for (2004-05 has none; it was not played): dates, scheduled

@@ -26,7 +26,7 @@ Last updated: 2026-10-15
   - The derived standings match the official season totals for 1,788 of 1,791 team-seasons. The 3 differences are
     pinned to single games and excepted. A spot-check of 4 games against the NHL's standings matched exactly.
   - Career-win sanity check: Brodeur 691 and Roy 551 match our data.
-- **Exceptions.** 92 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
+- **Exceptions.** 97 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
   single team (`team_id`). From 2022-23, an era rule in `goalie_saves_add_up` allows saves that are exactly 1 too
   high, watched by `checks.goalie_saves_plus_one_by_season` with a 2% limit.
 - **Daily run started (2026-10-15).** `.github/workflows/daily.yml`, 11:00 UTC daily, full build on Sundays.
@@ -54,7 +54,16 @@ Last updated: 2026-10-15
   of the same place into `dim_players.birth_city_standard` (38 NHL players change city); checked by
   `birth_city_spellings_valid`. Former names stay separate (D14). Compared with QuantHockey's city totals in
   `docs/data_coverage.md`, "Birthplaces"; "New York" and "New York City" are deliberately left separate.
-- **Latest `dbt build` on MotherDuck (2026-10-15):** 180 of 180 pass; the nightly build 40 of 40 (12 tables, 28 data checks). No failure is left without an approved exception.
+- **Records data modelled (2026-10-17).** `fct_draft_picks` (13,152 picks), `dim_trophies`, `fct_award_results`,
+  `bridge_playoff_series_games`, `fct_playoff_series` (NHL playoff games only; the 2004 World Cup games in the NHL's
+  list are left out; the 1919 Final has no winner) and `fct_team_seasons` (official totals). Tagged `records`:
+  rebuilt weekly and after `ingest.records`, not nightly.
+  - New checks: `draft_pick_unique`, `playoff_series_score_matches`, `stanley_cup_winner_matches_final`,
+    `team_season_goals_match_games` (official goals equal our games minus shootout goals, every team-season from
+    2005-06). 5 approved exceptions: the 1919 and 1927 Finals, the 1917-18 forfeits.
+  - Golden questions: P08 (draft), A01 (awards), F02 (series), SE01 (team seasons), each with a reference answer.
+- **Latest `dbt build` on MotherDuck (2026-10-17):** 216 of 216 pass; the nightly build 44 of 44 (12 tables, 32 data
+  checks). No failure is left without an approved exception.
 
 ## In progress
 
@@ -65,7 +74,7 @@ Last updated: 2026-10-15
     game, it matches game for game: Ken Dryden 1975-76 under the headline (21 qualifying decisions, league median
     equal on all 60 dates), and Dryden 1975-76 and Braden Holtby 2015-16 under the above-.500 column (24 and 45).
   - **Still labelled draft** until the owner has checked it.
-- **Golden-question test of the query layer (2026-10-15).** Five questions (H03, T11, X01, S05, G01), with
+- **Golden-question test of the query layer (2026-10-15).** Five questions (H03, T11, X01, SE05, G01), with
   reference answers computed by direct SQL and checked against outside sources where they exist:
   - H03: 21 goals, MTL 14-TSP 7 (1920-01-10) and EDM 12-CHI 9 (1985-12-11); playoffs 18, LAK 10-EDM 8
     (1982-04-07). Matches Hockey Reference and NHL.com.
@@ -73,15 +82,15 @@ Last updated: 2026-10-15
     matching the Ice Hockey Wiki.
   - X01: regular season 302 games, Rangers 143-130-19-10 (W-L-T-OTL); playoffs 39 games, Islanders 20-19,
     matching outside sources.
-  - S05: 2025-26, 326 of 1,312 regular-season games decided in OT or a shootout (2013-14 has the highest share,
+  - SE05: 2025-26, 326 of 1,312 regular-season games decided in OT or a shootout (2013-14 has the highest share,
     25.0%). Counting OT games that ended tied wrongly puts 2003-04 and 2002-03 near the top.
   - G01: the mart matches an independent recomputation for every goalie.
   - **Blind run** (a fresh agent using only the MCP tools, before the guide existed): every figure was right, and it
-    excluded OT ties. Two misses, both from definitions not yet in MotherDuck: S05 included playoffs (348), and G01
+    excluded OT ties. Two misses, both from definitions not yet in MotherDuck: SE05 included playoffs (348), and G01
     led with the literal above-.500 column instead of the D01 headline. Records were given as three unlabelled
     numbers.
   - **Second blind run, with the guide text** given in the agent's instructions (the guide could not be read through
-    MCP, see below): S05, G01 and a new question, G02 (most shutouts in a season), all correct. S05 was regular
+    MCP, see below): SE05, G01 and a new question, G02 (most shutouts in a season), all correct. SE05 was regular
     season only (326); G01 led with the D01 headline and labelled records W-L-T-OTL; G02 gave George Hainsworth,
     22 in 1928-29. So the guide's content fixes both misses.
   - **The guide in MotherDuck (resolved 2026-10-15).** MCP saw no guides because none existed: Guides cannot be
@@ -90,7 +99,7 @@ Last updated: 2026-10-15
     (`user`) Guide, topic `nhl`; version 1 published 2026-10-15 and readable through MCP.
   - **Third blind run, reading the guide from MotherDuck itself** (2026-10-15): a fresh agent with only the MCP
     tools found it (`get_query_guide`, then `list_guides` on topic `nhl`, then `get_guide`) and applied its rules.
-    S05 (2025-26, 326), G01 (top-half headline first: Samsonov .653 at 50, Holtby .600 at 100; then above .500) and
+    SE05 (2025-26, 326), G01 (top-half headline first: Samsonov .653 at 50, Holtby .600 at 100; then above .500) and
     G02 (Hainsworth, 22 in 1928-29) all match the references. 12 MCP calls in all (3 to find the guide, 3 per
     question).
   - **Cost:** each answer query ran in about 20 ms. Query history is incomplete for MCP queries: it holds 26 MCP
@@ -157,7 +166,7 @@ Last updated: 2026-10-15
   - To confirm: the Billing page after the first nights on Lite.
 - **Nightly build, chosen 2026-10-15** (`docs/decisions.md`): one `dbt build` that rebuilds the tables (7 when chosen, 12 since the skater load) and runs the
   data checks (24 then, 27 now), with `checks.check_failures` now a table:
-  `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --indirect-selection empty --no-populate-cache`
+  `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --exclude tag:records --indirect-selection empty --no-populate-cache`
 - **Weekly, and after any change to models, seeds or exceptions:** a full `dbt build`. It also runs the 28 key tests
   the nightly build leaves out (uniqueness, not-null and relationships on the 7 tables) and the staging tests.
 - **Measured 2026-10-15** (three runs in separate time windows, from query history and dbt's log):

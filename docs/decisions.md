@@ -3,6 +3,15 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-17: records tables weekly, not nightly
+
+**Decision (owner, 2026-10-17).** The six tables built from the NHL records site and the official team totals
+(`fct_draft_picks`, `dim_trophies`, `fct_award_results`, `bridge_playoff_series_games`, `fct_playoff_series`,
+`fct_team_seasons`, tagged `records`) are rebuilt in the weekly full build and whenever `ingest.records` runs, not
+nightly. Their data changes only when `ingest.records` is run by hand. The nightly build adds `--exclude tag:records`;
+after `ingest.records`, run `dbt build --select tag:records+`. Saves about 75 statements a night (about 0.6 CU-hours
+a month, worst case).
+
 ## 2026-10-15: running-cost budget
 
 **Decision (owner, 2026-10-15).** Total running costs (MotherDuck, GitHub and anything added later) aim for about

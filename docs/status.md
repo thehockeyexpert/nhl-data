@@ -62,7 +62,19 @@ Last updated: 2026-10-15
     `team_season_goals_match_games` (official goals equal our games minus shootout goals, every team-season from
     2005-06). 5 approved exceptions: the 1919 and 1927 Finals, the 1917-18 forfeits.
   - Golden questions: P08 (draft), A01 (awards), F02 (series), SE01 (team seasons), each with a reference answer.
-- **Latest `dbt build` on MotherDuck (2026-10-17):** 216 of 216 pass; the nightly build 44 of 44 (12 tables, 32 data
+- **Skater stats per game (2026-10-17, not yet in the daily run).** `ingest.skater_games` (425 requests in 12.1 min,
+  434 date-window responses, 1.24 GB raw JSON); `stg_nhl_stats__skater_games` and `fct_skater_games` are incremental
+  (each build reads only raw rows loaded since the last one).
+  - 2,421,850 rows, 108 seasons, 7,923 skaters. Per-game rows add up to the season totals for every player-season
+    (`skater_games_match_seasons`); `skater_game_in_games` flags only the suspended 1988 Final game (exception
+    approved 2026-10-18; 98 exceptions in all).
+  - First incremental build: 65 s for the staging model (one-off). Measured nightly run (ingest of the 3 last game
+    dates plus the nightly dbt build): the per-game ingest 17 statements (19 CU-s worst case); the two incremental
+    models 0.65 s each. The whole nightly dbt build: 244 recorded statements, 16.1 s execution, 249 CU-s worst case.
+  - To add to `daily.yml` (owner's decision): a one-off full load of 2026-27 first, then a nightly step
+    `ingest.skater_games --season "$SEASON" --recent-days 3`, and `config.materialized:incremental` in the nightly
+    selection.
+- **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 44 of 44 (12 tables, 32 data
   checks). No failure is left without an approved exception.
 
 ## In progress

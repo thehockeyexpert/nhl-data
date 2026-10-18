@@ -114,6 +114,32 @@ models:
       - name: time_on_ice_per_game_seconds
         description: Average time on ice per game, in seconds. Empty before 1997-98 (docs/data_coverage.md, "Skater stats").
 
+  - name: fct_skater_games
+    description: >
+      One row per skater per game, regular season and playoffs, linked to fct_games. The team comes from the game and
+      home or road, so a traded player's games are split by team. Same early-era gaps as fct_skater_seasons (shots and
+      plus-minus from 1959-60, ice time and faceoffs from 1997-98). Per-game rows add up to the season totals (check
+      skater_games_match_seasons). Incremental.
+    columns:
+      - name: skater_game_key
+        description: game_id and player_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests: [not_null]
+      - name: player_id
+        description: The player. Joins to dim_players.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_players')
+                field: player_id
+      - name: team_id
+        description: The skater's team in that game. Joins to dim_teams. Empty only if the game is not in fct_games.
+      - name: time_on_ice_seconds
+        description: Time on ice in that game, in seconds. From 1997-98.
+
   - name: bridge_skater_season_teams
     description: >
       Which teams a skater played for in a season and game type, one row per team, without statistics. Each

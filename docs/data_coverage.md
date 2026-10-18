@@ -57,6 +57,19 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - In `dim_teams` these have `is_nhl_team` false, no franchise and no lineage. Their name and seasons come only from the games they appear in.
 - Special events (all-star games, international tournaments) use further team IDs that are not NHL clubs. Those games are not in `fct_games`.
 
+## Skater stats per game
+
+Loaded 2026-10-17: the stats API's skater summary with `isGame=true`, 434 responses (date windows), 1.24 GB raw JSON.
+
+- **2,421,850 rows** (one per skater per game, regular season and playoffs, 1917-18 to 2025-26), 7,923 skaters. That
+  equals exactly the sum of games played in the season totals.
+- **Per-game rows add up to the season totals** (games, goals, assists, points) for every player-season in every
+  finished season (check `skater_games_match_seasons`).
+- **The suspended 1988 Final game** (1988-05-24) has 36 skater rows under game ID 1987030999, which is not in our games
+  (see "Skater stats"). Its team cannot be taken from the game, so `team_id` is empty for those rows.
+- Early-era gaps are the same as the season totals: shots and plus-minus from 1959-60, ice time and faceoffs from
+  1997-98. Playoff games against non-NHL teams up to 1925-26 have no rows.
+
 ## Records data: drafts, awards, playoff series, official team totals
 
 Observed 2026-10-17 while building `fct_draft_picks`, `fct_award_results`, `fct_playoff_series` and `fct_team_seasons`.

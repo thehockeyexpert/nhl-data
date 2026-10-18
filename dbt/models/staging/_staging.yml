@@ -172,6 +172,22 @@ models:
         description: Eight-digit season ID.
         data_tests: [unique, not_null]
 
+  - name: stg_nhl_stats__skater_games
+    description: >
+      One row per skater per game, regular season and playoffs, from the NHL stats API's skater summary (isGame=true).
+      Incremental: each build reads only raw responses loaded since the last build. Same early-era gaps as the season
+      totals (docs/data_coverage.md, "Skater stats").
+    columns:
+      - name: skater_game_key
+        description: game_id and player_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [not_null]
+
   - name: stg_nhl_stats__skater_seasons
     description: >
       One row per skater per season and game type (2 regular season, 3 playoffs), from the NHL stats API's

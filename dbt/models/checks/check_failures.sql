@@ -946,6 +946,62 @@ team_season_goals_match_games as (
       and (official.goals_for != ours.goals_for - ours.shootout_wins
            or official.goals_against != ours.goals_against - ours.shootout_losses)
 
+),
+
+skater_game_totals as (
+
+    select player_id, season, game_type, count(*) as games, sum(goals) as goals, sum(assists) as assists,
+           sum(points) as points
+    from {{ ref('fct_skater_games') }}
+    group by player_id, season, game_type
+
+),
+
+skater_games_match_seasons as (
+
+    -- In a finished season with per-game rows, each skater's games, goals, assists and points add up to the season
+    -- totals, in both directions (a player-season missing from either side fails).
+    select
+        'skater_games_match_seasons' as check_name,
+        coalesce(totals.season, per_game.season) as season,
+        null::bigint as game_id,
+        'player ' || coalesce(totals.player_id, per_game.player_id) || ' game type '
+            || coalesce(totals.game_type, per_game.game_type) || ': season GP-G-A-P '
+            || coalesce(totals.games_played, 0) || '-' || coalesce(totals.goals, 0) || '-'
+            || coalesce(totals.assists, 0) || '-' || coalesce(totals.points, 0) || ', per game '
+            || coalesce(per_game.games, 0) || '-' || coalesce(per_game.goals, 0) || '-'
+            || coalesce(per_game.assists, 0) || '-' || coalesce(per_game.points, 0) as detail,
+        totals.team_id
+    from (
+        select * from skater_seasons
+        where games_played > 0 and season in (select distinct season from skater_game_totals)
+    ) as totals
+    full outer join skater_game_totals as per_game
+        on per_game.player_id = totals.player_id
+        and per_game.season = totals.season
+        and per_game.game_type = totals.game_type
+    where coalesce(totals.season, per_game.season) in (select season from finished_seasons)
+      and (totals.player_id is null or per_game.player_id is null
+           or totals.games_played != per_game.games
+           or totals.goals != per_game.goals
+           or totals.assists != per_game.assists
+           or totals.points != per_game.points)
+
+),
+
+skater_game_in_games as (
+
+    -- Every per-game skater row belongs to a game in fct_games, so its team is known.
+    select
+        'skater_game_in_games' as check_name,
+        season,
+        game_id,
+        count(*) || ' skater rows for a game not in fct_games' as detail,
+        null::integer as team_id
+    from {{ ref('fct_skater_games') }}
+    where team_id is null
+    group by season, game_id
+
 )
 
 select * from season_facts_present
@@ -1009,3 +1065,7 @@ union all
 select * from stanley_cup_winner_matches_final
 union all
 select * from team_season_goals_match_games
+union all
+select * from skater_games_match_seasons
+union all
+select * from skater_game_in_games

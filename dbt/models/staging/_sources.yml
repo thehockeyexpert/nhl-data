@@ -32,6 +32,8 @@ sources:
         description: The standings rules in use each season, from api-web.nhle.com.
       - name: nhl_stats__goalie_game
         description: One row per season and game type (regular season, playoffs) of per-game goalie stats from the NHL stats API.
+      - name: nhl_stats__skater_game
+        description: One row per date window (season, game type, first and last date) of per-game skater stats from the NHL stats API.
       - name: nhl_stats__skater_season
         description: One row per season and game type (regular season, playoffs) of skater season totals from the NHL stats API's skater summary.
       - name: nhl_stats__team_season

@@ -72,6 +72,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest one season: `uv run python -m ingest.schedule --season 20252026`
 - Ingest many seasons, newest first, resumable: `uv run python -m ingest.backfill --from 20242025 --to 19171918`
 - Ingest skater season totals, many seasons, resumable: `uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918`
+- Ingest per-game skater stats, many seasons, resumable: `uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918`; nightly, the last game dates: `uv run python -m ingest.skater_games --season 20262027 --recent-days 3`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)

@@ -3,6 +3,15 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-18: per-game skater stats in the daily run
+
+**Decision (owner, 2026-10-18).** The daily run loads the last 3 game dates of per-game skater stats
+(`ingest.skater_games --recent-days 3`), and the nightly build adds the incremental models
+(`config.materialized:incremental`: `stg_nhl_stats__skater_games`, `fct_skater_games`), which read only raw rows
+loaded since the last build. Measured on 2026-10-17: about 47 CU-seconds a night worst case (19 for the ingest, 28
+for dbt), about 0.39 CU-hours a month; the whole estimate stays at about 3.3 to 3.7 of the free plan's 10 CU-hours,
+$0. A season never loaded in full is loaded in full first, so a new season needs no extra step.
+
 ## 2026-10-17: records tables weekly, not nightly
 
 **Decision (owner, 2026-10-17).** The six tables built from the NHL records site and the official team totals

@@ -64,6 +64,10 @@ jobs:
       - name: Load the season's skater totals
         run: uv run python -m ingest.skaters --season "$SEASON"
 
+      # The last 3 game dates before today. A season never loaded in full (a new CURRENT_SEASON) is loaded in full first.
+      - name: Load the season's per-game skater stats
+        run: uv run python -m ingest.skater_games --season "$SEASON" --recent-days 3
+
       - name: Choose the dbt build
         id: choose
         run: |
@@ -77,11 +81,12 @@ jobs:
           echo "build=$build" >> "$GITHUB_OUTPUT"
           echo "dbt build: $build"
 
+      # Incremental models (fct_skater_games and its staging) only read raw rows loaded since the last build.
       - name: Nightly dbt build (all tables and the data checks)
         if: steps.choose.outputs.build == 'nightly'
         run: >
           uv run dbt build --project-dir dbt --profiles-dir dbt
-          --select config.materialized:table test_type:singular
+          --select config.materialized:table config.materialized:incremental test_type:singular
           --exclude tag:records --indirect-selection empty --no-populate-cache
 
       - name: Full dbt build (seeds, views, tables and every test)

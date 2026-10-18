@@ -62,7 +62,7 @@ Last updated: 2026-10-15
     `team_season_goals_match_games` (official goals equal our games minus shootout goals, every team-season from
     2005-06). 5 approved exceptions: the 1919 and 1927 Finals, the 1917-18 forfeits.
   - Golden questions: P08 (draft), A01 (awards), F02 (series), SE01 (team seasons), each with a reference answer.
-- **Skater stats per game (2026-10-17, not yet in the daily run).** `ingest.skater_games` (425 requests in 12.1 min,
+- **Skater stats per game (2026-10-17; in the daily run from 2026-10-18).** `ingest.skater_games` (425 requests in 12.1 min,
   434 date-window responses, 1.24 GB raw JSON); `stg_nhl_stats__skater_games` and `fct_skater_games` are incremental
   (each build reads only raw rows loaded since the last one).
   - 2,421,850 rows, 108 seasons, 7,923 skaters. Per-game rows add up to the season totals for every player-season
@@ -71,11 +71,13 @@ Last updated: 2026-10-15
   - First incremental build: 65 s for the staging model (one-off). Measured nightly run (ingest of the 3 last game
     dates plus the nightly dbt build): the per-game ingest 17 statements (19 CU-s worst case); the two incremental
     models 0.65 s each. The whole nightly dbt build: 244 recorded statements, 16.1 s execution, 249 CU-s worst case.
-  - To add to `daily.yml` (owner's decision): a one-off full load of 2026-27 first, then a nightly step
-    `ingest.skater_games --season "$SEASON" --recent-days 3`, and `config.materialized:incremental` in the nightly
-    selection.
-- **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 44 of 44 (12 tables, 32 data
-  checks). No failure is left without an approved exception.
+  - In the daily run from 2026-10-18 (owner's decision, about +0.39 CU-hours a month): 2026-27 loaded in full once
+    (7 requests, 16 s); nightly `ingest.skater_games --season "$SEASON" --recent-days 3`, and
+    `config.materialized:incremental` in the nightly selection (48 of 48 pass). In recent mode a season never loaded
+    in full is loaded in full first, so a new `CURRENT_SEASON` needs no extra step.
+  - Guide version 4 (2026-10-18): coverage lists `fct_skater_games` and the records tables.
+- **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
+  models, 34 data checks). No failure is left without an approved exception.
 
 ## In progress
 

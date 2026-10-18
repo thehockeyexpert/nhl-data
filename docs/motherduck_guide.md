@@ -10,7 +10,7 @@ below the line into the Claude.ai Project instructions. Definitions come from `d
 Read this before answering any question from the `nhl` database. Use the `marts` schema. Table and column
 comments in MotherDuck carry more detail.
 
-## Coverage: what is and is not loaded (2026-10-15)
+## Coverage: what is and is not loaded (2026-10-18)
 If a question needs data that is not loaded, say so plainly and name what is missing. Never estimate it from
 other tables.
 
@@ -23,19 +23,18 @@ other tables.
   points, penalty minutes, power-play and short-handed scoring; shots, plus-minus, ice time and faceoffs only in
   later eras). One row per player, season and game type; a player who changed teams has one row, not one per team
   (`bridge_skater_season_teams` lists his teams).
+- **Skater games**, regular season and playoffs, all history: `fct_skater_games`, one row per skater per game, with
+  the skater's team in that game. Answers "most in one game", streaks, and totals for one team when a player changed teams.
+  Same early-era gaps as the season totals (shots and plus-minus from 1959-60, ice time and faceoffs from 1997-98).
 - Players, with birthplace and `is_nhl_player`: `dim_players`. Seasons: `dim_seasons`. Games: `dim_games`.
   Teams, franchises and lineages: `dim_teams`.
-
-**Loaded, in `staging` only (usable, not yet modelled):**
-- Draft picks, trophies and award results, playoff series: `staging.stg_nhl_records__draft_picks`,
-  `stg_nhl_records__trophies`, `stg_nhl_records__award_results`, `stg_nhl_records__playoff_series_games`.
-- Official team season totals: `staging.stg_nhl_stats__team_seasons`.
+- Records, refreshed weekly (Sundays), so the current season can lag by up to a week: draft picks
+  (`fct_draft_picks`, 1963 on), trophies and award results (`dim_trophies`, `fct_award_results`), playoff series
+  (`fct_playoff_series`, `bridge_playoff_series_games`), official team season totals (`fct_team_seasons`).
 
 **Not loaded:**
-- **Skater statistics per game** (box scores) and **shots** (play-by-play). Season totals answer "most in a
-  season" and career questions; "most in one game", streaks and anything per game cannot be answered yet.
-- Skater totals split by team for players who changed teams mid-season.
-- Team game statistics (shots, power play, penalties), play-by-play, shifts, fights, game duration.
+- **Shots** and events (play-by-play): shot locations, shot attempts, hits, blocks, giveaways, takeaways.
+- Team game statistics (shots, power play, penalties), shifts, fights, game duration.
 - Players' seasons in other leagues (junior, college), arena locations and travel.
 
 ## Tables
@@ -47,6 +46,14 @@ other tables.
 - `marts.fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
 - `marts.dim_teams`: one row per team identity, with `franchise_id` (the NHL's) and `lineage_id` (ours).
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
+- `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
+  game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.
+- `marts.fct_draft_picks` (`overall_pick`, `round_number`, `team_id`, `player_id`), `marts.fct_award_results`
+  (`is_winner` true for winners; finalists and runners-up are also listed, and the Stanley Cup rows name every
+  player engraved on the Cup), `marts.dim_trophies`.
+- `marts.fct_playoff_series`: one row per NHL playoff series, `winner_team_id` and `loser_team_id`; `has_winner` is
+  false for the unfinished 1919 Final. `is_final_round` marks the Stanley Cup Final.
+- `marts.fct_team_seasons`: the NHL's official regular-season team totals (wins, points, goals for and against).
 - `marts.dim_players`: one row per person. Use `is_nhl_player` (D15): the list also holds people who never played.
 - `marts.dim_seasons`, `marts.dim_games`: season facts and rules; game date, type, teams and venue.
 - `marts.goalie_records_vs_above_500`: question G01, still a DRAFT.
@@ -64,7 +71,8 @@ other tables.
 - **Playoffs before 1926-27:** games against non-NHL teams (Vancouver, Seattle, Victoria, Edmonton, Calgary) have
   no credited skater or goalie statistics. Say so when early playoff totals matter.
 - **1987-88 playoffs:** the suspended Final game of 1988-05-24 counts in player statistics but is not in the games
-  tables, so Edmonton and Boston players have one more game than their team.
+  tables, so Edmonton and Boston players have one more game than their team. In `fct_skater_games` its 36 rows
+  (game 1987030999) have an empty `team_id`.
 - A shootout goal is not a goal in player totals.
 
 ## Stat terms (full list in the repo's `docs/definitions.md`, "Stat terms")

@@ -78,4 +78,4 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
-- Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table test_type:singular --exclude tag:records --indirect-selection empty --no-populate-cache`
+- Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records --indirect-selection empty --no-populate-cache`

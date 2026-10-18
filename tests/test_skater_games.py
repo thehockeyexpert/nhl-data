@@ -79,6 +79,14 @@ def test_recent_mode_fetches_the_last_dates_before_today(con):
     assert [re.findall(r'gameDate>="([^"]+)"', u)[0] for u in client.urls] == ["2025-10-12", "2025-10-13", "2025-10-14"]
 
 
+def test_recent_mode_loads_a_never_loaded_season_in_full_first(con):
+    skater_games.run_season(20252026, FakeStats(), con, recent_days=3, verbose=False)
+    assert is_season_done(con, skater_games.JOB, 20252026)
+    client = FakeStats()
+    skater_games.run_season(20252026, client, con, recent_days=3, verbose=False)
+    assert len(client.urls) == 4  # now only the last dates: 3 regular-season dates and the 1 playoff date
+
+
 def test_rerun_with_unchanged_content_adds_nothing(con):
     skater_games.run(20252026, FakeStats(), con, verbose=False)
     assert skater_games.run(20252026, FakeStats(), con, verbose=False) == {skater_games.SKATER_GAME_TABLE: [2, 0]}

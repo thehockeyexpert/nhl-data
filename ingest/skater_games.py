@@ -3,6 +3,7 @@
 Run one season with:   uv run python -m ingest.skater_games --season 20252026
 Many seasons with:     uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918
 Nightly, recent dates: uv run python -m ingest.skater_games --season 20262027 --recent-days 3   (the 3 game dates before today)
+                       A season that has never been loaded in full is loaded in full first, so a new season needs no extra step.
 
 The stats API's skater summary with isGame=true gives one row per player per game. It returns at most 10,000 rows
 per request, so a season is fetched in windows of game dates. The windows come from the season's game list in
@@ -16,7 +17,7 @@ from datetime import date, timedelta
 
 from ingest.goalies import ROW_CAP
 from ingest.nhl_api import NhlApiClient
-from ingest.raw_loader import connect, ensure_log, ensure_table, load_response, log_season_done
+from ingest.raw_loader import connect, ensure_log, ensure_table, is_season_done, load_response, log_season_done
 from ingest.schedule import GAME_TABLE, season_id, totals
 
 JOB = "skater_games"
@@ -120,6 +121,18 @@ def run_recent(season, client, con, days, today=None, verbose=True):
     return load_windows(season, client, con, windows, verbose)
 
 
+def run_season(season, client, con, recent_days=None, verbose=True):
+    """The last `recent_days` game dates, or the whole season if it was never loaded in full (or no recent_days)."""
+    ensure_log(con)
+    if recent_days and is_season_done(con, JOB, season):
+        return run_recent(season, client, con, recent_days, verbose=verbose)
+    if recent_days and verbose:
+        print(f"  {season} has not been loaded in full yet: loading the whole season first")
+    counts = run(season, client, con, verbose)
+    log_season_done(con, JOB, season, *totals(counts))
+    return counts
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--season", type=season_id, required=True, help="for example 20252026")
@@ -129,12 +142,7 @@ def main():
     con = connect()
     client = NhlApiClient()
     try:
-        if args.recent_days:
-            counts = run_recent(args.season, client, con, args.recent_days)
-        else:
-            ensure_log(con)
-            counts = run(args.season, client, con)
-            log_season_done(con, JOB, args.season, *totals(counts))
+        counts = run_season(args.season, client, con, args.recent_days)
         print(f"  requests {totals(counts)[0]}, new rows {totals(counts)[1]}")
     finally:
         client.close()

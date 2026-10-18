@@ -196,17 +196,26 @@ questions:
     theme: player
     question: Who led the NHL in goals in 2025-26?
     difficulty: easy
-    needs: [skater_game_stats]
-    answerable_now: false
-    definitions: []
+    needs: [fct_skater_seasons]
+    answerable_now: true
+    definitions: [D11, D15]
+    review_note: >-
+      Reference by direct SQL (2026-10-18), regular season: Nathan MacKinnon, 53 goals in 80 games; then Cole Caufield
+      51 and Connor McDavid 48. No goalie scored. Not checked against an outside source; the per-game rows add up to
+      these season totals (check skater_games_match_seasons).
   - id: P02
     source: claude_draft
     theme: player
     question: What is the most points by a player in one game?
     difficulty: easy
-    needs: [skater_game_stats]
-    answerable_now: false
-    definitions: [D11]
+    needs: [fct_skater_games]
+    answerable_now: true
+    definitions: [D11, D15]
+    review_note: >-
+      Reference by direct SQL (2026-10-18), regular season: Darryl Sittler, 10 points (6 goals, 4 assists) for Toronto
+      against Boston on 1976-02-07, the NHL record as widely published. Next: 8 points, by Maurice Richard
+      (1944-12-28), Bert Olmstead (1954-01-09), Tom Bladon (1977-12-11) and others. Playoffs: 8 points, by Patrik
+      Sundstrom (1988-04-22) and Mario Lemieux (1989-04-25).
   - id: P03
     source: claude_draft
     theme: player
@@ -220,33 +229,52 @@ questions:
     theme: player
     question: How many career games and points per game does Connor McDavid have?
     difficulty: easy
-    needs: [skater_game_stats, player_bios]
-    answerable_now: false
-    definitions: [D11]
+    needs: [fct_skater_seasons]
+    answerable_now: true
+    definitions: [D05, D11]
+    review_note: >-
+      Changes every game, so check against finished seasons. Reference by direct SQL (2026-10-18), regular season:
+      through 2024-25, 712 games and 1,082 points (1.52 per game), matching his widely published totals; through
+      2025-26, 794 games and 1,220 points (1.537 per game, 138 points in 82 games in 2025-26). An answer should add
+      the 2026-27 games so far and say the season is in progress.
   - id: P05
     source: claude_draft
     theme: player
     question: Which defencemen averaged the most ice time in 2025-26?
     difficulty: easy
-    needs: [skater_game_stats]
-    answerable_now: false
-    definitions: [D05]
+    needs: [fct_skater_seasons]
+    answerable_now: true
+    definitions: [D05, D11]
+    review_note: >-
+      Reference by direct SQL (2026-10-18), regular season, defencemen (position D) with at least half the team
+      games (41 of 82): Quinn Hughes 27:44 a game (74 games), Zach Werenski 26:37 (75), Moritz Seider 25:40 (82), Miro
+      Heiskanen 25:28 (77), Filip Hronek 25:01 (82). Not checked against an outside source.
   - id: P06
     source: claude_draft
     theme: player
     question: Which Swedish-born players have scored the most NHL goals?
     difficulty: medium
-    needs: [skater_game_stats, player_bios]
-    answerable_now: false
-    definitions: []
+    needs: [fct_skater_seasons, dim_players]
+    answerable_now: true
+    definitions: [D11, D14, D15, D24]
+    review_note: >-
+      Reference by direct SQL (2026-10-18), regular season, born in Sweden: Mats Sundin 564 goals (1,346 games),
+      Daniel Alfredsson 444, Markus Naslund 395, Daniel Sedin 393, Filip Forsberg 358, Mika Zibanejad 350. Sundin's
+      564 is his widely published career total.
   - id: P07
     source: claude_draft
     theme: player
     question: What are the highest-scoring rookie seasons?
     difficulty: hard
-    needs: [skater_game_stats, player_bios]
-    answerable_now: false
-    definitions: [D09]
+    needs: [fct_skater_seasons, dim_players]
+    answerable_now: true
+    definitions: [D09, D11]
+    review_note: >-
+      Reference by direct SQL (2026-10-18), regular season, D09 counted from NHL games: Wayne Gretzky 137 points
+      (1979-80), Teemu Selanne 132 (1992-93, 76 goals), Peter Stastny 109 (1980-81), Alex Ovechkin 106 (2005-06), Mike
+      Rogers 105 (1979-80), Dale Hawerchuk 103 (1981-82), Sidney Crosby 102 (2005-06), Joe Juneau 102 (1992-93). A
+      right answer must say that Gretzky and Rogers came from the WHA and were not rookies under the NHL rule, so
+      Selanne's 132 is the NHL rookie record, as widely published.
   - id: P08
     source: claude_draft
     theme: player
@@ -358,9 +386,15 @@ questions:
     theme: streaks
     question: What is the longest point streak by a player?
     difficulty: hard
-    needs: [skater_game_stats]
-    answerable_now: false
-    definitions: [D06]
+    needs: [fct_skater_games]
+    answerable_now: true
+    definitions: [D06, D11]
+    review_note: >-
+      Golden question for fct_skater_games (2026-10-18). Reference by direct SQL, regular season, consecutive games
+      the player played (missed games skipped), within one season (D06): Wayne Gretzky, 51 games,
+      1983-10-05 to 1984-01-27 (1983-84); then Mario Lemieux 46 (1989-90) and Gretzky 39 (1985-86). Matches the
+      NHL record as widely published. Counted across seasons, Gretzky's run reaches 60 games (from 1983-03-13); an
+      answer should use the single-season figure and may mention the other.
 
   # --- current season (2026-27)
   - id: C01
@@ -644,3 +678,30 @@ questions:
     flags: [ambiguous]
     proposed_wording: Which goalie has been credited with the most NHL goals, regular season and playoffs combined?
     review_note: Under the default scope (D11) this would count the regular season only; famous goalie goals include playoff ones.
+  - id: P20
+    source: claude_draft
+    theme: player
+    question: What is the most goals scored by a player in one game?
+    difficulty: easy
+    needs: [fct_skater_games]
+    answerable_now: true
+    definitions: [D11]
+    review_note: >-
+      Golden question for fct_skater_games (2026-10-18). Reference by direct SQL, regular season: Joe Malone, 7 goals
+      for the Quebec Bulldogs against the Toronto St. Patricks on 1920-01-31 (1919-20), the NHL record as widely
+      published. Next: 6 goals by Newsy Lalonde (1920-01-10), Malone again (1920-03-10) and others. No goalie has
+      more than 1 goal in a game. Playoffs: 5 goals, shared by Newsy Lalonde (1919), Maurice Richard (1944), Darryl
+      Sittler and Reggie Leach (1976) and Mario Lemieux (1989).
+  - id: P21
+    source: claude_draft
+    theme: player
+    question: How many goals and points did Wayne Gretzky score for each team in 1995-96, the season he was traded?
+    difficulty: medium
+    needs: [fct_skater_games, dim_teams]
+    answerable_now: true
+    definitions: [D11]
+    review_note: >-
+      Golden question for fct_skater_games (2026-10-18), a team split that fct_skater_seasons cannot give. Reference
+      by direct SQL, regular season: Los Angeles Kings 62 games, 15 goals, 66 assists, 81 points; St. Louis Blues 18
+      games, 8 goals, 13 assists, 21 points. Together 80 games, 23 goals, 79 assists, 102 points, equal to his
+      fct_skater_seasons row.

@@ -59,7 +59,13 @@ other tables.
 - `marts.goalie_records_vs_above_500`: question G01, still a DRAFT.
 
 ## Players and scoring
-- **"Most goals" (or points) includes goalies' goals** (D15): add `fct_goalie_games.goals` to the skater totals.
+- **Identify a player by `player_id`, never by name alone.** Look the name up in `dim_players` first; if several
+  NHL players share it, say so and ask or show each one.
+- **"Most goals", "most assists" and "most points" include goalies** (D15): add `fct_goalie_games.goals` and
+  `assists` to the skater totals. Questions about skaters only leave goalies out.
+- **"Canadian", "Swedish" and the like (D24):** born in that country (`birth_country`), not nationality.
+- **Totals for one team when a player changed teams (D27):** sum `fct_skater_games` (or `fct_goalie_games`) by
+  `team_id`; `fct_skater_seasons` combines all of a season's teams in one row.
 - **Where a player is from (D14):** birthplace as the NHL records it. Group by **`birth_city_standard`**, which
   merges spellings of the same place (Göteborg and Gothenburg, Saint Paul and St. Paul), together with
   `birth_state_province` and `birth_country`, so towns that share a name stay separate. Countries are three-letter
@@ -106,6 +112,7 @@ other tables.
 - Our lineage differs from the NHL for the original Winnipeg Jets (1979-80 to 1995-96): we put them with the
   Coyotes, the NHL puts them with today's Jets. Say so when either club is involved.
 - Utah is a separate lineage from the Coyotes.
+- For franchise-record questions, also give the `franchise_id` figure where it differs from `lineage_id` (D03).
 
 ## Results, ties and overtime (common mistakes)
 - Ties exist only up to 2003-04 (`is_tie`). There was no 2004-05 season (lockout).
@@ -126,7 +133,22 @@ other tables.
 - **Best record (D23):** win percentage W / (W + L + T + OTL) is the headline, with points percentage
   (2W + T + OTL) / (2 x decisions) beside it.
 - **Minimums (D05):** G01 needs at least 50 qualifying decisions; report the 100-decision version too and say
-  which is shown.
+  which is shown. Other rates, regular season, where "team games" is the most games any team played that season:
+  skater career 400 games; skater season half the team games; shooting % also shots at least equal to team games
+  (season) or 1,000 shots (career); goalie season one third of the team games; goalie career 250 games, with
+  career save % only over seasons from 1955-56. Never prorate a shortened season (D29).
+- **Streaks (D06):** a player's streak counts consecutive games the player played (missed games skipped), within
+  one regular season; a streak carried across seasons may be given as extra. A team winning streak counts wins of
+  any kind; a loss, overtime or shootout loss, or tie ends it.
+- **Rookie (D09):** the NHL's Calder rule from NHL games: no earlier season over 25 games, not 6 or more games in
+  each of two earlier seasons, and from 1990-91 under 26 on September 15. We have no other pro leagues: say so,
+  and name WHA arrivals (Gretzky and Mike Rogers in 1979-80 were not rookies for the NHL).
+- **Age (D25):** youngest or oldest, exact age on the game date; "age in a season", age on February 1.
+- **Active player (D26):** played a game this season or last season.
+- **Decades (D28):** "the 1980s" is 1980-81 to 1989-90.
+- **One-goal games (D07):** overtime wins count, shootout games do not unless asked. **Winning record (D13):** more
+  wins than all losses (overtime and shootout losses included), ties ignored. **Hat trick (D16):** 3 or more goals
+  in a game. **Back-to-back (D08):** played the previous calendar day.
 - **Standings points (D02):** 2 for a win, 1 for a tie, 1 for an overtime or shootout loss where that season's
   rules give it.
 

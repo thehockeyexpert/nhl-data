@@ -1,9 +1,10 @@
-"""Load many seasons, newest first: schedule and results (default), goalie games, skater seasons or skater games.
+"""Load many seasons, newest first: schedule and results (default), goalie games, skater seasons, skater games or standings.
 
 Run it with:  uv run python -m ingest.backfill --from 20242025 --to 19171918
               uv run python -m ingest.backfill --job goalies --from 20262027 --to 19171918
               uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918
               uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918
+              uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918
 
 Safe to stop (Ctrl+C) and restart with the same command: seasons that already
 finished are skipped without any requests, and a half-finished season is redone
@@ -14,13 +15,19 @@ import argparse
 import sys
 import time
 
-from ingest import goalies, schedule, skater_games, skaters
+from ingest import goalies, schedule, skater_games, skaters, standings
 from ingest.nhl_api import NhlApiClient, NhlApiError
 from ingest.raw_loader import connect, ensure_log, is_season_done, log_season_done
 from ingest.schedule import season_id, totals
 
 # --job name -> module with JOB and run(season, client, con, verbose)
-JOBS = {"schedule": schedule, "goalies": goalies, "skaters": skaters, "skater_games": skater_games}
+JOBS = {
+    "schedule": schedule,
+    "goalies": goalies,
+    "skaters": skaters,
+    "skater_games": skater_games,
+    "standings": standings,
+}
 
 
 def seasons_between(newest, oldest):

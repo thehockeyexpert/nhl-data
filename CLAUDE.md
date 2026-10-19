@@ -16,7 +16,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 ## Layers (schemas in the single MotherDuck database `nhl`)
 - `raw`: JSON exactly as received, plus `source_url` and `loaded_at`. Append-only. Written only by `ingest/`.
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.
-- `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`).
+- `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`, `dim_team_season`).
 - `reference`: dbt seeds, small hand-written CSVs in `dbt/seeds/` holding our own decisions (labels, overrides, exceptions). Never NHL data.
 - `checks`: `check_failures` (every row that breaks a data check), `season_status` (which seasons count as finished) and `season_in_progress_notes` (postponed or pending games; never fails).
 
@@ -74,6 +74,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest skater season totals, many seasons, resumable: `uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918`
 - Ingest per-game skater stats, many seasons, resumable: `uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918`; nightly, the last game dates: `uv run python -m ingest.skater_games --season 20262027 --recent-days 3`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
+- Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
 - Python tests: `uv run pytest`

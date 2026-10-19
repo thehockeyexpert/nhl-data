@@ -1002,6 +1002,72 @@ skater_game_in_games as (
     where team_id is null
     group by season, game_id
 
+),
+
+team_season_unique as (
+
+    -- Each team appears once per season in dim_team_season.
+    select
+        'team_season_unique' as check_name,
+        season,
+        null::bigint as game_id,
+        'team listed ' || count(*) || ' times in dim_team_season' as detail,
+        team_id
+    from {{ ref('dim_team_season') }}
+    group by season, team_id
+    having count(*) > 1
+
+),
+
+team_season_resolves as (
+
+    -- Every team in the standings matches, by abbreviation or name, a team that played a regular-season game that season.
+    select
+        'team_season_resolves' as check_name,
+        season,
+        null::bigint as game_id,
+        'standings abbreviation ' || team_abbrev || ' matches no team that season' as detail,
+        null::integer as team_id
+    from {{ ref('dim_team_season') }}
+    where team_id is null
+
+),
+
+team_season_covered as (
+
+    -- Every team with a regular-season game has a conference and division row for that season.
+    select
+        'team_season_covered' as check_name,
+        per_team.season,
+        null::bigint as game_id,
+        per_team.team_abbrev || ' has regular-season games but no row in dim_team_season' as detail,
+        per_team.team_id
+    from per_team
+    where not exists (
+        select 1 from {{ ref('dim_team_season') }} as team_seasons
+        where team_seasons.season = per_team.season and team_seasons.team_id = per_team.team_id)
+
+),
+
+team_season_groups_match_rules as (
+
+    -- A team has a conference exactly when the NHL's rules say conferences were in use that season, and the same
+    -- for divisions. A season missing from the rules fails too: rerun ingest.records.
+    select
+        'team_season_groups_match_rules' as check_name,
+        season,
+        null::bigint as game_id,
+        team_abbrev || ': conference ' || coalesce(conference_name, 'empty')
+            || ' with conferences in use ' || coalesce(is_conferences_in_use::varchar, 'unknown')
+            || ', division ' || coalesce(division_name, 'empty')
+            || ' with divisions in use ' || coalesce(is_divisions_in_use::varchar, 'unknown') as detail,
+        team_id
+    from {{ ref('dim_team_season') }}
+    where is_conferences_in_use is null
+       or is_divisions_in_use is null
+       or (conference_name is not null) != is_conferences_in_use
+       or (division_name is not null) != is_divisions_in_use
+
 )
 
 select * from season_facts_present
@@ -1069,3 +1135,11 @@ union all
 select * from skater_games_match_seasons
 union all
 select * from skater_game_in_games
+union all
+select * from team_season_unique
+union all
+select * from team_season_resolves
+union all
+select * from team_season_covered
+union all
+select * from team_season_groups_match_rules

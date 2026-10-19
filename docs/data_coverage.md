@@ -233,6 +233,22 @@ What we checked on 2026-10-14:
     [hockeyanswered.com](https://hockeyanswered.com/what-is-the-row-stat-in-hockey/)) explain what ROW is and
     that it was the first tiebreaker before 2019-20, but neither gives the season it was introduced.
 
+## Conferences and divisions
+
+Each team's conference and division per season come from the NHL's standings on the season's first standings day
+(`api-web.nhle.com/v1/standings/{date}`, `dim_team_season`). Observed on 2026-10-19, 109 seasons, 1,791 team-seasons:
+
+- **No divisions in 38 seasons:** 1917-18 to 1925-26 and 1938-39 to 1966-67. Canadian and American divisions from
+  1926-27 to 1937-38; East and West divisions with no conferences from 1967-68 to 1973-74.
+- **No conferences in 58 seasons:** every season to 1973-74, and 2020-21. Prince of Wales and Clarence Campbell
+  conferences, then Eastern and Western.
+- **2020-21:** four divisions with sponsors' names (MassMutual East, Discover Central, Honda West, Scotia North)
+  and no conferences.
+- These empty values agree with the NHL's own `conferencesInUse` and `divisionsInUse` flags in every season
+  (check `team_season_groups_match_rules`).
+- **Different abbreviation:** the standings list the Cleveland Barons (1976-77, 1977-78) as `CBN`; the games use
+  `CLE`. They are matched to team 49 by the team's full name. Unexplained.
+
 ## Venue names
 
 - Observed: four venue names arrive garbled from the NHL's weekly schedule, for example `Le Colis√©e` for Le Colisée and `Sportovn√≠ hala` for Sportovní hala. 676 games are affected. They are stored as received.

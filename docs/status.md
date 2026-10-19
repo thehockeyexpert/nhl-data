@@ -76,6 +76,13 @@ Last updated: 2026-10-15
     `config.materialized:incremental` in the nightly selection (48 of 48 pass). In recent mode a season never loaded
     in full is loaded in full first, so a new `CURRENT_SEASON` needs no extra step.
   - Guide version 4 (2026-10-18): coverage lists `fct_skater_games` and the records tables.
+- **Conferences and divisions per season (2026-10-19).** `ingest.standings` (110 requests in 1.8 min, standings on each
+  season's first standings day); `stg_nhl_web__standings` and `dim_team_season` (1,791 team-seasons, 109 seasons,
+  including 32 teams in 2026-27). Divisions are empty in 38 seasons, conferences in 58 (`docs/data_coverage.md`).
+  - New checks `team_season_unique`, `team_season_resolves`, `team_season_covered`, `team_season_groups_match_rules`,
+    each proven to fail on a throwaway local copy. No exceptions needed.
+  - In the daily run: `ingest.standings --season "$SEASON"` (2 requests, nothing stored after the first run), and
+    `dim_team_season` in the nightly build (53 of 53 pass on 2026-10-19).
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 

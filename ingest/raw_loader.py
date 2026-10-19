@@ -19,9 +19,11 @@ _TABLE_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
 
 # Fields that change without the data changing. They are still stored, exactly as received, but a response
 # that differs only in these fields does not count as new. The weekly schedule's ticket links change almost
-# every day (20 of 21 changed weeks on 2026-10-15) and no dbt model reads them.
+# every day (20 of 21 changed weeks on 2026-10-15) and no dbt model reads them. The standings carry the time they
+# were produced, which changed between two loads of the same date minutes apart (2026-10-19).
 IGNORED_WHEN_COMPARING = {
     "nhl_web__schedule": frozenset({"ticketsLink", "ticketsLinkFr"}),
+    "nhl_web__standings": frozenset({"standingsDateTimeUtc"}),
 }
 
 

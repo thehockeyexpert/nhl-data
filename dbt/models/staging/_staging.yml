@@ -172,6 +172,19 @@ models:
         description: Eight-digit season ID.
         data_tests: [unique, not_null]
 
+  - name: stg_nhl_web__standings
+    description: >
+      One row per team per season from the NHL's standings on the season's first standings day, with the team's
+      conference and division that season. Teams are named by abbreviation only; dim_team_season adds the team_id.
+    columns:
+      - name: team_season_abbrev_key
+        description: season and team_abbrev joined.
+        data_tests: [unique, not_null]
+      - name: conference_name
+        description: The conference, for example Eastern or Prince of Wales. Empty in seasons without conferences.
+      - name: division_name
+        description: The division, for example Atlantic or Smythe. Empty in seasons without divisions.
+
   - name: stg_nhl_stats__skater_games
     description: >
       One row per skater per game, regular season and playoffs, from the NHL stats API's skater summary (isGame=true).

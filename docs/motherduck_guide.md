@@ -27,7 +27,8 @@ other tables.
   the skater's team in that game. Answers "most in one game", streaks, and totals for one team when a player changed teams.
   Same early-era gaps as the season totals (shots and plus-minus from 1959-60, ice time and faceoffs from 1997-98).
 - Players, with birthplace and `is_nhl_player`: `dim_players`. Seasons: `dim_seasons`. Games: `dim_games`.
-  Teams, franchises and lineages: `dim_teams`.
+  Teams, franchises and lineages: `dim_teams`. Each team's conference and division per season, 1917-18 to the
+  current season: `dim_team_season`.
 - Records, refreshed weekly (Sundays), so the current season can lag by up to a week: draft picks
   (`fct_draft_picks`, 1963 on), trophies and award results (`dim_trophies`, `fct_award_results`), playoff series
   (`fct_playoff_series`, `bridge_playoff_series_games`), official team season totals (`fct_team_seasons`).
@@ -45,6 +46,8 @@ other tables.
 - `marts.fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
 - `marts.fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
 - `marts.dim_teams`: one row per team identity, with `franchise_id` (the NHL's) and `lineage_id` (ours).
+- `marts.dim_team_season`: one row per team per regular season, with `conference_name` and `division_name`. Join on
+  `team_id` and `season`, never on `team_id` alone.
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
 - `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
   game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.
@@ -113,6 +116,10 @@ other tables.
   Coyotes, the NHL puts them with today's Jets. Say so when either club is involved.
 - Utah is a separate lineage from the Coyotes.
 - For franchise-record questions, also give the `franchise_id` figure where it differs from `lineage_id` (D03).
+- **Conferences and divisions change by era** (`dim_team_season`). Divisions are empty in 38 seasons (1917-18 to
+  1925-26 and 1938-39 to 1966-67) and conferences in 58 (up to 1973-74, and 2020-21). A division name can mean
+  different groups in different eras (Central, Pacific); group by season as well as name. 2020-21 used four
+  one-off sponsor-named divisions (for example Scotia North).
 
 ## Results, ties and overtime (common mistakes)
 - Ties exist only up to 2003-04 (`is_tie`). There was no 2004-05 season (lockout).

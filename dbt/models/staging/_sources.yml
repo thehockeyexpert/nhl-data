@@ -30,6 +30,8 @@ sources:
         description: One row per playoff series game from records.nhl.com, one response.
       - name: nhl_web__standings_season
         description: The standings rules in use each season, from api-web.nhle.com.
+      - name: nhl_web__standings
+        description: One row per season of standings from api-web.nhle.com, taken on the season's first standings day.
       - name: nhl_stats__goalie_game
         description: One row per season and game type (regular season, playoffs) of per-game goalie stats from the NHL stats API.
       - name: nhl_stats__skater_game

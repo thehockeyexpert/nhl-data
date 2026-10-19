@@ -3,6 +3,12 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-19: MotherDuck trial extended to about 2026-11-02
+
+**Fact (from the owner, 2026-10-19).** The Business trial ended on 2026-10-19 and MotherDuck refused connections
+until the owner extended it by 14 days, to about **2026-11-02**. The owner still plans to move to the free plan
+before then. That day's daily run (11:18 UTC) had already passed; nothing else ran during the outage.
+
 ## 2026-10-19: birthplace coordinates from GeoNames
 
 **Decision (owner, 2026-10-19).** `marts.dim_birthplaces` gives each birthplace in `dim_players` a latitude and

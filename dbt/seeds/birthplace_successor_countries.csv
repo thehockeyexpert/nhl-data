@@ -1,0 +1,17 @@
+recorded_country,country,reason
+RUS,BLR,"Observed: places in today's Belarus recorded under RUS (for example Minsk). Unexplained; consistent with Soviet-era birthplaces."
+RUS,UKR,"Observed: places in today's Ukraine recorded under RUS (for example Kiev). Unexplained; consistent with Soviet-era birthplaces."
+RUS,KAZ,"Observed: places in today's Kazakhstan recorded under RUS (for example Karaganda). Unexplained; consistent with Soviet-era birthplaces."
+RUS,LVA,Same rule for the other former Soviet republics.
+RUS,LTU,Same rule for the other former Soviet republics.
+RUS,EST,Same rule for the other former Soviet republics.
+RUS,UZB,Same rule for the other former Soviet republics.
+RUS,MDA,Same rule for the other former Soviet republics.
+RUS,GEO,Same rule for the other former Soviet republics.
+RUS,ARM,Same rule for the other former Soviet republics.
+RUS,AZE,Same rule for the other former Soviet republics.
+RUS,KGZ,Same rule for the other former Soviet republics.
+RUS,TJK,Same rule for the other former Soviet republics.
+RUS,TKM,Same rule for the other former Soviet republics.
+CZE,SVK,"Observed: places in today's Slovakia recorded under CZE (for example Banska Bystrica). Unexplained; consistent with Czechoslovak-era birthplaces."
+SVK,CZE,Same rule in the other direction.

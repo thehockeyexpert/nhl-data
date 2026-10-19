@@ -156,3 +156,39 @@ def is_season_done(con, job, season):
         f"SELECT 1 FROM {LOG_TABLE} WHERE job = ? AND season = ? LIMIT 1", [job, season]
     ).fetchone()
     return row is not None
+
+
+def replace_text_file(con, table, source_url, path):
+    """Store a downloaded text file one row per line, untouched, replacing what the table held before.
+
+    Used for the GeoNames files: they are not NHL responses, are large, and only the newest copy is useful, so the
+    owner decided on 2026-10-19 that a refresh replaces them instead of adding to them (docs/decisions.md).
+    Returns the number of lines stored, or None if the stored copy already has the same content.
+    """
+    with open(path, "rb") as file:
+        file_hash = hashlib.sha256(file.read()).hexdigest()
+    qualified = _qualified(table)
+    con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
+    exists = con.execute(
+        "SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = ?", [RAW_SCHEMA, table]
+    ).fetchone()
+    if exists:
+        stored = con.execute(f"SELECT any_value(file_hash) FROM {qualified} WHERE source_url = ?", [source_url]).fetchone()
+        if stored[0] == file_hash:
+            return None
+    literal_path = str(path).replace("'", "''")
+    # One statement, so the table is never left half-replaced. Lines are split on the newline only; nothing else changes.
+    con.execute(
+        f"""
+        CREATE OR REPLACE TABLE {qualified} AS
+        SELECT
+            ?::VARCHAR AS source_url,
+            now() AS loaded_at,
+            generate_subscripts(lines, 1) AS line_number,
+            unnest(lines) AS line,
+            ?::VARCHAR AS file_hash
+        FROM (SELECT string_split(rtrim(content, chr(10)), chr(10)) AS lines FROM read_text('{literal_path}'))
+        """,
+        [source_url, file_hash],
+    )
+    return con.execute(f"SELECT count(*) FROM {qualified}").fetchone()[0]

@@ -97,3 +97,51 @@ seeds:
       - name: approved_on
         description: The date the owner approved it.
         data_tests: [not_null]
+
+  - name: canada_province_codes
+    description: >
+      Canadian province and territory codes as the NHL records them (ON, QC) with GeoNames' own code for each (ON is
+      08), used to match birthplaces in the right province. Taken from GeoNames' admin1CodesASCII.txt.
+    columns:
+      - name: province_code
+        description: The postal abbreviation, as in dim_players.birth_state_province.
+        data_tests: [unique, not_null]
+      - name: geonames_admin1_code
+        description: GeoNames' admin1 code for the province.
+        data_tests: [unique, not_null]
+
+  - name: birthplace_successor_countries
+    description: >
+      Countries in which a birthplace recorded under another country may be found: a place recorded under RUS is
+      looked for in the other former Soviet republics, CZE and SVK in each other. Used only after every match in the
+      recorded country fails (match_method successor_country). Approved by the owner 2026-10-19.
+    columns:
+      - name: recorded_country
+        description: The country as the NHL records it.
+        data_tests: [not_null]
+      - name: country
+        description: A country to look in instead.
+        data_tests: [not_null]
+
+  - name: birthplace_manual_fixes
+    description: >
+      Coordinates for birthplaces that GeoNames matching cannot find, such as former towns now part of another city.
+      Each row names a GeoNames place or gives coordinates, always with a source. Never guessed.
+    columns:
+      - name: birthplace_key
+        description: The birthplace, as in dim_birthplaces.
+        data_tests: [unique, not_null]
+      - name: geonames_id
+        description: The GeoNames place whose coordinates to use. Empty if latitude and longitude are given instead.
+      - name: latitude
+        description: Only when no GeoNames place fits; from the source.
+      - name: longitude
+        description: Only when no GeoNames place fits; from the source.
+      - name: reason
+        description: Why this place, in plain words.
+        data_tests: [not_null]
+      - name: source
+        description: Where the reason and coordinates come from (a URL).
+        data_tests: [not_null]
+      - name: approved_on
+        description: The date the owner approved the row. Empty while proposed.

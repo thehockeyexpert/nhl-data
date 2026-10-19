@@ -3,6 +3,25 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-10-19: birthplace coordinates from GeoNames
+
+**Decision (owner, 2026-10-19).** `marts.dim_birthplaces` gives each birthplace in `dim_players` a latitude and
+longitude from GeoNames (CC BY 4.0), with no paid or per-request geocoding service.
+- **Sources:** `cities500` (every place with at least 500 people) and the full Canada file `CA.zip`, plus the
+  country list. Not chosen: the US file (71 MB download, 2.2 million rows, about +0.6 points of players).
+- **Refresh replaces, not appends:** the GeoNames raw tables are replaced on each refresh so storage stays flat, an
+  exception to the append-only raw layer. Refreshed by `.github/workflows/geonames.yml` four times a year and on demand;
+  `dim_birthplaces` is rebuilt in the Sunday full build and after a refresh, not nightly.
+- **Matching:** exact name, then alternate name, both in the right country (and province or state for CAN and USA);
+  then a Canadian administrative area of that name (`admin_area`, for former municipalities such as Scarborough); then
+  the name in a successor country (`successor_country`, `seeds/birthplace_successor_countries.csv`). Manual rows
+  (`seeds/birthplace_manual_fixes.csv`, about 25, each with a source) take precedence. Coordinates are never guessed.
+- **Coverage:** a warning, not a failure, below 95% of players with a birth city (97.40% on 2026-10-19).
+- **Cost, measured 2026-10-19:** the load took 12.6 s from the laptop (553,723 lines, about 77 MB of text);
+  rebuilding `dim_birthplaces` 1.3 s. Four refreshes a year and one weekly rebuild: well under 0.1 CU-hours a month,
+  an estimate. Storage about 77 MB of text, likely less once compressed: under 1% of the free plan's 10 GB. GitHub
+  Actions minutes are free for a public repo. **$0 a month.**
+
 ## 2026-10-18: per-game skater stats in the daily run
 
 **Decision (owner, 2026-10-18).** The daily run loads the last 3 game dates of per-game skater stats

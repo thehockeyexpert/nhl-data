@@ -1068,6 +1068,55 @@ team_season_groups_match_rules as (
        or (conference_name is not null) != is_conferences_in_use
        or (division_name is not null) != is_divisions_in_use
 
+),
+
+birthplace_coordinates_valid as (
+
+    -- Latitude is between -90 and 90 and longitude between -180 and 180; a matched place has both, an unmatched one neither.
+    select
+        'birthplace_coordinates_valid' as check_name,
+        null::integer as season,
+        null::bigint as game_id,
+        birthplace_key || ' (' || match_method || '): latitude ' || coalesce(latitude::varchar, 'empty')
+            || ', longitude ' || coalesce(longitude::varchar, 'empty') as detail,
+        null::integer as team_id
+    from {{ ref('dim_birthplaces') }}
+    where not coalesce(latitude between -90 and 90 and longitude between -180 and 180, match_method = 'unmatched')
+       or (match_method = 'unmatched') != (latitude is null or longitude is null)
+
+),
+
+birthplace_manual_fixes_valid as (
+
+    -- Every manual fix names a birthplace that exists and gives it coordinates (a GeoNames place, or its own).
+    select
+        'birthplace_manual_fixes_valid' as check_name,
+        null::integer as season,
+        null::bigint as game_id,
+        'manual fix for ' || fixes.birthplace_key || ': '
+            || case when birthplaces.birthplace_key is null then 'no such birthplace' else 'no coordinates' end as detail,
+        null::integer as team_id
+    from {{ ref('birthplace_manual_fixes') }} as fixes
+    left join {{ ref('dim_birthplaces') }} as birthplaces on birthplaces.birthplace_key = fixes.birthplace_key
+    where birthplaces.birthplace_key is null or birthplaces.latitude is null
+
+),
+
+birthplace_coverage as (
+
+    -- At least 95% of players with a birth city have coordinates. Its test is a warning, not a failure (owner, 2026-10-19).
+    select
+        'birthplace_coverage' as check_name,
+        null::integer as season,
+        null::bigint as game_id,
+        round(100.0 * count(birthplaces.latitude) / count(*), 2) || '% of ' || count(*)
+            || ' players with a birth city have coordinates (minimum 95%)' as detail,
+        null::integer as team_id
+    from {{ ref('dim_players') }} as players
+    left join {{ ref('dim_birthplaces') }} as birthplaces on birthplaces.birthplace_key = players.birthplace_key
+    where players.birthplace_key is not null
+    having count(birthplaces.latitude) < 0.95 * count(*)
+
 )
 
 select * from season_facts_present
@@ -1143,3 +1192,9 @@ union all
 select * from team_season_covered
 union all
 select * from team_season_groups_match_rules
+union all
+select * from birthplace_coordinates_valid
+union all
+select * from birthplace_manual_fixes_valid
+union all
+select * from birthplace_coverage

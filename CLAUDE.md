@@ -8,6 +8,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - The MotherDuck token lives in the env var `motherduck_token`. Never print, log, or write it.
 - Use uv for everything Python (`uv add`, `uv run`). No pip, no manual venvs.
 - No MoneyPuck data for now.
+- GeoNames (birthplace coordinates) is CC BY 4.0: anything public built from it credits GeoNames. No paid or per-request geocoding services.
 - No NHL data files in the public repo: no API responses, extracts or exports, in any format. The repo holds code, docs and our own decisions (seeds) only.
 - Nothing from the NHL is printed in logs: ingest output reports counts, timings and status only, never response content.
 - The NHL endpoints are unofficial and unlicensed, used for personal use only. Public content is facts and figures only: no NHL logos, photos or video. See `docs/decisions.md` (2026-10-14).
@@ -15,8 +16,10 @@ The owner is new to Python and dbt: explain changes in plain language.
 
 ## Layers (schemas in the single MotherDuck database `nhl`)
 - `raw`: JSON exactly as received, plus `source_url` and `loaded_at`. Append-only. Written only by `ingest/`.
+  Exception: the GeoNames tables (`geonames__*`) hold one row per line of the downloaded file and are replaced on each
+  refresh, not appended (decided 2026-10-19).
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.
-- `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`, `dim_team_season`).
+- `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`, `dim_team_season`, `dim_birthplaces`).
 - `reference`: dbt seeds, small hand-written CSVs in `dbt/seeds/` holding our own decisions (labels, overrides, exceptions). Never NHL data.
 - `checks`: `check_failures` (every row that breaks a data check), `season_status` (which seasons count as finished) and `season_in_progress_notes` (postponed or pending games; never fails).
 
@@ -31,7 +34,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `tests/`: Python tests for the ingest code.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
 - `analyst/`: golden questions for checking the conversational query layer.
-- `.github/workflows/`: `daily.yml`, the daily run (11:00 UTC: ingest the current season, then the nightly dbt build; the full build on Sundays). Its logs are public.
+- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (11:00 UTC: ingest the current season, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
 
 ## Conventions
@@ -76,7 +79,8 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
+- Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
-- Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records --indirect-selection empty --no-populate-cache`
+- Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records tag:geonames --indirect-selection empty --no-populate-cache`

@@ -83,6 +83,13 @@ Last updated: 2026-10-15
     each proven to fail on a throwaway local copy. No exceptions needed.
   - In the daily run: `ingest.standings --season "$SEASON"` (2 requests, nothing stored after the first run), and
     `dim_team_season` in the nightly build (53 of 53 pass on 2026-10-19).
+- **Birthplace coordinates (2026-10-19).** `ingest.geonames` (cities500, the Canada file and the country list; 553,723
+  lines in 12.6 s, replaced on each refresh); `dim_birthplaces` (4,442 places) and `dim_players.birthplace_key`.
+  97.40% of players with a birth city matched; 532 places (606 players) unmatched, 25 manual rows (approved 2026-10-19)
+  (`docs/data_coverage.md`, "Birthplace coordinates").
+  - New checks `birthplace_coordinates_valid`, `birthplace_manual_fixes_valid` and `birthplace_coverage` (a warning
+    below 95%), each proven to fail on a throwaway local copy.
+  - Refreshed by `.github/workflows/geonames.yml` (quarterly and on demand); rebuilt in the Sunday full build, not nightly.
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 

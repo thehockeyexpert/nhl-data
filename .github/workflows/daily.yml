@@ -86,12 +86,13 @@ jobs:
           echo "dbt build: $build"
 
       # Incremental models (fct_skater_games and its staging) only read raw rows loaded since the last build.
+      # dim_birthplaces (tag geonames) is rebuilt on Sundays and by geonames.yml, not nightly.
       - name: Nightly dbt build (all tables and the data checks)
         if: steps.choose.outputs.build == 'nightly'
         run: >
           uv run dbt build --project-dir dbt --profiles-dir dbt
           --select config.materialized:table config.materialized:incremental test_type:singular
-          --exclude tag:records --indirect-selection empty --no-populate-cache
+          --exclude tag:records tag:geonames --indirect-selection empty --no-populate-cache
 
       - name: Full dbt build (seeds, views, tables and every test)
         if: steps.choose.outputs.build == 'full'

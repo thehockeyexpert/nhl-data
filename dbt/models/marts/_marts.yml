@@ -177,6 +177,15 @@ models:
         description: State or province code, recorded only for players born in Canada or the United States.
       - name: birth_country
         description: Three-letter country code, for example CAN, USA, SWE.
+      - name: birthplace_key
+        description: >
+          The birthplace as country|state_province|birth_city_standard, for example CAN|ON|Toronto. Joins to
+          dim_birthplaces for latitude and longitude. Empty when there is no birth city.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_birthplaces')
+                field: birthplace_key
       - name: first_nhl_season
         description: First season with an NHL regular-season or playoff game.
       - name: is_in_player_list
@@ -489,3 +498,40 @@ models:
         description: True if the NHL used conferences that season (the NHL's standings rules).
       - name: is_divisions_in_use
         description: True if the NHL used divisions that season (the NHL's standings rules).
+
+  - name: dim_birthplaces
+    description: >
+      One row per distinct birthplace in dim_players (country, state or province, standard city), with latitude and
+      longitude from GeoNames (geonames.org, CC BY 4.0: credit GeoNames on anything public). Join from dim_players on
+      birthplace_key. match_method says how each place was found; unmatched places have no coordinates
+      (docs/data_coverage.md, "Birthplace coordinates"). Rebuilt weekly, so a brand-new birthplace can lag by a week.
+    columns:
+      - name: birthplace_key
+        description: country|state_province|city, for example CAN|ON|Toronto or SWE||Gavle.
+        data_tests: [unique, not_null]
+      - name: city
+        description: The standard city name (dim_players.birth_city_standard).
+        data_tests: [not_null]
+      - name: state_province
+        description: The state or province code as the NHL records it.
+      - name: country
+        description: Three-letter country code as the NHL records it.
+        data_tests: [not_null]
+      - name: latitude
+        description: Degrees north (negative is south). Empty when unmatched.
+      - name: longitude
+        description: Degrees east (negative is west). Empty when unmatched.
+      - name: match_method
+        description: >
+          How the coordinates were found: manual (seeds/birthplace_manual_fixes.csv), exact (the GeoNames name),
+          alternate_name, admin_area (a Canadian administrative area such as a former municipality),
+          successor_country (the name found in a successor country, for example Minsk recorded under RUS), or unmatched.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [manual, exact, alternate_name, admin_area, successor_country, unmatched]
+      - name: geonames_id
+        description: The GeoNames place used. Empty when unmatched, or for a manual row with coordinates from another source.
+      - name: population
+        description: The GeoNames population of the matched place (today's figure, not at the player's birth).

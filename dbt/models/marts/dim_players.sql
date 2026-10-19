@@ -3,6 +3,7 @@
 -- or as a goalie (a goalie game). The player list also holds people who never played an NHL game.
 -- Birthplace is as the NHL records it (D14). birth_city_standard merges spellings of the same place (accents,
 -- Saint and St., English and local names) listed in dbt/seeds/birth_city_spellings.csv; use it to group by city.
+-- birthplace_key joins to dim_birthplaces for the birthplace's coordinates.
 
 with players as (
 
@@ -66,6 +67,8 @@ select
     coalesce(spellings.city, players.birth_city) as birth_city_standard,
     players.birth_state_province,
     players.birth_country,
+    {{ birthplace_key('players.birth_country', 'players.birth_state_province',
+                      'coalesce(spellings.city, players.birth_city)') }} as birthplace_key,
     players.nationality,
     players.height_inches,
     players.weight_pounds,

@@ -73,3 +73,10 @@ def test_rejects_a_body_that_is_not_json():
     client, _ = make_client([httpx.Response(200, text="<html>oops</html>")])
     with pytest.raises(NhlApiError, match="not valid JSON"):
         client.fetch("https://example.test/a")
+
+
+def test_fetch_bytes_returns_a_file_untouched_and_retries_like_fetch():
+    body = bytes([80, 75, 3, 4]) + b" a zip, not json"
+    client, waits = make_client([httpx.Response(503), httpx.Response(200, content=body)])
+    assert client.fetch_bytes("https://example.test/file.zip") == body
+    assert waits == [2.0, 1.0]  # the retry wait, then the usual pause between requests

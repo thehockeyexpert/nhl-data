@@ -28,7 +28,7 @@ other tables.
   Same early-era gaps as the season totals (shots and plus-minus from 1959-60, ice time and faceoffs from 1997-98).
 - Players, with birthplace and `is_nhl_player`: `dim_players`. Seasons: `dim_seasons`. Games: `dim_games`.
   Teams, franchises and lineages: `dim_teams`. Each team's conference and division per season, 1917-18 to the
-  current season: `dim_team_season`.
+  current season: `dim_team_season`. Birthplace coordinates: `dim_birthplaces` (97.4% of players with a birth city).
 - Records, refreshed weekly (Sundays), so the current season can lag by up to a week: draft picks
   (`fct_draft_picks`, 1963 on), trophies and award results (`dim_trophies`, `fct_award_results`), playoff series
   (`fct_playoff_series`, `bridge_playoff_series_games`), official team season totals (`fct_team_seasons`).
@@ -46,6 +46,9 @@ other tables.
 - `marts.fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
 - `marts.fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
 - `marts.dim_teams`: one row per team identity, with `franchise_id` (the NHL's) and `lineage_id` (ours).
+- `marts.dim_birthplaces`: one row per birthplace with `latitude` and `longitude` (GeoNames, CC BY 4.0: credit
+  GeoNames when showing them). Join from `dim_players` on `birthplace_key`. `match_method` 'unmatched' has no
+  coordinates; say how many players a map leaves out. Former towns share a successor's point (Fort William at Thunder Bay).
 - `marts.dim_team_season`: one row per team per regular season, with `conference_name` and `division_name`. Join on
   `team_id` and `season`, never on `team_id` alone.
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.

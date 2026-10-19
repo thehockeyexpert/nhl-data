@@ -172,6 +172,34 @@ models:
         description: Eight-digit season ID.
         data_tests: [unique, not_null]
 
+  - name: stg_geonames__cities500
+    description: >
+      One row per GeoNames place with at least 500 people, worldwide (cities500). Used for birthplace coordinates.
+      GeoNames, CC BY 4.0.
+    columns:
+      - name: geonames_id
+        description: GeoNames' ID for the place.
+        data_tests: [unique, not_null]
+
+  - name: stg_geonames__ca
+    description: >
+      One row per GeoNames feature in Canada, including small villages, neighbourhoods and former municipalities, and
+      also lakes and hills (feature_class P is populated places, A administrative areas). GeoNames, CC BY 4.0.
+    columns:
+      - name: geonames_id
+        description: GeoNames' ID for the feature.
+        data_tests: [unique, not_null]
+
+  - name: stg_geonames__country_info
+    description: One row per country in GeoNames' country list, with its two- and three-letter ISO codes.
+    columns:
+      - name: country_code
+        description: Two-letter ISO code, as GeoNames uses it.
+        data_tests: [unique, not_null]
+      - name: country_iso3
+        description: Three-letter ISO code, as the NHL uses it.
+        data_tests: [unique, not_null]
+
   - name: stg_nhl_web__standings
     description: >
       One row per team per season from the NHL's standings on the season's first standings day, with the team's

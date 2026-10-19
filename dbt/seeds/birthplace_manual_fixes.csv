@@ -1,0 +1,26 @@
+birthplace_key,geonames_id,latitude,longitude,reason,source,approved_on
+CAN|ON|Fort William,6166142,,,"Former city, amalgamated with Port Arthur into Thunder Bay in January 1970. Placed at Thunder Bay.",https://en.wikipedia.org/wiki/Fort_William%2C_Ontario,2026-10-19
+CAN|ON|Port Arthur,6166142,,,"Former city, amalgamated with Fort William into Thunder Bay in January 1970. Placed at Thunder Bay.",https://en.wikipedia.org/wiki/Port_Arthur%2C_Ontario,2026-10-19
+CAN|QC|Valleyfield,6139289,,,Former name of Salaberry-de-Valleyfield.,https://www.thecanadianencyclopedia.ca/en/article/salaberry-de-valleyfield,2026-10-19
+CAN|QC|Noranda,6128577,,,"Former city, merged with Rouyn into Rouyn-Noranda in 1986. Placed at Rouyn-Noranda.",https://en.wikipedia.org/wiki/Rouyn-Noranda,2026-10-19
+CAN|ON|Berlin,5992996,,,Kitchener was named Berlin until 1916.,https://en.wikipedia.org/wiki/Kitchener%2C_Ontario,2026-10-19
+CAN|QC|Rouyn,6128577,,,"Former city, merged with Noranda into Rouyn-Noranda in 1986. Placed at Rouyn-Noranda.",https://en.wikipedia.org/wiki/Rouyn-Noranda,2026-10-19
+CAN|QC|Shawinigan Falls,6145489,,,Shawinigan was named Shawinigan Falls until 1958.,https://en.wikipedia.org/wiki/Shawinigan,2026-10-19
+SWE||Järfälla,2703396,,,"Järfälla is a municipality; placed at its seat, Jakobsberg.",https://en.wikipedia.org/wiki/J%C3%A4rf%C3%A4lla_Municipality,2026-10-19
+USA|MI|Shelby Township,,42.67083,-83.03306,"Shelby Charter Township, Macomb County. Not in the GeoNames files we load; coordinates from the source.",https://en.wikipedia.org/wiki/Shelby_Charter_Township%2C_Michigan,2026-10-19
+CAN|MB|Foxwarren,5957178,,,GeoNames lists Foxwarren as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/5957178,2026-10-19
+CAN|MB|Nesbitt,6087096,,,GeoNames lists Nesbitt (Manitoba) as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/6087096,2026-10-19
+CAN|ON|Holland Landing,5976144,,,GeoNames lists Holland Landing as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/5976144,2026-10-19
+CAN|ON|Penetang,6100932,,,Penetanguishene is sometimes shortened to Penetang.,https://en.wikipedia.org/wiki/Penetanguishene,2026-10-19
+CAN|ON|Smith Falls,6150174,,,Spelling only: Smiths Falls.,https://www.geonames.org/6150174,2026-10-19
+CAN|ON|St. Catherines,6155721,,,Spelling only: St. Catharines.,https://www.geonames.org/6155721,2026-10-19
+CAN|ON|St. Mary's,6157062,,,"Spelling only: St. Marys, Ontario.",https://www.geonames.org/6157062,2026-10-19
+CAN|QC|Longueil,6059891,,,Spelling only: Longueuil.,https://www.geonames.org/6059891,2026-10-19
+KAZ||Kamenogorsk,1520316,,,"Short form of Ust-Kamenogorsk (Oskemen); ""Kamenogorsk"" redirects to the city's article.",https://en.wikipedia.org/wiki/Oskemen,2026-10-19
+CAN|ON|New Market,6087701,,,Spelling only: Newmarket.,https://www.geonames.org/6087701,2026-10-19
+CAN|MB|Portage,6111529,,,"Portage la Prairie, nicknamed Portage.",https://en.wikipedia.org/wiki/Portage_la_Prairie,2026-10-19
+CAN|QC|Caughnawaga,13546315,,,Kahnawake was formerly known as Caughnawaga.,https://en.wikipedia.org/wiki/Kahnawake,2026-10-19
+CAN|ON|Manotick,6065401,,,GeoNames lists Manotick as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/6065401,2026-10-19
+CAN|ON|Navan,6086367,,,GeoNames lists Navan as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/6086367,2026-10-19
+CAN|AB|Calahoo,5913315,,,GeoNames lists Calahoo as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/5913315,2026-10-19
+CAN|ON|Lynden,6062307,,,GeoNames lists Lynden (Ontario) as a locality (L.AREA); matching uses only towns and administrative areas.,https://www.geonames.org/6062307,2026-10-19

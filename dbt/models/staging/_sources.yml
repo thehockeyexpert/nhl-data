@@ -30,6 +30,14 @@ sources:
         description: One row per playoff series game from records.nhl.com, one response.
       - name: nhl_web__standings_season
         description: The standings rules in use each season, from api-web.nhle.com.
+      - name: geonames__cities500
+        description: >
+          GeoNames cities500 (every place with at least 500 people), one row per line of the file, untouched. Replaced,
+          not appended, on each refresh (decided 2026-10-19). GeoNames, CC BY 4.0.
+      - name: geonames__ca
+        description: The GeoNames file for Canada, one row per line, untouched. Replaced on each refresh. CC BY 4.0.
+      - name: geonames__country_info
+        description: GeoNames' country list, one row per line, untouched. Replaced on each refresh. CC BY 4.0.
       - name: nhl_web__standings
         description: One row per season of standings from api-web.nhle.com, taken on the season's first standings day.
       - name: nhl_stats__goalie_game

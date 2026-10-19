@@ -59,6 +59,26 @@ seeds:
         reason: varchar
         evidence: varchar
         approved_on: date
+    canada_province_codes:
+      +column_types:
+        province_code: varchar
+        geonames_admin1_code: varchar
+        province_name: varchar
+        source: varchar
+    birthplace_successor_countries:
+      +column_types:
+        recorded_country: varchar
+        country: varchar
+        reason: varchar
+    birthplace_manual_fixes:
+      +column_types:
+        birthplace_key: varchar
+        geonames_id: bigint
+        latitude: double
+        longitude: double
+        reason: varchar
+        source: varchar
+        approved_on: date
     birth_city_spellings:
       +column_types:
         country: varchar

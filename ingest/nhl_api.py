@@ -1,4 +1,4 @@
-"""The one place that makes web requests to the NHL API.
+"""The one place that makes web requests: the NHL API, and the GeoNames files used for birthplace coordinates.
 
 It is deliberately polite: one request at a time, a pause between requests,
 and a patient retry when the server is busy.
@@ -67,6 +67,14 @@ class NhlApiClient:
 
     def fetch(self, url):
         """Return the response body for `url` as text, exactly as the NHL sent it."""
+        return self._checked_json_text(url, self._get(url))
+
+    def fetch_bytes(self, url):
+        """Return the response body for `url` as bytes, for files that are not JSON (such as a zip)."""
+        return self._get(url).content
+
+    def _get(self, url):
+        """The successful response for `url`, after pacing and any retries."""
         for attempt in range(self._max_retries + 1):
             self._pace()
             response = None
@@ -77,7 +85,7 @@ class NhlApiClient:
                 problem = type(error).__name__
             else:
                 if response.status_code == 200:
-                    return self._checked_json_text(url, response)
+                    return response
                 if response.status_code not in RETRY_STATUSES:
                     raise NhlApiError(f"HTTP {response.status_code} for {url}")
                 problem = f"HTTP {response.status_code}"

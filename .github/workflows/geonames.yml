@@ -1,0 +1,52 @@
+# Refresh the GeoNames place files used for birthplace coordinates, then rebuild dim_birthplaces and the checks.
+# GeoNames changes slowly, so this runs four times a year and on demand, not daily (decided 2026-10-19,
+# docs/decisions.md). A refresh replaces the GeoNames tables in raw instead of adding to them.
+#
+# This repo is public, so these logs are public. The ingest prints line counts only, never file content,
+# and nothing from dbt's target/ or logs/ folders is uploaded.
+
+name: geonames
+
+on:
+  schedule:
+    - cron: "0 12 1 1,4,7,10 *"   # 12:00 UTC on the first day of January, April, July and October
+  workflow_dispatch:              # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: read
+
+# Shares the daily run's group, so the two never write to MotherDuck at the same time.
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  geonames:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      motherduck_token: ${{ secrets.MOTHERDUCK_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: astral-sh/setup-uv@v10.2.0
+
+      - name: Install the locked package versions
+        run: uv sync --frozen
+
+      - name: Check the settings
+        run: |
+          if [ -z "$motherduck_token" ]; then echo "The MOTHERDUCK_TOKEN secret is not set."; exit 1; fi
+
+      - name: Python tests (no network, no database)
+        run: uv run pytest
+
+      - name: Load the GeoNames files
+        run: uv run python -m ingest.geonames
+
+      # The birthplace seeds, the GeoNames models and everything after them (check_failures and the data checks).
+      - name: Rebuild birthplaces and the checks
+        run: >
+          uv run dbt build --project-dir dbt --profiles-dir dbt
+          --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+

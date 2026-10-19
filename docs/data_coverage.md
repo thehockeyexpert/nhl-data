@@ -249,6 +249,32 @@ Each team's conference and division per season come from the NHL's standings on 
 - **Different abbreviation:** the standings list the Cleveland Barons (1976-77, 1977-78) as `CBN`; the games use
   `CLE`. They are matched to team 49 by the team's full name. Unexplained.
 
+## Birthplace coordinates
+
+`dim_birthplaces` gives each distinct birthplace (country, state or province, standard city) coordinates from
+GeoNames (`docs/decisions.md`, 2026-10-19). Observed on 2026-10-19, 4,442 birthplaces of 23,297 players with a birth
+city:
+
+| match_method | places | players | share of players |
+|---|---|---|---|
+| exact | 3,745 | 21,787 | 93.52% |
+| alternate_name | 106 | 564 | 2.42% |
+| manual | 25 | 167 | 0.72% |
+| admin_area | 23 | 152 | 0.65% |
+| successor_country | 11 | 21 | 0.09% |
+| unmatched | 532 | 606 | 2.60% |
+
+- **Matched: 97.40% of players.**
+- **Former places share a successor's coordinates.** Fort William and Port Arthur are placed at Thunder Bay, Noranda
+  and Rouyn at Rouyn-Noranda. They stay separate birthplaces (D14); only their map point is shared.
+- **Population is today's,** from GeoNames, not the place's size when the player was born.
+- **Why places are unmatched (observed):** villages and townships that GeoNames lists only as localities or not at all
+  in the files we load (most of the US ones: the US file is not loaded), alternative spellings or short forms in the
+  NHL's data, places recorded under a former country, and a few names that may be misspelled (for example
+  "Sverdlovskurg"). Unexplained beyond what is observed.
+- **Ambiguous names left unmatched on purpose:** "Saint-Jean" (QC) could be several places, and no source confirmed it
+  as Saint-Jean-sur-Richelieu.
+
 ## Venue names
 
 - Observed: four venue names arrive garbled from the NHL's weekly schedule, for example `Le Colis√©e` for Le Colisée and `Sportovn√≠ hala` for Sportovní hala. 676 games are affected. They are stored as received.

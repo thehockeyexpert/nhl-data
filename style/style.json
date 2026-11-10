@@ -1,0 +1,205 @@
+{
+  "canvas": {
+    "width_px": 1080,
+    "height_px": 1350,
+    "format": "PNG"
+  },
+  "palettes": {
+    "fresh_ice_light": {
+      "background": "#F4F7F9",
+      "ink": "#0E1A26",
+      "muted_text": "#5B6977",
+      "bar_track": "#E1E7EC",
+      "grid": "#DCE3E9",
+      "default_accent": "#FF5A36"
+    },
+    "fresh_ice_dark": {
+      "background": "#0E1A26",
+      "ink": "#F4F7F9",
+      "muted_text": "#9AA8B6",
+      "bar_track": "#1E2D3C",
+      "grid": "#22313F",
+      "default_accent": "#FF5A36"
+    }
+  },
+  "fonts": {
+    "title": "Barlow Condensed Bold",
+    "label": "Barlow Condensed Bold, uppercase, letter-spacing 0.1em",
+    "body_and_numbers": "Barlow SemiBold/Bold",
+    "source": "Google Fonts, free (OFL)"
+  },
+  "accent_rule": {
+    "min_contrast_bars_and_shapes": 3.0,
+    "min_contrast_text": 4.5,
+    "method": "If the accent's WCAG contrast against the background is below the minimum, mix it toward white (dark background) or black (light background) in 4% steps until it passes. Keep the hue."
+  },
+  "team_accents": {
+    "ANA": {
+      "team": "Anaheim Ducks",
+      "accent": "#FC4C02",
+      "name": "Orange"
+    },
+    "BOS": {
+      "team": "Boston Bruins",
+      "accent": "#FFB81C",
+      "name": "Gold"
+    },
+    "BUF": {
+      "team": "Buffalo Sabres",
+      "accent": "#003087",
+      "name": "Royal blue"
+    },
+    "CGY": {
+      "team": "Calgary Flames",
+      "accent": "#C8102E",
+      "name": "Red"
+    },
+    "CAR": {
+      "team": "Carolina Hurricanes",
+      "accent": "#CE1126",
+      "name": "Red"
+    },
+    "CHI": {
+      "team": "Chicago Blackhawks",
+      "accent": "#CF0A2C",
+      "name": "Red"
+    },
+    "COL": {
+      "team": "Colorado Avalanche",
+      "accent": "#6F263D",
+      "name": "Burgundy"
+    },
+    "CBJ": {
+      "team": "Columbus Blue Jackets",
+      "accent": "#002654",
+      "name": "Union blue"
+    },
+    "DAL": {
+      "team": "Dallas Stars",
+      "accent": "#006847",
+      "name": "Victory green"
+    },
+    "DET": {
+      "team": "Detroit Red Wings",
+      "accent": "#CE1126",
+      "name": "Red"
+    },
+    "EDM": {
+      "team": "Edmonton Oilers",
+      "accent": "#FF4C00",
+      "name": "Orange"
+    },
+    "FLA": {
+      "team": "Florida Panthers",
+      "accent": "#C8102E",
+      "name": "Red"
+    },
+    "LAK": {
+      "team": "Los Angeles Kings",
+      "accent": "#111111",
+      "name": "Black"
+    },
+    "MIN": {
+      "team": "Minnesota Wild",
+      "accent": "#154734",
+      "name": "Forest green"
+    },
+    "MTL": {
+      "team": "Montréal Canadiens",
+      "accent": "#AF1E2D",
+      "name": "Red"
+    },
+    "NSH": {
+      "team": "Nashville Predators",
+      "accent": "#FFB81C",
+      "name": "Gold"
+    },
+    "NJD": {
+      "team": "New Jersey Devils",
+      "accent": "#CE1126",
+      "name": "Red"
+    },
+    "NYI": {
+      "team": "New York Islanders",
+      "accent": "#00539B",
+      "name": "Royal blue"
+    },
+    "NYR": {
+      "team": "New York Rangers",
+      "accent": "#0038A8",
+      "name": "Blue"
+    },
+    "OTT": {
+      "team": "Ottawa Senators",
+      "accent": "#DA1A32",
+      "name": "Red"
+    },
+    "PHI": {
+      "team": "Philadelphia Flyers",
+      "accent": "#F74902",
+      "name": "Orange"
+    },
+    "PIT": {
+      "team": "Pittsburgh Penguins",
+      "accent": "#FCB514",
+      "name": "Gold"
+    },
+    "SJS": {
+      "team": "San Jose Sharks",
+      "accent": "#006D75",
+      "name": "Teal"
+    },
+    "SEA": {
+      "team": "Seattle Kraken",
+      "accent": "#99D9D9",
+      "name": "Ice blue"
+    },
+    "STL": {
+      "team": "St. Louis Blues",
+      "accent": "#002F87",
+      "name": "Blue"
+    },
+    "TBL": {
+      "team": "Tampa Bay Lightning",
+      "accent": "#002868",
+      "name": "Blue"
+    },
+    "TOR": {
+      "team": "Toronto Maple Leafs",
+      "accent": "#00205B",
+      "name": "Blue"
+    },
+    "UTA": {
+      "team": "Utah Mammoth",
+      "accent": "#69B3E7",
+      "name": "Mountain blue"
+    },
+    "VAN": {
+      "team": "Vancouver Canucks",
+      "accent": "#07346F",
+      "name": "Blue"
+    },
+    "VGK": {
+      "team": "Vegas Golden Knights",
+      "accent": "#B4975A",
+      "name": "Gold"
+    },
+    "WSH": {
+      "team": "Washington Capitals",
+      "accent": "#C8102E",
+      "name": "Red"
+    },
+    "WPG": {
+      "team": "Winnipeg Jets",
+      "accent": "#004C97",
+      "name": "Aviator blue"
+    }
+  },
+  "country_accents": {
+    "CAN": {
+      "country": "Canada",
+      "accent": "#D52B1E",
+      "name": "Canada red"
+    }
+  }
+}

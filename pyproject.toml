@@ -7,6 +7,7 @@ dependencies = [
     "dbt-duckdb>=1.11.0",
     "duckdb>=1.5.6",
     "httpx>=0.28.1",
+    "matplotlib>=3.11.2",
 ]
 
 [dependency-groups]

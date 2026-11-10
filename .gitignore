@@ -237,6 +237,8 @@ data/
 *.json
 # Exception: Claude Code's project settings (the MotherDuck tool block list), not NHL data
 !.claude/settings.json
+# Exception: the Instagram style rules (our own design decisions), not NHL data
+!style/style.json
 *.json.gz
 *.ndjson
 

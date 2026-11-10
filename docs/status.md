@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-10-15
+Last updated: 2026-11-10
 
 ## Done
 
@@ -90,6 +90,14 @@ Last updated: 2026-10-15
   - New checks `birthplace_coordinates_valid`, `birthplace_manual_fixes_valid` and `birthplace_coverage` (a warning
     below 95%), each proven to fail on a throwaway local copy.
   - Refreshed by `.github/workflows/geonames.yml` (quarterly and on demand); rebuilt in the Sunday full build, not nightly.
+- **Shots from play-by-play, trial season 2025-26 (2026-11-10).** Tier 2 storage settled (`docs/decisions.md`): full
+  responses as gzip files on the owner's laptop, outside the repo; only shot events in `raw.nhl_web__pbp_shot`.
+  - `ingest.play_by_play` (1,394 requests in 23.3 min; 16.2 MB of files; one bulk insert); `stg_nhl_web__pbp_shots`
+    and `fct_shots` (163,818 shots, 1,394 games), both incremental, tag `play_by_play`. 11 of 11 tests pass.
+  - Goals match every game's score (shootouts aside); the shooting team checked against the rosters for every event
+    (`docs/data_coverage.md`, "Shots").
+  - Nightly in the daily run: new games plus the last 3 days' games fetched again (estimate about 0.4 CU-hours a
+    month, $0). MotherDuck query history is not available on the free plan, so costs come from run timings.
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 
@@ -152,8 +160,9 @@ Last updated: 2026-10-15
      back to 1917-18.
    - Must be an incremental model (re-reading 1.2 GB of JSON every build could cost an estimated 7 to 20 CU-hours a
      month, more than the free 10). With it: about 0.2 CU-hours once, $0 a month.
-5. **Parked, not started: `fct_shots`** (play-by-play, Tier 2; needs the owner's go-ahead and the Tier 2 storage
-   decision first).
+5. **`fct_shots`, other seasons** (2007-08 to 2024-25; 2025-26 and 2026-27 loaded). Waiting for the owner's decision
+   after the 2025-26 trial (`docs/decisions.md`, 2026-11-10). Before each season: check the shooting team against the
+   rosters, as for 2025-26. Earlier estimates, before the trial:
    - 24,542 games from 2007-08 to 2025-26, one request each (about 7 to 10 hours). Sampled sizes: about 35 KB per
      game in 2007-09, 100 to 150 KB from 2009-10; about 2.8 GB raw JSON in all. About 2.6 million shot attempts.
    - Shot coordinates: present in every sampled game from 2009-10 on, absent in the sampled games of 2007-08 and
@@ -255,8 +264,6 @@ Last updated: 2026-10-15
 - **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
   fights, and the storage decision for play-by-play.
 - **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
-- **Tier 2 storage:** whether play-by-play payloads go into MotherDuck or into compressed files outside it, to be
-  decided before Tier 2 starts.
 
 ## Not started
 

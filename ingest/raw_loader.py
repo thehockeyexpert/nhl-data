@@ -158,6 +158,48 @@ def is_season_done(con, job, season):
     return row is not None
 
 
+def ensure_events_table(con, table):
+    """Create a raw event table (one row per event, see append_events_file) if it does not exist yet."""
+    qualified = _qualified(table)
+    con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
+    con.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {qualified} (
+            source_url   VARCHAR NOT NULL,
+            loaded_at    TIMESTAMPTZ NOT NULL,
+            season       INTEGER NOT NULL,
+            game_id      BIGINT NOT NULL,
+            payload_hash VARCHAR NOT NULL,
+            event        JSON NOT NULL
+        )
+        """
+    )
+    return qualified
+
+
+def append_events_file(con, table, path):
+    """Bulk-load one local Parquet file of events into a raw event table. Returns the number of rows added.
+
+    Used for play-by-play: the owner decided on 2026-11-10 that the full responses stay as compressed files on the
+    laptop and only the events we model go to MotherDuck (docs/decisions.md). Each row is one event exactly as received,
+    with the URL and hash of the response it came from. A response already loaded (same game and payload_hash) is
+    skipped, so reruns add nothing; a changed response is added again and staging keeps the newest.
+    """
+    qualified = ensure_events_table(con, table)
+    literal_path = str(path).replace("'", "''")
+    # One statement: the file is read on this computer and only the new rows are sent.
+    return con.execute(
+        f"""
+        INSERT INTO {qualified}
+        SELECT source_url, now(), season, game_id, payload_hash, event
+        FROM read_parquet('{literal_path}') AS new
+        WHERE NOT EXISTS (
+            SELECT 1 FROM {qualified} AS old WHERE old.game_id = new.game_id AND old.payload_hash = new.payload_hash
+        )
+        """
+    ).fetchone()[0]
+
+
 def replace_text_file(con, table, source_url, path):
     """Store a downloaded text file one row per line, untouched, replacing what the table held before.
 

@@ -535,3 +535,58 @@ models:
         description: The GeoNames place used. Empty when unmatched, or for a manual row with coordinates from another source.
       - name: population
         description: The GeoNames population of the matched place (today's figure, not at the player's birth).
+
+  - name: fct_shots
+    description: >
+      One row per shot attempt (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season
+      and playoffs, linked to fct_games. Shootout attempts are included and flagged with is_shootout. Loaded season by
+      season from 2007-08 (docs/data_coverage.md, "Shots"). Incremental.
+    columns:
+      - name: shot_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+      - name: event_type
+        description: shot-on-goal, missed-shot, blocked-shot or goal, as the NHL names them.
+      - name: is_goal
+        description: True for a goal (shootout goals included; filter on is_shootout).
+      - name: is_on_goal
+        description: True for a goal or a shot on goal.
+      - name: is_shootout
+        description: True for a shootout attempt (period type SO).
+      - name: time_in_period_seconds
+        description: Time elapsed in the period when the shot was taken, in seconds.
+      - name: situation_code
+        description: The NHL's four-digit situation code, as received. Not yet interpreted.
+      - name: shooting_team_id
+        description: >
+          The shooting team (the event's owner team). Checked against the game rosters for 2025-26 only, blocked shots
+          included. Joins to dim_teams.
+      - name: is_home_shooter
+        description: True if the shooting team is the home team.
+      - name: defending_team_id
+        description: The other team in the game.
+      - name: shooting_player_id
+        description: The shooter (for a goal, the scorer). Joins to dim_players.
+      - name: goalie_in_net_id
+        description: The defending goalie, empty when the net was empty or for a blocked shot.
+      - name: blocking_player_id
+        description: For a blocked shot, the player who blocked it.
+      - name: x_coord
+        description: >
+          Where the shot was taken along the length of the rink, as the NHL records it (-99 to 99 observed in 2025-26;
+          units not documented). Which end a team attacks changes by period; see home_team_defending_side.
+      - name: y_coord
+        description: Where the shot was taken across the rink, as the NHL records it (-42 to 42 observed in 2025-26).
+      - name: zone_code
+        description: >
+          The zone as received (O, D or N), from the shooter's side: 97% of 2025-26 non-shootout goals are in zone O.
+      - name: reason
+        description: For a missed or blocked shot, the NHL's reason (for example wide-of-net), as received.

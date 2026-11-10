@@ -72,6 +72,14 @@ jobs:
       - name: Load the season's standings
         run: uv run python -m ingest.standings --season "$SEASON"
 
+      # Shots from the play-by-play: games not loaded yet, plus the last 3 days' games fetched again for the NHL's
+      # corrections. The full responses go to the runner's temporary folder, deleted when the job ends; only the shot
+      # events reach MotherDuck. The owner's laptop keeps the full archive (docs/decisions.md, 2026-11-10).
+      - name: Load the season's play-by-play shots
+        env:
+          NHL_PBP_DIR: ${{ runner.temp }}/play_by_play
+        run: uv run python -m ingest.play_by_play --season "$SEASON" --recent-days 3
+
       - name: Choose the dbt build
         id: choose
         run: |

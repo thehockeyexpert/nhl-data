@@ -3,6 +3,44 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-10: play-by-play shots, files on the laptop
+
+**Decision (owner, 2026-11-10).** Tier 2 starts with `fct_shots`. This settles the Tier 2 storage question in
+`CLAUDE.md`:
+- **Raw play-by-play** stays as gzip files on the owner's laptop, outside the repo (`NHL_PBP_DIR`, default
+  `~/nhl-data-files/play_by_play/<season>/<game_id>.json.gz`), exactly as received. `ingest/play_by_play.py` refuses a
+  folder inside the repo.
+- **Only the shot events** (shots on goal, missed, blocked, goals) are bulk-loaded into `raw.nhl_web__pbp_shot`, one
+  row per event exactly as received: one insert statement per load. `stg_nhl_web__pbp_shots` and `fct_shots` are
+  incremental.
+- **Nightly** (`daily.yml`): finished games not loaded yet, plus the last 3 days' games fetched again for the NHL's
+  corrections. The runner keeps the files in its temporary folder, deleted after the job; the log prints counts only.
+  The owner reruns the season script on the laptop now and then to keep the local archive complete.
+- **Loaded so far:** 2025-26 (trial) and 2026-27 (285 games, 290 s, from the laptop before the first nightly run). The
+  other seasons wait for the owner's decision.
+
+**Trial, 2025-26 (measured 2026-11-10, from the laptop).** MotherDuck query history is not available on the free plan
+("Query History is not available on your plan"), so compute comes from the run's own timings and dbt's log.
+
+| | Measured | Worst case (1 CU-second minimum per statement) |
+|---|---|---|
+| Download: 1,394 requests | 23 min 16 s | no MotherDuck compute |
+| Local files | 16.2 MB gzip (183 MB as JSON), about 11.6 KB per game | |
+| Gathering shots on the laptop | 9.5 s, 6.4 MB Parquet, 163,818 rows | no MotherDuck compute |
+| Load into MotherDuck: 11 statements, one insert | under 4 s from the end of gathering to the end of the run | about 13 CU-s |
+| First dbt build of the two models and 9 tests | 70 statements, 6.8 s | about 73 CU-s |
+| Build with no new data (as on a quiet night) | 75 statements, 4.4 s (models 35 of them) | about 76 CU-s |
+| **Ingest, start to end** | **1,414 s** | |
+| **MotherDuck compute: load and both builds** | | **about 162 CU-s (0.045 CU-hours)** |
+
+- **Storage in MotherDuck:** not measured per table (`storage_info` is per database and updates later). Estimate:
+  the raw events, the staging table and `fct_shots` each about the size of the 6.4 MB Parquet file or a few times it,
+  so 15 to 40 MB a season.
+- **Nightly estimate:** about 11 ingest statements and 35 for the two models, about 50 CU-seconds a night worst
+  case, about 0.4 CU-hours a month of the free 10, **$0**. About 50 requests (new games plus 3 days fetched again),
+  about 1 minute on GitHub. Each re-fetched game whose response changed adds its shots again (about 117 rows); staging
+  keeps the newest.
+
 ## 2026-10-19: MotherDuck trial extended to about 2026-11-02
 
 **Fact (from the owner, 2026-10-19).** The Business trial ended on 2026-10-19 and MotherDuck refused connections

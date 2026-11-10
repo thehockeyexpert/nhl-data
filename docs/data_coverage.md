@@ -57,6 +57,24 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 - In `dim_teams` these have `is_nhl_team` false, no franchise and no lineage. Their name and seasons come only from the games they appear in.
 - Special events (all-star games, international tournaments) use further team IDs that are not NHL clubs. Those games are not in `fct_games`.
 
+## Shots (play-by-play)
+
+Trial loaded 2026-11-10: 2025-26, regular season and playoffs, one play-by-play response per game from
+api-web.nhle.com. Only the shot events are in MotherDuck; the full responses are on the owner's laptop.
+
+- **163,818 shot events in 1,394 games**, every finished regular-season and playoff game of the season: 69,507 shots
+  on goal, 41,811 missed, 43,664 blocked, 8,836 goals (797 of all events are shootout attempts).
+- **Goals match the scores.** Leaving out shootouts, each team's goals equal its final score in every game.
+- **Shooting team.** The event's owner team is the shooter's team (checked against each game's roster) in all 163,818
+  events, blocked shots included. Checked for 2025-26 only; to check again for each older season before it is loaded.
+- **Coordinates** are present on every event. Observed range: x from -99 to 99, y from -42 to 42. Units are not
+  documented by the NHL.
+- **Zone** is from the shooter's side: 8,317 of 8,572 non-shootout goals are in zone O, 131 in D, 124 in N.
+- **2026-27** (loaded 2026-11-10 from the laptop, 285 finished games): 32,718 events; the same checks pass (shooting
+  team for every event, goals match every score, coordinates on every event).
+- **Not yet checked:** seasons before 2025-26. Sampled earlier (one game per season) without coordinates in 2007-08 and
+  2008-09 (`docs/status.md`).
+
 ## Skater stats per game
 
 Loaded 2026-10-17: the stats API's skater summary with `isGame=true`, 434 responses (date windows), 1.24 GB raw JSON.

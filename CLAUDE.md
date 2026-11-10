@@ -18,6 +18,8 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `raw`: JSON exactly as received, plus `source_url` and `loaded_at`. Append-only. Written only by `ingest/`.
   Exception: the GeoNames tables (`geonames__*`) hold one row per line of the downloaded file and are replaced on each
   refresh, not appended (decided 2026-10-19).
+  Exception: `nhl_web__pbp_shot` holds one row per shot event, each exactly as received; the full play-by-play
+  responses stay as gzip files on the owner's laptop, outside the repo (decided 2026-11-10).
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.
 - `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`, `dim_team_season`, `dim_birthplaces`).
 - `reference`: dbt seeds, small hand-written CSVs in `dbt/seeds/` holding our own decisions (labels, overrides, exceptions). Never NHL data.
@@ -25,8 +27,9 @@ The owner is new to Python and dbt: explain changes in plain language.
 
 ## Data tiers
 - Tier 1: all-history schedule, results, game-level stats. Small.
-- Tier 2: play-by-play and shifts, 2007-08 onward. Heavy; backfilled later from the laptop. Do not start without being asked.
-- Open decision, to settle BEFORE starting Tier 2: MotherDuck's free plan caps storage at 10 GB, so Tier 2 raw payloads may need to be stored as compressed files outside MotherDuck instead of in the `raw` schema.
+- Tier 2: play-by-play and shifts, 2007-08 onward. Heavy; backfilled from the laptop. Do not start a load without being asked.
+- Tier 2 storage (decided 2026-11-10): raw play-by-play is kept as compressed files on the laptop (`NHL_PBP_DIR`, default
+  `~/nhl-data-files/play_by_play`), never in the repo; only the modelled events (shots) are bulk-loaded into `raw`.
 
 ## Folders
 - `ingest/`: Python that fetches from the NHL API and loads `raw`.
@@ -34,7 +37,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `tests/`: Python tests for the ingest code.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
 - `analyst/`: golden questions for checking the conversational query layer.
-- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (11:00 UTC: ingest the current season, then the nightly dbt build; the full build on Sundays). Its logs are public.
+- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (11:00 UTC: ingest the current season, play-by-play shots included, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
 
 ## Conventions
@@ -77,6 +80,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest skater season totals, many seasons, resumable: `uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918`
 - Ingest per-game skater stats, many seasons, resumable: `uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918`; nightly, the last game dates: `uv run python -m ingest.skater_games --season 20262027 --recent-days 3`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
+- Ingest play-by-play shots (full files kept on the laptop, outside the repo), one season: `uv run python -m ingest.play_by_play --season 20252026`; many seasons, resumable: `uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008`; nightly on GitHub, new games plus the last 3 days': `uv run python -m ingest.play_by_play --season 20262027 --recent-days 3`; after a laptop load, `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`

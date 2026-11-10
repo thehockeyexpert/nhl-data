@@ -540,7 +540,8 @@ models:
     description: >
       One row per shot attempt (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season
       and playoffs, linked to fct_games. Shootout attempts are included and flagged with is_shootout. Loaded season by
-      season from 2007-08 (docs/data_coverage.md, "Shots"). Incremental.
+      season from 2007-08 (docs/data_coverage.md, "Shots"). Each game's goals match its score (check
+      shot_goals_match_score). Incremental.
     columns:
       - name: shot_key
         description: game_id and event_id joined.

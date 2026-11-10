@@ -64,7 +64,8 @@ api-web.nhle.com. Only the shot events are in MotherDuck; the full responses are
 
 - **163,818 shot events in 1,394 games**, every finished regular-season and playoff game of the season: 69,507 shots
   on goal, 41,811 missed, 43,664 blocked, 8,836 goals (797 of all events are shootout attempts).
-- **Goals match the scores.** Leaving out shootouts, each team's goals equal its final score in every game.
+- **Goals match the scores.** Leaving out shootouts, each team's goals equal its final score in every game (check
+  `shot_goals_match_score`).
 - **Shooting team.** The event's owner team is the shooter's team (checked against each game's roster) in all 163,818
   events, blocked shots included. Checked for 2025-26 only; to check again for each older season before it is loaded.
 - **Coordinates** are present on every event. Observed range: x from -99 to 99, y from -42 to 42. Units are not

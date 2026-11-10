@@ -96,6 +96,10 @@ Last updated: 2026-11-10
     and `fct_shots` (163,818 shots, 1,394 games), both incremental, tag `play_by_play`. 11 of 11 tests pass.
   - Goals match every game's score (shootouts aside); the shooting team checked against the rosters for every event
     (`docs/data_coverage.md`, "Shots").
+  - New check `shot_goals_match_score` (2026-11-10): each team's play-by-play goals, shootouts left out, equal its
+    final score minus any shootout winning goal; two-day lag in a season in progress. Proven to fail on a throwaway
+    local copy (a goal removed, shootout goals counted, a goal given to the other team; the lag holds back a game dated
+    today). Passes on 2025-26 and 2026-27; no exceptions needed.
   - Nightly in the daily run: new games plus the last 3 days' games fetched again (estimate about 0.4 CU-hours a
     month, $0). MotherDuck query history is not available on the free plan, so costs come from run timings.
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental

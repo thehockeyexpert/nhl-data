@@ -1004,6 +1004,40 @@ skater_game_in_games as (
 
 ),
 
+shot_goals as (
+
+    select
+        game_id,
+        count(*) filter (where is_goal and not is_shootout and is_home_shooter) as home_goals,
+        count(*) filter (where is_goal and not is_shootout and not is_home_shooter) as away_goals
+    from {{ ref('fct_shots') }}
+    group by game_id
+
+),
+
+shot_goals_match_score as (
+
+    -- In every game with shots, each team's goals in the play-by-play (shootout attempts left out) equal its final
+    -- score, minus the one goal a shootout win adds to the winner's score. Games with no shots loaded are not checked.
+    select
+        'shot_goals_match_score' as check_name,
+        games.season,
+        games.game_id,
+        'final score ' || games.home_score || '-' || games.away_score
+            || case when games.last_period_type = 'SO' then ' (shootout)' else '' end
+            || ', play-by-play goals ' || shot_goals.home_goals || '-' || shot_goals.away_goals as detail,
+        null::integer as team_id
+    from shot_goals
+    inner join games on games.game_id = shot_goals.game_id
+    where games.is_final
+      and (games.season in (select season from finished_seasons) or games.game_date <= current_date - 2)
+      and (shot_goals.home_goals != games.home_score
+               - case when games.last_period_type = 'SO' and games.home_score > games.away_score then 1 else 0 end
+           or shot_goals.away_goals != games.away_score
+               - case when games.last_period_type = 'SO' and games.away_score > games.home_score then 1 else 0 end)
+
+),
+
 team_season_unique as (
 
     -- Each team appears once per season in dim_team_season.
@@ -1184,6 +1218,8 @@ union all
 select * from skater_games_match_seasons
 union all
 select * from skater_game_in_games
+union all
+select * from shot_goals_match_score
 union all
 select * from team_season_unique
 union all

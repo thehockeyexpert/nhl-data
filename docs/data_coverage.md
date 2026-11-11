@@ -59,25 +59,50 @@ weekly schedule responses. Each section will be confirmed against the loaded dat
 
 ## Shots (play-by-play)
 
-Trial loaded 2026-11-10: 2025-26, regular season and playoffs, one play-by-play response per game from
-api-web.nhle.com. Only the shot events are in MotherDuck; the full responses are on the owner's laptop.
+Loaded 2026-11-10 to 2026-11-11: every finished regular-season and playoff game from 2007-08 to today, one
+play-by-play response per game from api-web.nhle.com. Only the shot events are in MotherDuck; the full responses are
+on the owner's laptop.
 
-- **163,818 shot events in 1,394 games**, every finished regular-season and playoff game of the season: 69,507 shots
-  on goal, 41,811 missed, 43,664 blocked, 8,836 goals (797 of all events are shootout attempts).
-- **Goals match the scores.** Leaving out shootouts, each team's goals equal its final score in every game (check
-  `shot_goals_match_score`).
-- **Shooting team.** The event's owner team is the shooter's team (checked against each game's roster) in all 163,818
-  events, blocked shots included. Checked for 2025-26 only; to check again for each older season before it is loaded.
-- **Coordinates** are present on every event. Observed range: x from -99 to 99, y from -42 to 42. Units are not
-  documented by the NHL.
-- **Zone** is from the shooter's side: 8,317 of 8,572 non-shootout goals are in zone O, 131 in D, 124 in N.
-- **2026-27** (loaded 2026-11-10 from the laptop, 285 finished games): 32,718 events; the same checks pass (shooting
-  team for every event, goals match every score, coordinates on every event).
-- **2024-25** (loaded 2026-11-10 from the laptop, 1,398 games: 1,312 regular season, 86 playoff): 167,558 events in
-  the raw layer: 70,828 shots on goal, 41,030 missed, 47,096 blocked, 8,604 goals (508 shootout attempts). Coordinates
-  on every event. Goals against the scores and the shooting team against the rosters: not yet checked.
-- **Not yet checked:** seasons before 2025-26. Sampled earlier (one game per season) without coordinates in 2007-08 and
-  2008-09 (`docs/status.md`).
+- **2,714,604 shot events in 24,827 games**, 2007-08 to 2026-27 (in progress), in `marts.fct_shots`.
+- **Goals match the scores.** Leaving out shootouts, each team's goals equal its final score in every game of every
+  season (check `shot_goals_match_score`, 2026-11-11).
+- **Shooting team.** The event's owner team is the shooter's team (checked against each game's roster in the
+  downloaded files) for every shot type, blocked shots included, with 3 exceptions in 2.9 million events: one event
+  each in 2012-13 and 2015-16 whose owner team differs from the shooter's roster team, and one in 2013-14 whose shooter
+  is not on the game's roster. Unexplained; not investigated.
+- **2007-08 and 2008-09 are thin.** Goals and shots on goal look complete (7,491 and 7,840 goals; 70,603 and 73,369
+  shots on goal), but missed shots are almost absent (29 and 27 in the whole season) and blocked shots absent (0).
+  Shot attempts (Corsi, Fenwick) can only start in 2009-10. Coordinates are missing on 99.6% of events in both
+  seasons, so shot and goal locations start in 2009-10.
+- **Coordinates from 2009-10:** missing on 115 events in 2009-10, 27 in 2010-11, under 25 a season after that, and
+  none from 2020-21. Observed range: x from -99 to 99, y from -42 to 42. Units are not documented by the NHL.
+- **Zone** is from the shooter's side: in 2025-26, 8,317 of 8,572 non-shootout goals are in zone O, 131 in D, 124 in N.
+- **Shots per season** (regular season and playoffs, shootouts included), for reference:
+
+  | Season | Events | Games | Goals | On goal | Missed | Blocked |
+  |---|---|---|---|---|---|---|
+  | 2007-08 | 78,123 | 1,315 | 7,491 | 70,603 | 29 | 0 |
+  | 2008-09 | 81,236 | 1,317 | 7,840 | 73,369 | 27 | 0 |
+  | 2009-10 | 148,018 | 1,319 | 7,767 | 73,163 | 31,018 | 36,070 |
+  | 2010-11 | 150,472 | 1,319 | 7,544 | 73,822 | 31,255 | 37,851 |
+  | 2011-12 | 147,461 | 1,316 | 7,370 | 71,894 | 30,765 | 37,432 |
+  | 2012-13 | 90,068 | 806 | 4,480 | 43,525 | 18,747 | 23,316 |
+  | 2013-14 | 149,845 | 1,323 | 7,506 | 73,120 | 31,431 | 37,788 |
+  | 2014-15 | 149,467 | 1,319 | 7,377 | 72,659 | 30,887 | 38,544 |
+  | 2015-16 | 148,192 | 1,321 | 7,281 | 71,986 | 30,997 | 37,928 |
+  | 2016-17 | 149,661 | 1,317 | 7,377 | 73,022 | 31,313 | 37,949 |
+  | 2017-18 | 160,727 | 1,355 | 8,187 | 78,950 | 33,416 | 40,174 |
+  | 2018-19 | 157,478 | 1,358 | 8,250 | 77,689 | 32,502 | 39,037 |
+  | 2019-20 | 139,200 | 1,212 | 7,361 | 69,259 | 28,416 | 34,164 |
+  | 2020-21 | 104,316 | 952 | 5,636 | 52,098 | 21,385 | 25,197 |
+  | 2021-22 | 160,574 | 1,401 | 8,936 | 80,649 | 32,765 | 38,224 |
+  | 2022-23 | 164,416 | 1,400 | 9,027 | 79,059 | 34,625 | 41,705 |
+  | 2023-24 | 171,256 | 1,400 | 8,772 | 76,160 | 38,204 | 48,120 |
+  | 2024-25 | 167,558 | 1,398 | 8,604 | 70,828 | 41,030 | 47,096 |
+  | 2025-26 | 163,818 | 1,394 | 8,836 | 69,507 | 41,811 | 43,664 |
+
+- **Before 2007-08:** not loaded. Sampled 2026-11-11 (one game each from 1930 to 2005): goals with period, scorer and
+  both assists, and penalties with their type, are present; shots appear from about 1997-98; no hits in any sample.
 
 ## Skater stats per game
 

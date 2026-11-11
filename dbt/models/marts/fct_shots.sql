@@ -1,8 +1,8 @@
 -- One row per shot attempt (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season and
 -- playoffs, from 2007-08, linked to fct_games. Shootout attempts are kept and flagged (is_shootout).
--- The shooting team is the event's owner team: in 2025-26 that is the shooter's team for every shot type, blocked shots
--- included (all 163,818 events checked against each game's roster, 2026-11-10). Other seasons are to be checked before
--- they are loaded.
+-- The shooting team is the event's owner team: that is the shooter's team for every shot type, blocked shots included,
+-- in every event checked against each game's roster (2007-08 to 2026-27; 3 exceptions in 2.9 million events, listed in
+-- docs/data_coverage.md, "Shots").
 -- Incremental: each build replaces only the games new in staging.
 
 {{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', tags=['play_by_play']) }}

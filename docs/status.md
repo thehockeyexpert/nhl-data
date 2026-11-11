@@ -104,24 +104,17 @@ Last updated: 2026-11-11
   - Nightly in the daily run: new games plus the last 3 days' games fetched again (estimate about 0.4 CU-hours a
     month, $0). MotherDuck query history is not available on the free plan, so costs come from run timings.
   - 2026-27 loaded from the laptop on 2026-11-10 (285 games, 32,718 events) before the first nightly run.
+- **`fct_shots` backfill, 2007-08 to 2024-25 (finished 2026-11-11).** Downloaded on the laptop over 2026-11-10
+  and 2026-11-11 (stopped twice: a restart, then low memory; resumed both times without losing data). `fct_shots` now
+  holds 2,714,604 shots in 24,827 games, 2007-08 to today. Shooting team checked against the rosters for every
+  season (3 exceptions in 2.9 million events); goals match every game's score (`shot_goals_match_score` passes);
+  the play-by-play build passes 11 of 11. 2007-08 and 2008-09 have almost no missed or blocked shots and almost
+  no coordinates (`docs/data_coverage.md`, "Shots"). The MotherDuck guide is updated in `docs/motherduck_guide.md`;
+  publishing it is left to the owner (`uv run python -m analyst.publish_guide`).
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 
 ## In progress
-
-- **`fct_shots` backfill, 2024-25 back to 2007-08** (owner's decision, 2026-11-10; `docs/decisions.md`). Run on the
-  laptop, newest season first: `uv run python -m ingest.backfill --job play_by_play --from 20232024 --to 20072008`.
-  - **2024-25:** loaded into `raw.nhl_web__pbp_shot` on 2026-11-10 (1,398 games, 1,312 regular season and 86 playoff;
-    167,558 events). Not yet in `fct_shots`: no dbt build has run since. Shooting team not yet checked against the
-    rosters.
-  - **2023-24:** the download stopped at 496 games when the laptop restarted overnight (2026-11-10, about 23:17
-    local). Nothing from it reached MotherDuck: a season's shots are loaded only after all its games are downloaded.
-    Resumed 2026-11-11; files already on disk are skipped. Remaining: 17 seasons from 2023-24, roughly 23 minutes
-    each (2025-26 took 23.3 min), so about 6 to 7 hours.
-  - **After the backfill:** for each season, check the shooting team against the rosters and record the counts in
-    `docs/data_coverage.md` ("Shots"), as for 2025-26; then
-    `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`; then update the guide's
-    coverage (it still says shots are not loaded) and publish it.
 
 - **G01 ("best record against teams above .500"):** `goalie_records_vs_above_500` is built under the revised D01
   (headline: opponent above the league median by points % before the game, with at least 10 games played; second

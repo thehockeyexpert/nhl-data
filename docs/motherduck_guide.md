@@ -10,7 +10,7 @@ below the line into the Claude.ai Project instructions. Definitions come from `d
 Read this before answering any question from the `nhl` database. Use the `marts` schema. Table and column
 comments in MotherDuck carry more detail.
 
-## Coverage: what is and is not loaded (2026-10-18)
+## Coverage: what is and is not loaded (2026-11-11)
 If a question needs data that is not loaded, say so plainly and name what is missing. Never estimate it from
 other tables.
 
@@ -33,9 +33,14 @@ other tables.
   (`fct_draft_picks`, 1963 on), trophies and award results (`dim_trophies`, `fct_award_results`), playoff series
   (`fct_playoff_series`, `bridge_playoff_series_games`), official team season totals (`fct_team_seasons`).
 
+- **Shots from the play-by-play, 2007-08 to today:** `fct_shots`, one row per shot on goal, missed shot, blocked
+  shot and goal, regular season and playoffs, with period, time, strength (`situation_code`), shooter, goalie,
+  blocker, both assists on goals, shot type and coordinates. 2007-08 and 2008-09 have goals and shots on goal only
+  (almost no missed or blocked shots) and almost no coordinates: shot attempts and locations start in 2009-10.
+
 **Not loaded:**
-- **Shots** and events (play-by-play): shot locations, shot attempts, hits, blocks, giveaways, takeaways.
-- Team game statistics (shots, power play, penalties), shifts, fights, game duration.
+- Play-by-play before 2007-08, and events other than shots: hits, penalties and fights, giveaways, takeaways, faceoffs.
+- Team game statistics (power play, penalties), shifts, game duration.
 - Players' seasons in other leagues (junior, college), arena locations and travel.
 
 ## Tables
@@ -51,6 +56,11 @@ other tables.
   coordinates; say how many players a map leaves out. Former towns share a successor's point (Fort William at Thunder Bay).
 - `marts.dim_team_season`: one row per team per regular season, with `conference_name` and `division_name`. Join on
   `team_id` and `season`, never on `team_id` alone.
+- `marts.fct_shots`: one row per shot event, 2007-08 onward. `is_goal`, `is_on_goal`, `is_shootout` (shootout
+  attempts are kept: leave them out of goal and shot totals). `shooting_team_id` is the shooter's team. Join to
+  `dim_players` on `shooting_player_id`, `goalie_in_net_id`, `assist1_player_id` (primary assist) or
+  `assist2_player_id`. Coordinates: see `docs/data_coverage.md` for which end a team attacks
+  (`home_team_defending_side`).
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
 - `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
   game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.
@@ -97,10 +107,13 @@ other tables.
   seasons out of "best ever" rate questions; don't count them as zero.
 - **Formulas:** save % = saves / shots against; GAA = goals against x 3,600 / `time_on_ice_seconds`.
 - **Faceoff %** is empty for players who took no faceoffs, and there are no raw win and loss counts.
-- **Not in the data:** primary and secondary assists, the number of penalties, penalties drawn.
-- **Not loaded, never estimate:** shot attempts (Corsi/SAT), unblocked attempts (Fenwick/USAT), missed and blocked
-  shots, expected goals and anything built on them, shifts, zone starts, hits, takeaways, giveaways, Game Score.
-  Say they are not loaded.
+- **Primary and secondary assists:** only from 2007-08, in `fct_shots` (goals, `assist1_player_id` and
+  `assist2_player_id`, shootouts left out). Not in the season or game totals. Not in the data: the number of
+  penalties, penalties drawn.
+- **Shot attempts** (Corsi/SAT: on goal + missed + blocked) and **unblocked attempts** (Fenwick/USAT: on goal +
+  missed) come from `fct_shots`, from 2009-10 only. Leave shootout attempts out.
+- **Not loaded, never estimate:** expected goals and anything built on them, shifts, zone starts, hits, takeaways,
+  giveaways, Game Score, and any play-by-play before 2007-08. Say they are not loaded.
 - **Other sites' seasons:** a single year such as "2018" means 2018-19. Convert with
   `start_year * 10000 + start_year + 1`.
 

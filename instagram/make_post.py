@@ -39,6 +39,10 @@ FONT_FILES = {
     "name": "barlow/Barlow-SemiBold.ttf",                      # names
     "number": "barlow/Barlow-Bold.ttf",                        # numbers
     "body": "barlow/Barlow-Regular.ttf",                       # subtitle
+    # Story carousels (instagram/carousel.py)
+    "hero": "barlowcondensed/BarlowCondensed-ExtraBold.ttf",   # the huge numbers
+    "medium": "barlow/Barlow-Medium.ttf",                      # subtitles and context lines
+    "semi": "barlowsemicondensed/BarlowSemiCondensed-SemiBold.ttf",  # short lines and chart labels
 }
 
 # Sizes in pixels, scaled from the team mockups (a 340 px wide card) to 1080 px: about 3.18 times.

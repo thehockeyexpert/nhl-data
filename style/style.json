@@ -11,7 +11,8 @@
       "muted_text": "#5B6977",
       "bar_track": "#E1E7EC",
       "grid": "#DCE3E9",
-      "default_accent": "#FF5A36"
+      "default_accent": "#FF5A36",
+      "row_tint": "#E9EEF2"
     },
     "fresh_ice_dark": {
       "background": "#0E1A26",
@@ -19,7 +20,8 @@
       "muted_text": "#9AA8B6",
       "bar_track": "#1E2D3C",
       "grid": "#22313F",
-      "default_accent": "#FF5A36"
+      "default_accent": "#FF5A36",
+      "row_tint": "#14222F"
     }
   },
   "fonts": {
@@ -201,5 +203,64 @@
       "accent": "#D52B1E",
       "name": "Canada red"
     }
+  },
+  "layout": {
+    "name": "studio_edition",
+    "margin_px": 80,
+    "header": {
+      "label_y": 104,
+      "label_size": 26,
+      "rule_y": 132
+    },
+    "footer": {
+      "rule_y": 1248,
+      "text_y": 1290,
+      "text_size": 22
+    },
+    "hairline": {
+      "width": 2,
+      "opacity_light": 0.14,
+      "opacity_dark": 0.16
+    },
+    "rounded_corners": false,
+    "reference": "studio_reference.html"
+  },
+  "story": {
+    "slides": [
+      "hook",
+      "reveal",
+      "comparison",
+      "trend",
+      "turning_point",
+      "conclusion"
+    ],
+    "default_mode": "mixed",
+    "mixed": {
+      "hook": "dark",
+      "reveal": "dark",
+      "comparison": "light",
+      "trend": "light",
+      "turning_point": "light",
+      "conclusion": "dark"
+    },
+    "comparison_panel": {
+      "light": "#E4EAF0",
+      "dark": "#202A35"
+    },
+    "reference": "story_reference.html",
+    "frame": {
+      "header": false,
+      "slide_counter": false,
+      "hairlines": false,
+      "source_line": false,
+      "handle": {
+        "x_right": 1000,
+        "y": 1290,
+        "size": 24
+      },
+      "data_credit": "caption or comments"
+    },
+    "comparison_panel_top": 0,
+    "clean_text_rule": "Every piece of text must add something new; never repeat a fact already on the slide."
   }
 }

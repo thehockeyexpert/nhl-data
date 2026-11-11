@@ -250,3 +250,6 @@ dbt/.user.yml
 
 # Downloaded files (GeoNames zips) never go in this public repo
 *.zip
+
+# The Instagram reference designs stay on the laptop
+style/*.html

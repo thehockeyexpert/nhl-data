@@ -39,11 +39,26 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `analyst/`: golden questions for checking the conversational query layer.
 - `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (11:00 UTC: ingest the current season, play-by-play shots included, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
-- `instagram/`: Instagram images drawn from MotherDuck (`make_post.py` single posts, `carousel.py` carousels,
-  `charts.py` the chart library), following `style/`. Images are saved outside the repo.
-- `carousels/`: one YAML file per carousel (words, chart choices, and the facts behind them). See `carousels/README.md`.
-  When the owner describes a story, draft the YAML: every number must come from a query you ran on MotherDuck,
-  recorded under `facts:` with dates pinned; the owner edits the words before rendering.
+- `instagram/`: Instagram images drawn from MotherDuck (`carousel.py` story carousels; `make_post.py` shared drawing
+  helpers and the older single post), following `style/`. Images are saved outside the repo.
+- `style/`: the style guide, `style.json` and `new_post_prompt.md`. The reference designs (`style/*.html`) stay on the
+  laptop and are gitignored.
+- `carousels/`: one YAML file per post. See `carousels/README.md`.
+
+## Instagram posts
+- **Every post is a six-slide story carousel** ("Story carousels" in `style/style_guide.md`): hook, reveal,
+  comparison, trend, turning_point, conclusion, in that order. A slide is skipped only when there's no honest data for it.
+- The only fixed element on a slide is the handle, bottom right: no header label, slide counter, hairline frame or
+  source line. The NHL credit ("Data: NHL") goes in the caption.
+- Mixed mode by default (hook, reveal, conclusion dark; the rest light); `--mode light|dark` overrides. The accent is
+  the subject's team or country, with the contrast rule.
+- **Drafting a story** (`style/new_post_prompt.md`): first test the story against MotherDuck and say so if it doesn't
+  hold. Then draft `carousels/<name>.yml` with all six slides and a caption crediting "Data: NHL", and show the owner
+  the text before rendering. Every number comes from a query you ran, saved under `facts:` with dates pinned, and is
+  re-checked on render. No claims that aren't in the data.
+- Every piece of text must add something new; never repeat a fact already on the slide. When in doubt, cut it.
+- Check the schedule length in `dim_seasons` before any pace or share of a season (2026-27 has 84 games per team).
+- Commit only the YAML for a new post, after showing the owner the diff.
 
 ## Conventions
 - Python does fetching and loading only; all cleaning happens in dbt SQL.
@@ -90,8 +105,8 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
-- Render a carousel (facts re-checked first): `uv run python -m instagram.carousel render carousels/<name>.yml`;
-  facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
+- Render a story carousel (facts re-checked first; mixed mode unless `--mode light|dark`):
+  `uv run python -m instagram.carousel render carousels/<name>.yml`; facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
 - Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records tag:geonames --indirect-selection empty --no-populate-cache`

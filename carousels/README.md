@@ -1,77 +1,71 @@
-# Instagram carousels
+# Instagram story carousels
 
-Each `.yml` file here is one carousel: the words, the chart choices and the facts behind them. Text only: no data
-files, no images. The slides are drawn from MotherDuck when you render, following `style/style_guide.md`.
+Every post is a six-slide story carousel: the "Story carousels" section of `style/style_guide.md`. Each `.yml` file
+here is one carousel: the words, the caption and the facts behind them. Text only: no data files, no images.
 
 ```
-uv run python -m instagram.carousel check  carousels/mcdavid-hot-start.yml   # re-run the facts only
-uv run python -m instagram.carousel render carousels/mcdavid-hot-start.yml   # facts, then one PNG per slide
+uv run python -m instagram.carousel check  carousels/mcdavid-hot-start.yml               # re-run the facts only
+uv run python -m instagram.carousel render carousels/mcdavid-hot-start.yml               # mixed light and dark
+uv run python -m instagram.carousel render carousels/mcdavid-hot-start.yml --mode light  # or --mode dark
 ```
 
-Slides are saved outside the repo as `posts/<file name>/01.png`, `02.png` and so on, in `NHL_POSTS_DIR` or
-`~/nhl-data-files/posts`. Rendering again replaces them.
+The slides and `caption.txt` are saved outside the repo in `posts/<file name>/` (`NHL_POSTS_DIR`, or
+`~/nhl-data-files/posts`). Rendering again replaces them.
 
-## The workflow
+## The workflow (`style/new_post_prompt.md`)
 
-1. **You describe a story** to Claude Code ("McDavid's start to the season", "where Canada's players come from").
-2. **Claude drafts the file.** Every number in the draft comes from a query Claude ran against MotherDuck, and each
-   query is written under `facts:` with its answer. No number comes from memory or from another site.
-3. **You edit the words.** Change titles, subtitles and bodies as you like. If you change a number, change or add
-   the fact that backs it.
-4. **Render.** The facts are re-checked first: if the data no longer gives the same answer (a correction from the
-   NHL, a game added), nothing is drawn and the command shows what changed.
+1. **You describe a story:** what's surprising, the subject, the accent, the timeframe.
+2. **Claude tests it against MotherDuck.** If the story doesn't hold up, Claude says so before drafting and suggests a
+   better angle.
+3. **Claude drafts the YAML:** the six slides and a caption that credits "Data: NHL". Every number comes from a query
+   Claude ran, saved under `facts:` with dates pinned. If a slide has no honest data, Claude proposes skipping it.
+4. **You edit the words.** If you change a number, change or add the fact that backs it.
+5. **Render.** The facts are re-checked first: if the data no longer gives the same answer, nothing is drawn.
+   Commit only the YAML, after reviewing the diff.
 
-## The file
+## The six slides, always in this order
+
+| Slide | Fields | Notes |
+|---|---|---|
+| `hook` | `kicker`, `headline` (three lines; the last is in the accent) | Full-bleed dark, faint half-rink behind the words |
+| `reveal` | `number`, `label` (two lines), `name`, `subtitle`, `stats` (up to four `{value, label}`) | The hero number in the accent |
+| `comparison` | `top` and `bottom`, each `{kicker, number, line}` | Top panel: the subject, in the accent. Bottom: the comparison, in ink |
+| `trend` | `title`, `subtitle`, `games`, `axis_title`, `lines` (`{player_id, season, name}`; the first is the subject) | Running points totals, drawn from MotherDuck at render time; labels at the line ends |
+| `turning_point` | `title`, `subtitle`, `stats_title`, `stats` (up to three `{value, label: [two lines], accent}`), `rink` | `rink: illustration` draws arrows labelled "ILLUSTRATION, NOT TRACKED PASSES"; `rink: none` leaves it out |
+| `conclusion` | `kicker`, `headline` (two lines; the second in the accent), `context` (up to two lines), `question`, `call` | `call` defaults to "Tell us in the comments." |
+
+A slide can be left out only when there is no honest data for it; the order never changes. Kickers and labels are
+written exactly as they should appear (uppercase in the file, so "McDAVID" keeps its small c).
+
+Every slide carries only the handle at the bottom right: no label, counter, hairline frame or source line. The NHL
+credit goes in `caption:` (required, and it must contain "Data: NHL").
+
+## Writing rules
+
+- Every number on a slide is backed by a fact whose query Claude ran; dates are pinned (`game_date <= '2026-11-09'`).
+- No claims that aren't in the data: no tactics, linemates or units the data doesn't record.
+- As clean as possible: every piece of text adds something new. A label and a sentence never say the same thing, a
+  question isn't repeated as a graphic, and a closing line doesn't restate the stats. When in doubt, cut it.
+- Follow `docs/motherduck_guide.md`: regular season unless the story says otherwise, players by `player_id`, the
+  guide's minimums for rates. Check the season's schedule length in `dim_seasons` before any pace (2026-27 has 84
+  games per team).
+- Facts and figures only: no logos or photos. The rink drawing and the typography are the visuals.
+
+## Example
 
 ```yaml
-accent: EDM                  # a team or country code from style/style.json; the subject's colour
-mode: dark-light             # light, dark, or alternating: dark-light (slide 1 dark) or light-dark
-label: "2026-27 · Connor McDavid"   # the small uppercase line at the top of every slide
-through: 2026-11-09          # optional: charts count games up to this date, so they match the text
-handle: "@topshelfstats"     # optional: defaults to --handle or NHL_POST_HANDLE
+accent: EDM
+mode: mixed
+through: 2026-11-09
 slides:
-  - type: title              # big title in the middle, subtitle (or body) under it
-    title: 48 points in 19 games
-    subtitle: Connor McDavid's start to the 2026-27 season
-  - type: chart              # title, optional subtitle, then a chart from the library
-    chart: points_leaders
-    season: 20262027
-    top: 5
-    title: 12 points clear
-  - type: text               # title, optional subtitle, then body: paragraphs, and "- " for bullets
-    title: Tied for sixth, all time
-    body: |
-      - Mario Lemieux, 57 (1988-89)
-  - type: end                # like the title slide, for the last slide
-    title: Can he keep it going?
-    body: Regular season only, games through 9 November 2026.
+  - type: hook
+    kicker: "CONNOR McDAVID · 2026-27"
+    headline: ["Nobody has", "started like this", "in 30 years."]
+  # ... reveal, comparison, trend, turning_point, conclusion
+caption: |
+  ... Data: NHL.
 facts:
-  - claim: McDavid has 48 points in 19 games
+  - claim: "Reveal: 19 games, 48 points"
     sql: select count(*), sum(points) from marts.fct_skater_games where ...
     value: [19, 48]          # one value, a list for one row, or a list of rows
 ```
-
-Any slide can set its own `label`, and its own `mode` (light or dark), which wins over the carousel's. Every slide gets the label, the slide counter (1/6) and the footer
-("Data: NHL" and the handle).
-
-## The chart library (`instagram/charts.py`)
-
-| Chart | What it shows | Settings |
-|---|---|---|
-| `points_leaders` | A season's regular-season points leaders, goalies included | `season`, `top` (5), `highlight` (a player_id; the leader by default) |
-| `points_histogram` | One player's games by points scored: 0, 1, 2, 3, 4, 5+ | `player_id`, `season` (career if left out), `highlight` (a bucket 0-5; the tallest by default) |
-| `goals_per_game` | Goals per game, season by season, as a line | `player_id` (the league if left out), `from_season`, `to_season` |
-| `points_per_game_spread` | Every skater's points per game as a histogram, the player in the accent, lines at the average and +1 to +5 standard deviations | `season`, `player_id` |
-| `start_outliers` | The biggest outliers ever in points per game, in standard deviations, every season cut off at the same share of its games (needs `through`) | `season`, `top` (5), `highlight` (a player_id) |
-| `birthplaces_donut` | Players by birth country | `season` (every NHL player if left out), `top` (5), `highlight` (a country code; the accent if it is a country) |
-
-One thing per chart gets the accent; everything else is ink (the style guide's accent rule).
-
-## Rules for drafts
-
-- Every number on a slide is backed by a fact whose query Claude ran; dates in queries are pinned (`game_date <=
-  '2026-11-09'`) so the facts stay true while a season goes on.
-- Follow `docs/motherduck_guide.md`: regular season unless the story says otherwise, players by `player_id`, the
-  guide's minimums for rates (and say which one).
-- Facts and figures only: no logos, photos or video. Birthplace maps credit GeoNames.
-- The `value` of a fact is a handful of figures for one post, never a table extract.

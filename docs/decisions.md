@@ -3,6 +3,30 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-11: logos, headshots and photos in posts
+
+**Decision (owner, 2026-11-11).** This changes the "Public content" point of the 2026-10-14 decision. Posts may use,
+each credited in the caption (rules and placement in `style/style_guide.md`, "NHL logos and headshots"):
+- **NHL team logos:** the NHL's own SVGs (`assets.nhle.com/logos/nhl/svg/{TEAM}_light.svg` and `_dark.svg`), never
+  recoloured, stretched or given effects.
+- **Player headshots:** the cut-out PNG in the `headshot` field of the NHL API's player page, current season.
+- **Wikimedia Commons photos** under CC BY, CC BY-SA or public domain only, with the photographer and licence in the
+  caption.
+- **Photos the owner saves** in `assets/nhl/photos/`, named in the carousel YAML with a `credit:` field, also in the
+  caption.
+- Caption credit: "Data: NHL.", or "Data, logos and headshots: NHL." when an NHL logo or headshot is used.
+
+Still not allowed: automatic downloads from Getty, Imagn, team websites or image searches; AI-generated pictures of
+real players; committing any NHL image to the public repo (`assets/` is git-ignored). Video is not covered by this
+decision, so NHL video stays out.
+
+Notes for the record (Claude, 2026-11-11):
+- The NHL terms quoted in the 2026-10-14 entry still apply to NHL logos and headshots: use "only for non-commercial,
+  informational, personal use", "without modification or alteration".
+- Commons licences: CC BY and CC BY-SA require the author, the licence and a note of any changes (a crop or a removed
+  background is a change); CC BY-SA also requires a changed photo to be shared under the same licence. A licence
+  covers the photo's copyright only, not logos on the jerseys or the player's own rights.
+
 ## 2026-11-11: player pages, files on the laptop
 
 **Decision (owner, 2026-11-11).** Load B of the question inbox:
@@ -249,6 +273,8 @@ That dbt's rebuilds are the specific source of our 264 MB is our inference, not 
 - **Risk accepted.** The owner understands the risk.
 - **Use.** The project is for the owner's personal use.
 - **Public content.** Anything public contains facts and figures only, with no NHL logos, photos or video.
+  **Changed 2026-11-11** (see "2026-11-11: logos, headshots and photos in posts"): NHL team logos, NHL API headshots
+  and free-licence photos are now allowed, credited in the caption. Video is still not covered.
 
 What the NHL Terms of Service say ([nhl.com/info/terms-of-service](https://www.nhl.com/info/terms-of-service),
 last updated 29 October 2025, read on 2026-10-14):

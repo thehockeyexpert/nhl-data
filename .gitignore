@@ -256,3 +256,6 @@ style/*.html
 
 # The owner's question inbox stays on the laptop (post ideas before they are posted)
 analyst/question_inbox.md
+
+# NHL logos, headshots and photos for posts stay on the laptop: never commit an NHL image (decided 2026-11-11)
+assets/

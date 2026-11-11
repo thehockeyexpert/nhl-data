@@ -11,7 +11,13 @@ The owner is new to Python and dbt: explain changes in plain language.
 - GeoNames (birthplace coordinates) is CC BY 4.0: anything public built from it credits GeoNames. No paid or per-request geocoding services.
 - No NHL data files in the public repo: no API responses, extracts or exports, in any format. The repo holds code, docs and our own decisions (seeds) only.
 - Nothing from the NHL is printed in logs: ingest output reports counts, timings and status only, never response content.
-- The NHL endpoints are unofficial and unlicensed, used for personal use only. Public content is facts and figures only: no NHL logos, photos or video. See `docs/decisions.md` (2026-10-14).
+- The NHL endpoints are unofficial and unlicensed, used for personal use only. See `docs/decisions.md` (2026-10-14).
+- Public content is facts and figures, plus these images only, each credited in the caption (decided 2026-11-11,
+  `docs/decisions.md`; rules in `style/style_guide.md`, "NHL logos and headshots"): NHL team logos (the NHL's SVGs),
+  player headshots from the NHL API, Wikimedia Commons photos under CC BY, CC BY-SA or public domain (photographer
+  and licence credited), and photos the owner saves in `assets/nhl/photos/` with a `credit:` field.
+  Never: automatic downloads from Getty, Imagn, team sites or image searches; AI-generated pictures of real players;
+  any NHL image committed to the repo (`assets/` is git-ignored). Video (NHL footage) is not covered: not allowed.
 - Budget: total running costs aim for about $10 a month and never exceed $30. Before adding anything that could cost money (a service, a paid plan, a heavier schedule, a larger load), estimate its monthly cost and ask the owner first. See `docs/decisions.md` (2026-10-15).
 
 ## Layers (schemas in the single MotherDuck database `nhl`)
@@ -53,7 +59,8 @@ The owner is new to Python and dbt: explain changes in plain language.
 - **Every post is a six-slide story carousel** ("Story carousels" in `style/style_guide.md`): hook, reveal,
   comparison, trend, turning_point, conclusion, in that order. A slide is skipped only when there's no honest data for it.
 - The only fixed element on a slide is the handle, bottom right: no header label, slide counter, hairline frame or
-  source line. The NHL credit ("Data: NHL") goes in the caption.
+  source line. The NHL credit goes in the caption: "Data: NHL.", or "Data, logos and headshots: NHL." when an NHL logo
+  or headshot is used, plus every photo's credit.
 - Mixed mode by default (hook, reveal, conclusion dark; the rest light); `--mode light|dark` overrides. The accent is
   the subject's team or country, with the contrast rule.
 - **Drafting a story** (`style/new_post_prompt.md`): first test the story against MotherDuck and say so if it doesn't

@@ -27,7 +27,7 @@ All positions are in pixels on the 1080 x 1350 canvas.
 ## Story carousels (the default format for every post)
 Reference: https://claude.ai/artifact/9EWfk3pyxgcp4YMmzZXwLR, and `story_reference.html` in this folder, which has every coordinate and size. It overrides the Studio Edition section wherever the two differ.
 
-**Frame (overrides the Studio Edition frame):** margins are 80 px left and right. There is NO header label, NO slide counter, NO hairlines at the top or bottom, and NO source line. The only fixed element is the handle, at the bottom right (x = 1000, right-aligned, y = 1290, Barlow Condensed SemiBold 24 px, uppercase, muted). The NHL data credit goes in the post caption or comments, not on the image. Panels and full-bleed backgrounds run to the edges of the canvas.
+**Frame (overrides the Studio Edition frame):** margins are 80 px left and right. There is NO header label, NO slide counter, NO hairlines at the top or bottom, and NO source line. The only fixed element is the handle, at the bottom right (x = 1000, right-aligned, y = 1290, Barlow Condensed SemiBold 24 px, uppercase, muted). The NHL credit (data, logos and headshots) goes in the post caption or comments, not on the image. Panels and full-bleed backgrounds run to the edges of the canvas.
 
 **Six slides, always in this order.** Every post tells one story. Skip a slide only if there's no honest data for it.
 | # | Role | Treatment | Purpose |
@@ -47,7 +47,7 @@ Reference: https://claude.ai/artifact/9EWfk3pyxgcp4YMmzZXwLR, and `story_referen
 - Every number comes from a query, saved under `facts:` in the carousel YAML and re-checked on render.
 - No claims that aren't in the data, such as tactics or who plays on which unit.
 - Headlines are short and declarative, and the question on slide F has to be something people can answer in the comments.
-- No photos or logos. The rink drawing and the typography are the visuals.
+- Logos and headshots are optional extras (see **NHL logos and headshots** below). The typography and the data stay the main visual.
 - **As clean as possible.** Every piece of text has to add something new. Never repeat a fact already on the slide: a label and a sentence must not say the same thing, a question isn't repeated as a graphic, and a closing paragraph doesn't restate the stat column. When in doubt, cut it.
 
 ## Palettes
@@ -73,9 +73,29 @@ Alternate between light and dark.
 - **One shade on every slide:** a carousel's accent is the same colour on light and dark slides. It needs contrast of at least 3:1 (the WCAG minimum for large text) against both backgrounds and both comparison panels. If the team colour falls short anywhere, its lightness changes, keeping the hue and saturation, to the shade that reads best on all of them. No colour reaches 4.5:1 on both a light and a dark background, so the accent is for large text, numbers and shapes only; small text stays ink or muted. Examples: Lightning navy becomes a brighter blue, Bruins gold a deeper gold, Kings black a mid grey.
 
 ## Rules for anything posted
-- Facts and figures from the NHL data only, with no NHL or team logos or photos.
+- Facts and figures from the NHL data only. NHL team logos and player headshots are allowed, following the section below.
+- When a post uses any logo or headshot, the caption credits: "Data, logos and headshots: NHL." Otherwise it credits "Data: NHL."
 - Birthplace maps credit GeoNames: "Place data: GeoNames.org (CC BY 4.0)".
 - No MoneyPuck data.
+
+## NHL logos and headshots
+Anthony decided on 11 Nov 2026 to allow NHL team logos and player headshots for this personal account, credited to the NHL in the caption.
+
+**Sources (only these):**
+- Team logos are the NHL's own SVGs: `https://assets.nhle.com/logos/nhl/svg/{TEAM}_light.svg` on light slides and `{TEAM}_dark.svg` on dark slides.
+- Player headshots are the cut-out PNGs the NHL API gives for each player (the `headshot` field of `api-web.nhle.com/v1/player/{id}/landing`), using the current season's photo.
+- Action and cut-out player photos come from Wikimedia Commons, using only photos under a free licence (CC BY, CC BY-SA or public domain). The photographer and licence go in the caption, for example "Photo: Jane Smith / Wikimedia Commons, CC BY-SA 4.0".
+- Anthony may also supply a photo himself by saving it in `assets/nhl/photos/` and naming it in the YAML. Its source goes in a `credit:` field and in the caption.
+- Never pull photos automatically from Getty, Imagn, team websites or image searches, and never use AI-generated pictures of real players.
+
+**Storage:** download them into a local `assets/nhl/` folder (`logos/` and `headshots/`), which is git-ignored. The repo is public, so NHL images are never committed.
+
+**Placement:**
+- At most one headshot or photo per slide, and at most one logo per slide. Photos may be cut out (background removed) and placed like the headshot, or used as a full-height panel on one side of the hook.
+- A headshot goes on the hook or the reveal. It is bottom-aligned to the canvas edge on the right, at most 60% of the canvas height, and never covers the headline, the big number or the handle.
+- A team logo is small (80 to 120 px tall), placed beside the team or player name or in the top-left margin. Two logos may sit side by side on the comparison slide for a head-to-head.
+- Never recolour, stretch, crop, outline or add effects to a logo. Keep clear space around it equal to a quarter of its height.
+- The accent rule still applies. The logo brings its own colours, so the accent stays on the single highlighted data point.
 
 ## Team colours
 Taken from each team's primary or signature colour, from memory, except the Canucks blue #07346F, which Anthony chose. Check any colour against the team's brand page before relying on it.

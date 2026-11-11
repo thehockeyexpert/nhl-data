@@ -1,265 +1,308 @@
 {
-  "canvas": {
-    "width_px": 1080,
-    "height_px": 1350,
-    "format": "PNG"
+ "canvas": {
+  "width_px": 1080,
+  "height_px": 1350,
+  "format": "PNG"
+ },
+ "palettes": {
+  "fresh_ice_light": {
+   "background": "#F4F7F9",
+   "ink": "#0E1A26",
+   "muted_text": "#5B6977",
+   "bar_track": "#E1E7EC",
+   "grid": "#DCE3E9",
+   "default_accent": "#FF5A36",
+   "row_tint": "#E9EEF2"
   },
-  "palettes": {
-    "fresh_ice_light": {
-      "background": "#F4F7F9",
-      "ink": "#0E1A26",
-      "muted_text": "#5B6977",
-      "bar_track": "#E1E7EC",
-      "grid": "#DCE3E9",
-      "default_accent": "#FF5A36",
-      "row_tint": "#E9EEF2"
-    },
-    "fresh_ice_dark": {
-      "background": "#0E1A26",
-      "ink": "#F4F7F9",
-      "muted_text": "#9AA8B6",
-      "bar_track": "#1E2D3C",
-      "grid": "#22313F",
-      "default_accent": "#FF5A36",
-      "row_tint": "#14222F"
-    }
-  },
-  "fonts": {
-    "title": "Barlow Condensed Bold",
-    "label": "Barlow Condensed Bold, uppercase, letter-spacing 0.1em",
-    "body_and_numbers": "Barlow SemiBold/Bold",
-    "source": "Google Fonts, free (OFL)"
-  },
-  "accent_rule": {
-    "min_contrast": 3.0,
-    "method": "One shade per accent, the same on light and dark slides. If the team colour's WCAG contrast is below the minimum on any background (both palettes and both comparison panels), change its lightness, keeping hue and saturation, to the shade whose lowest contrast is highest (about 3.4:1)."
-  },
-  "team_accents": {
-    "ANA": {
-      "team": "Anaheim Ducks",
-      "accent": "#FC4C02",
-      "name": "Orange"
-    },
-    "BOS": {
-      "team": "Boston Bruins",
-      "accent": "#FFB81C",
-      "name": "Gold"
-    },
-    "BUF": {
-      "team": "Buffalo Sabres",
-      "accent": "#003087",
-      "name": "Royal blue"
-    },
-    "CGY": {
-      "team": "Calgary Flames",
-      "accent": "#C8102E",
-      "name": "Red"
-    },
-    "CAR": {
-      "team": "Carolina Hurricanes",
-      "accent": "#CE1126",
-      "name": "Red"
-    },
-    "CHI": {
-      "team": "Chicago Blackhawks",
-      "accent": "#CF0A2C",
-      "name": "Red"
-    },
-    "COL": {
-      "team": "Colorado Avalanche",
-      "accent": "#6F263D",
-      "name": "Burgundy"
-    },
-    "CBJ": {
-      "team": "Columbus Blue Jackets",
-      "accent": "#002654",
-      "name": "Union blue"
-    },
-    "DAL": {
-      "team": "Dallas Stars",
-      "accent": "#006847",
-      "name": "Victory green"
-    },
-    "DET": {
-      "team": "Detroit Red Wings",
-      "accent": "#CE1126",
-      "name": "Red"
-    },
-    "EDM": {
-      "team": "Edmonton Oilers",
-      "accent": "#FF4C00",
-      "name": "Orange"
-    },
-    "FLA": {
-      "team": "Florida Panthers",
-      "accent": "#C8102E",
-      "name": "Red"
-    },
-    "LAK": {
-      "team": "Los Angeles Kings",
-      "accent": "#111111",
-      "name": "Black"
-    },
-    "MIN": {
-      "team": "Minnesota Wild",
-      "accent": "#154734",
-      "name": "Forest green"
-    },
-    "MTL": {
-      "team": "Montréal Canadiens",
-      "accent": "#AF1E2D",
-      "name": "Red"
-    },
-    "NSH": {
-      "team": "Nashville Predators",
-      "accent": "#FFB81C",
-      "name": "Gold"
-    },
-    "NJD": {
-      "team": "New Jersey Devils",
-      "accent": "#CE1126",
-      "name": "Red"
-    },
-    "NYI": {
-      "team": "New York Islanders",
-      "accent": "#00539B",
-      "name": "Royal blue"
-    },
-    "NYR": {
-      "team": "New York Rangers",
-      "accent": "#0038A8",
-      "name": "Blue"
-    },
-    "OTT": {
-      "team": "Ottawa Senators",
-      "accent": "#DA1A32",
-      "name": "Red"
-    },
-    "PHI": {
-      "team": "Philadelphia Flyers",
-      "accent": "#F74902",
-      "name": "Orange"
-    },
-    "PIT": {
-      "team": "Pittsburgh Penguins",
-      "accent": "#FCB514",
-      "name": "Gold"
-    },
-    "SJS": {
-      "team": "San Jose Sharks",
-      "accent": "#006D75",
-      "name": "Teal"
-    },
-    "SEA": {
-      "team": "Seattle Kraken",
-      "accent": "#99D9D9",
-      "name": "Ice blue"
-    },
-    "STL": {
-      "team": "St. Louis Blues",
-      "accent": "#002F87",
-      "name": "Blue"
-    },
-    "TBL": {
-      "team": "Tampa Bay Lightning",
-      "accent": "#002868",
-      "name": "Blue"
-    },
-    "TOR": {
-      "team": "Toronto Maple Leafs",
-      "accent": "#00205B",
-      "name": "Blue"
-    },
-    "UTA": {
-      "team": "Utah Mammoth",
-      "accent": "#69B3E7",
-      "name": "Mountain blue"
-    },
-    "VAN": {
-      "team": "Vancouver Canucks",
-      "accent": "#07346F",
-      "name": "Blue"
-    },
-    "VGK": {
-      "team": "Vegas Golden Knights",
-      "accent": "#B4975A",
-      "name": "Gold"
-    },
-    "WSH": {
-      "team": "Washington Capitals",
-      "accent": "#C8102E",
-      "name": "Red"
-    },
-    "WPG": {
-      "team": "Winnipeg Jets",
-      "accent": "#004C97",
-      "name": "Aviator blue"
-    }
-  },
-  "country_accents": {
-    "CAN": {
-      "country": "Canada",
-      "accent": "#D52B1E",
-      "name": "Canada red"
-    }
-  },
-  "layout": {
-    "name": "studio_edition",
-    "margin_px": 80,
-    "header": {
-      "label_y": 104,
-      "label_size": 26,
-      "rule_y": 132
-    },
-    "footer": {
-      "rule_y": 1248,
-      "text_y": 1290,
-      "text_size": 22
-    },
-    "hairline": {
-      "width": 2,
-      "opacity_light": 0.14,
-      "opacity_dark": 0.16
-    },
-    "rounded_corners": false,
-    "reference": "studio_reference.html"
-  },
-  "story": {
-    "slides": [
-      "hook",
-      "reveal",
-      "comparison",
-      "trend",
-      "turning_point",
-      "conclusion"
-    ],
-    "default_mode": "mixed",
-    "mixed": {
-      "hook": "dark",
-      "reveal": "dark",
-      "comparison": "light",
-      "trend": "light",
-      "turning_point": "light",
-      "conclusion": "dark"
-    },
-    "comparison_panel": {
-      "light": "#E4EAF0",
-      "dark": "#202A35"
-    },
-    "reference": "story_reference.html",
-    "frame": {
-      "header": false,
-      "slide_counter": false,
-      "hairlines": false,
-      "source_line": false,
-      "handle": {
-        "x_right": 1000,
-        "y": 1290,
-        "size": 24
-      },
-      "data_credit": "caption or comments"
-    },
-    "comparison_panel_top": 0,
-    "clean_text_rule": "Every piece of text must add something new; never repeat a fact already on the slide."
+  "fresh_ice_dark": {
+   "background": "#0E1A26",
+   "ink": "#F4F7F9",
+   "muted_text": "#9AA8B6",
+   "bar_track": "#1E2D3C",
+   "grid": "#22313F",
+   "default_accent": "#FF5A36",
+   "row_tint": "#14222F"
   }
+ },
+ "fonts": {
+  "title": "Barlow Condensed Bold",
+  "label": "Barlow Condensed Bold, uppercase, letter-spacing 0.1em",
+  "body_and_numbers": "Barlow SemiBold/Bold",
+  "source": "Google Fonts, free (OFL)"
+ },
+ "accent_rule": {
+  "min_contrast": 3.0,
+  "method": "One shade per accent, the same on light and dark slides. If the team colour's WCAG contrast is below the minimum on any background (both palettes and both comparison panels), change its lightness, keeping hue and saturation, to the shade whose lowest contrast is highest (about 3.4:1)."
+ },
+ "team_accents": {
+  "ANA": {
+   "team": "Anaheim Ducks",
+   "accent": "#FC4C02",
+   "name": "Orange"
+  },
+  "BOS": {
+   "team": "Boston Bruins",
+   "accent": "#FFB81C",
+   "name": "Gold"
+  },
+  "BUF": {
+   "team": "Buffalo Sabres",
+   "accent": "#003087",
+   "name": "Royal blue"
+  },
+  "CGY": {
+   "team": "Calgary Flames",
+   "accent": "#C8102E",
+   "name": "Red"
+  },
+  "CAR": {
+   "team": "Carolina Hurricanes",
+   "accent": "#CE1126",
+   "name": "Red"
+  },
+  "CHI": {
+   "team": "Chicago Blackhawks",
+   "accent": "#CF0A2C",
+   "name": "Red"
+  },
+  "COL": {
+   "team": "Colorado Avalanche",
+   "accent": "#6F263D",
+   "name": "Burgundy"
+  },
+  "CBJ": {
+   "team": "Columbus Blue Jackets",
+   "accent": "#002654",
+   "name": "Union blue"
+  },
+  "DAL": {
+   "team": "Dallas Stars",
+   "accent": "#006847",
+   "name": "Victory green"
+  },
+  "DET": {
+   "team": "Detroit Red Wings",
+   "accent": "#CE1126",
+   "name": "Red"
+  },
+  "EDM": {
+   "team": "Edmonton Oilers",
+   "accent": "#FF4C00",
+   "name": "Orange"
+  },
+  "FLA": {
+   "team": "Florida Panthers",
+   "accent": "#C8102E",
+   "name": "Red"
+  },
+  "LAK": {
+   "team": "Los Angeles Kings",
+   "accent": "#111111",
+   "name": "Black"
+  },
+  "MIN": {
+   "team": "Minnesota Wild",
+   "accent": "#154734",
+   "name": "Forest green"
+  },
+  "MTL": {
+   "team": "Montréal Canadiens",
+   "accent": "#AF1E2D",
+   "name": "Red"
+  },
+  "NSH": {
+   "team": "Nashville Predators",
+   "accent": "#FFB81C",
+   "name": "Gold"
+  },
+  "NJD": {
+   "team": "New Jersey Devils",
+   "accent": "#CE1126",
+   "name": "Red"
+  },
+  "NYI": {
+   "team": "New York Islanders",
+   "accent": "#00539B",
+   "name": "Royal blue"
+  },
+  "NYR": {
+   "team": "New York Rangers",
+   "accent": "#0038A8",
+   "name": "Blue"
+  },
+  "OTT": {
+   "team": "Ottawa Senators",
+   "accent": "#DA1A32",
+   "name": "Red"
+  },
+  "PHI": {
+   "team": "Philadelphia Flyers",
+   "accent": "#F74902",
+   "name": "Orange"
+  },
+  "PIT": {
+   "team": "Pittsburgh Penguins",
+   "accent": "#FCB514",
+   "name": "Gold"
+  },
+  "SJS": {
+   "team": "San Jose Sharks",
+   "accent": "#006D75",
+   "name": "Teal"
+  },
+  "SEA": {
+   "team": "Seattle Kraken",
+   "accent": "#99D9D9",
+   "name": "Ice blue"
+  },
+  "STL": {
+   "team": "St. Louis Blues",
+   "accent": "#002F87",
+   "name": "Blue"
+  },
+  "TBL": {
+   "team": "Tampa Bay Lightning",
+   "accent": "#002868",
+   "name": "Blue"
+  },
+  "TOR": {
+   "team": "Toronto Maple Leafs",
+   "accent": "#00205B",
+   "name": "Blue"
+  },
+  "UTA": {
+   "team": "Utah Mammoth",
+   "accent": "#69B3E7",
+   "name": "Mountain blue"
+  },
+  "VAN": {
+   "team": "Vancouver Canucks",
+   "accent": "#07346F",
+   "name": "Blue"
+  },
+  "VGK": {
+   "team": "Vegas Golden Knights",
+   "accent": "#B4975A",
+   "name": "Gold"
+  },
+  "WSH": {
+   "team": "Washington Capitals",
+   "accent": "#C8102E",
+   "name": "Red"
+  },
+  "WPG": {
+   "team": "Winnipeg Jets",
+   "accent": "#004C97",
+   "name": "Aviator blue"
+  }
+ },
+ "country_accents": {
+  "CAN": {
+   "country": "Canada",
+   "accent": "#D52B1E",
+   "name": "Canada red"
+  }
+ },
+ "layout": {
+  "name": "studio_edition",
+  "margin_px": 80,
+  "header": {
+   "label_y": 104,
+   "label_size": 26,
+   "rule_y": 132
+  },
+  "footer": {
+   "rule_y": 1248,
+   "text_y": 1290,
+   "text_size": 22
+  },
+  "hairline": {
+   "width": 2,
+   "opacity_light": 0.14,
+   "opacity_dark": 0.16
+  },
+  "rounded_corners": false,
+  "reference": "studio_reference.html"
+ },
+ "story": {
+  "slides": [
+   "hook",
+   "reveal",
+   "comparison",
+   "trend",
+   "turning_point",
+   "conclusion"
+  ],
+  "default_mode": "mixed",
+  "mixed": {
+   "hook": "dark",
+   "reveal": "dark",
+   "comparison": "light",
+   "trend": "light",
+   "turning_point": "light",
+   "conclusion": "dark"
+  },
+  "comparison_panel": {
+   "light": "#E4EAF0",
+   "dark": "#202A35"
+  },
+  "reference": "story_reference.html",
+  "frame": {
+   "header": false,
+   "slide_counter": false,
+   "hairlines": false,
+   "source_line": false,
+   "handle": {
+    "x_right": 1000,
+    "y": 1290,
+    "size": 24
+   },
+   "data_credit": "caption or comments: 'Data: NHL.', or 'Data, logos and headshots: NHL.' when any NHL image is used"
+  },
+  "comparison_panel_top": 0,
+  "clean_text_rule": "Every piece of text must add something new; never repeat a fact already on the slide."
+ },
+ "nhl_images": {
+  "allowed": true,
+  "decided": "2026-11-11",
+  "logo_url": "https://assets.nhle.com/logos/nhl/svg/{TEAM}_{light|dark}.svg",
+  "headshot_source": "headshot field of https://api-web.nhle.com/v1/player/{id}/landing",
+  "never": [
+   "automatic downloads from Getty, Imagn, team sites or image searches",
+   "AI-generated pictures of real players",
+   "recolouring, stretching or effects on logos"
+  ],
+  "local_folder": "assets/nhl/ (git-ignored, never committed)",
+  "limits": {
+   "headshots_per_carousel": 1,
+   "logos_per_slide": 1,
+   "logos_per_comparison_slide": 2
+  },
+  "headshot": {
+   "slides": [
+    "hook",
+    "reveal"
+   ],
+   "anchor": "bottom-right",
+   "max_height_pct": 60,
+   "must_not_cover": [
+    "headline",
+    "big_number",
+    "handle"
+   ]
+  },
+  "logo": {
+   "height_px": [
+    80,
+    120
+   ],
+   "clear_space": "0.25 x logo height",
+   "variant": "light on light slides, dark on dark slides"
+  },
+  "yaml_field": "optional per-slide image: {type: headshot|logo|photo, player_id or team or file, position, credit}",
+  "photo_sources": [
+   "Wikimedia Commons, free licence only (CC BY, CC BY-SA, public domain), photographer and licence credited in caption",
+   "a file Anthony saves in assets/nhl/photos/ with a credit: field"
+  ]
+ }
 }

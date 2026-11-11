@@ -3,6 +3,19 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-11: player pages, files on the laptop
+
+**Decision (owner, 2026-11-11).** Load B of the question inbox:
+the NHL's player page (`api-web.nhle.com/v1/player/{id}/landing`) for everyone in the player list (23,575 people,
+about 6.5 hours at our pace, no cost), to answer questions about players' paths before the NHL (junior, college,
+minor and major pro leagues) and senior international tournaments.
+- **Full pages** stay as gzip files on the owner's laptop (`NHL_PLAYER_DIR`, default
+  `~/nhl-data-files/player_pages/<player_id>.json.gz`), exactly as received, as for play-by-play. About 30 KB each.
+- **Only the season totals** (one entry per season, league and team) go to MotherDuck:
+  `raw.nhl_web__player_season_total`, one row per entry exactly as received, with the page's URL and hash.
+  Expected: a few hundred thousand rows, well within the current plan.
+- Not in the daily run: careers change slowly, so the pages are refreshed by hand (`--refresh`) when needed.
+
 ## 2026-11-11: daily run moved to 07:00 UTC
 
 **Decision (owner, 2026-11-11).** `.github/workflows/daily.yml` runs at 07:00 UTC instead of 11:00 UTC (cron

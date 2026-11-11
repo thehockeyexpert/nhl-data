@@ -234,3 +234,43 @@ def replace_text_file(con, table, source_url, path):
         [source_url, file_hash],
     )
     return con.execute(f"SELECT count(*) FROM {qualified}").fetchone()[0]
+
+
+def ensure_player_rows_table(con, table):
+    """Create a raw table of player-page rows (one row per entry, see append_player_rows_file) if it does not exist."""
+    qualified = _qualified(table)
+    con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
+    con.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {qualified} (
+            source_url   VARCHAR NOT NULL,
+            loaded_at    TIMESTAMPTZ NOT NULL,
+            player_id    BIGINT NOT NULL,
+            payload_hash VARCHAR NOT NULL,
+            entry        JSON NOT NULL
+        )
+        """
+    )
+    return qualified
+
+
+def append_player_rows_file(con, table, path):
+    """Bulk-load one local Parquet file of player-page entries into a raw table. Returns the number of rows added.
+
+    Used for player pages, like play-by-play (docs/decisions.md, 2026-11-11): the full responses stay as compressed
+    files on the laptop and only the entries we model go to MotherDuck, each exactly as received, with the URL and
+    hash of the response it came from. A response already loaded (same player and payload_hash) is skipped.
+    """
+    qualified = ensure_player_rows_table(con, table)
+    literal_path = str(path).replace("'", "''")
+    return con.execute(
+        f"""
+        INSERT INTO {qualified}
+        SELECT source_url, now(), player_id, payload_hash, entry
+        FROM read_parquet('{literal_path}') AS new
+        WHERE NOT EXISTS (
+            SELECT 1 FROM {qualified} AS old
+            WHERE old.player_id = new.player_id AND old.payload_hash = new.payload_hash
+        )
+        """
+    ).fetchone()[0]

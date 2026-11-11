@@ -20,6 +20,8 @@ The owner is new to Python and dbt: explain changes in plain language.
   refresh, not appended (decided 2026-10-19).
   Exception: `nhl_web__pbp_shot` holds one row per shot event, each exactly as received; the full play-by-play
   responses stay as gzip files on the owner's laptop, outside the repo (decided 2026-11-10).
+  Exception: `nhl_web__player_season_total` holds one row per season-total entry of a player page, each exactly as
+  received; the full pages stay as gzip files on the laptop (decided 2026-11-11).
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.
 - `marts`: analysis-ready tables built from staging (`fct_games`, `dim_teams`, `dim_team_season`, `dim_birthplaces`).
 - `reference`: dbt seeds, small hand-written CSVs in `dbt/seeds/` holding our own decisions (labels, overrides, exceptions). Never NHL data.
@@ -104,6 +106,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
 - Ingest play-by-play shots (full files kept on the laptop, outside the repo), one season: `uv run python -m ingest.play_by_play --season 20252026`; many seasons, resumable: `uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008`; nightly on GitHub, new games plus the last 3 days': `uv run python -m ingest.play_by_play --season 20262027 --recent-days 3`; after a laptop load, `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`
 - Ingest shootout totals per skater (2005-06 onward), many seasons, resumable: `uv run python -m ingest.backfill --job shootouts --from 20262027 --to 20052006`; nightly: `uv run python -m ingest.shootouts --season 20262027`
+- Ingest player pages (every player's seasons in every league; full pages kept on the laptop, outside the repo): `uv run python -m ingest.player_pages` (resumable; `--limit 50` for a trial)
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`

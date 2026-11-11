@@ -145,3 +145,58 @@ seeds:
         data_tests: [not_null]
       - name: approved_on
         description: The date the owner approved the row. Empty while proposed.
+
+  - name: venues
+    description: >
+      Our list of NHL venues by building (arena definition, owner 2026-11-11): one arena is one physical building on
+      one site; a rename or sponsor rebrand keeps it the same arena, a move or a complete rebuild makes a new one.
+      building_id groups the NHL's venue names that are the same building. So far: the 14 venue names outside North
+      America (the international regular-season games, 1997 onward) and the 32 arenas of 2026-27 with every earlier
+      name they have in fct_games; older arenas to follow, each with a source.
+    columns:
+      - name: venue_name
+        description: The venue name exactly as in fct_games.
+        data_tests: [unique, not_null]
+      - name: building_id
+        description: Our ID for the physical building; the same for every name it has had.
+        data_tests: [not_null]
+      - name: building_name
+        description: The building's current or last name.
+        data_tests: [not_null]
+      - name: city
+        description: The city, in English.
+        data_tests: [not_null]
+      - name: country
+        description: Three-letter country code, as in dim_players.birth_country (CAN, USA, SWE).
+        data_tests: [not_null]
+      - name: opened_year
+        description: The year the building opened, where a source gives it; empty otherwise.
+      - name: latitude
+        description: The building's latitude in decimal degrees, from its Wikipedia article; empty where not looked up.
+      - name: longitude
+        description: The building's longitude in decimal degrees, from its Wikipedia article; empty where not looked up.
+      - name: note
+        description: Anything the source says about a rebuild, a replaced building or shared use, in our words.
+      - name: source
+        description: Where the building, its names and its location come from, and when it was read.
+        data_tests: [not_null]
+
+  - name: ebug_appearances
+    description: >
+      NHL games in which an amateur emergency backup goalie (EBUG) played (definition, owner 2026-11-11), from
+      Wikipedia's list (the source the owner approved), matched to our player IDs and the NHL's goalie game records.
+    columns:
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [unique, not_null]
+      - name: game_date
+        description: The game date in the NHL's records.
+        data_tests: [not_null]
+      - name: team_abbrev
+        description: The team he played for.
+        data_tests: [not_null]
+      - name: source
+        description: Where the appearance is listed, and when it was read.
+        data_tests: [not_null]
+      - name: note
+        description: Any difference between the source and the NHL's records.

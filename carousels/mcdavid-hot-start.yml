@@ -1,5 +1,11 @@
-# Connor McDavid's start to 2026-27. Draft by Claude, 2026-11-11: every number below comes from a query listed under
-# facts, run against MotherDuck that day. Edit the words freely; if you change a number, change its fact too.
+# Is Connor McDavid on another planet? His start to 2026-27, measured against the league and against history.
+# Draft by Claude, 2026-11-11: every number below comes from a query listed under facts, run against MotherDuck that
+# day. Edit the words freely; if you change a number, change its fact too.
+#
+# Method (for the standard-deviation slides): points per game of every skater with at least half the most team games
+# played so far (D05 for a season in progress), regular season. History: every season cut off at the same share of
+# its games as 2026-27 had played by 9 November (285 of 1,344, 21%), so early-season spreads are compared with
+# early-season spreads.
 accent: EDM
 mode: dark-light             # slide 1 dark, slide 2 light, and so on
 label: "2026-27 · Connor McDavid"
@@ -7,46 +13,49 @@ through: 2026-11-09          # charts and facts count games up to this date
 
 slides:
   - type: title
-    title: 48 points in 19 games
-    subtitle: Connor McDavid's start to the 2026-27 season
+    title: Is McDavid on another planet?
+    subtitle: Here's what he's done so far this season...
 
   - type: chart
     chart: points_leaders
     season: 20262027
     top: 5
-    title: 12 points clear
-    subtitle: Regular-season points, games through 9 November
+    title: 48 points in 19 games
+    subtitle: 12 more than anyone else in the league
 
   - type: chart
     chart: points_histogram
     player_id: 8478402
     season: 20262027
     highlight: 0
-    title: A point in every game
-    subtitle: McDavid's 19 games by points scored
+    title: Not one night off
+    subtitle: A point in all 19 games
+
+  - type: chart
+    chart: points_per_game_spread
+    season: 20262027
+    player_id: 8478402
+    title: 5.9 standard deviations
+    subtitle: Above the average skater in points per game (569 skaters, 10+ games)
+
+  - type: chart
+    chart: start_outliers
+    season: 20262027
+    top: 5
+    highlight: 8478402
+    title: In Lemieux and Gretzky territory
+    subtitle: Standard deviations above average, every season at the same point (21% of games)
 
   - type: text
-    title: Tied for sixth, all time
-    subtitle: Most points in a player's first 19 games of a season
+    title: In on 62% of Edmonton's goals
     body: |
-      - Mario Lemieux, 57 (1988-89)
-      - Wayne Gretzky, 54 (1983-84)
-      - Mario Lemieux, 53 (1995-96)
-      - Wayne Gretzky, 51 (1984-85)
-      - Mario Lemieux, 50 (1992-93)
-      - Connor McDavid, 48 (2026-27), with Wayne Gretzky (1987-88) and Joe Malone (1917-18)
+      48 of the Oilers' 77 goals have a McDavid point on them.
 
-  - type: text
-    title: 1,268 career points
-    body: |
-      In 813 regular-season games, this season included.
-
-      Before this season he averaged 1.54 points per game, third all time behind Wayne Gretzky (1.92) and Mario
-      Lemieux (1.88). Minimum 400 games.
+      Next best in the league: Kirill Kaprizov, in on 49% of Minnesota's.
 
   - type: end
-    title: Can he keep it going?
-    body: Regular season only, games through 9 November 2026.
+    title: Another planet? The numbers say yes.
+    body: Regular season, games through 9 November 2026.
 
 facts:
   - claim: McDavid has 19 games, 11 goals, 37 assists and 48 points in 2026-27
@@ -55,14 +64,14 @@ facts:
       where player_id = 8478402 and season = 20262027 and game_type = 2 and game_date <= '2026-11-09'
     value: [19, 11, 37, 48]
 
-  - claim: He has a point in every one of those games (games with no points)
+  - claim: A point in every one of those games (games with no points)
     sql: >
       select count(*) from marts.fct_skater_games
       where player_id = 8478402 and season = 20262027 and game_type = 2 and game_date <= '2026-11-09'
         and points = 0
     value: 0
 
-  - claim: 12 points clear of second place (top two scorers, goalies included, D15)
+  - claim: 12 more points than anyone else (top two scorers, goalies included, D15)
     sql: >
       with scoring as (
         select player_id, goals + assists as points from marts.fct_skater_games
@@ -75,39 +84,75 @@ facts:
       group by all order by pts desc limit 2
     value: [[Connor McDavid, 48], [Leon Draisaitl, 36]]
 
-  - claim: Most points in a player's first 19 games of a season (top 8; McDavid tied for sixth)
+  - claim: >-
+      5.9 standard deviations above the average skater in points per game; 569 skaters with at least 10 games
+      (half the most team games, 20)
     sql: >
       with g as (
-        select player_id, season, points,
-          row_number() over (partition by player_id, season order by game_date, game_id) as n
-        from marts.fct_skater_games where game_type = 2 and game_date <= '2026-11-09'
-      ), first19 as (
-        select player_id, season, sum(points) as pts from g where n <= 19 group by all having count(*) = 19
+        select player_id, team_id, points, game_id from marts.fct_skater_games
+        where season = 20262027 and game_type = 2 and game_date <= '2026-11-09'
+      ), most as (select max(n) as most from (select team_id, count(distinct game_id) as n from g group by team_id)),
+      p as (select player_id, count(*) as gp, sum(points) / count(*) as ppg from g group by player_id),
+      pool as (select p.* from p, most where gp >= most / 2.0)
+      select (select most from most), count(*),
+        round(((select ppg from p where player_id = 8478402) - avg(ppg)) / stddev_samp(ppg), 1)
+      from pool
+    value: [20, 569, 5.9]
+
+  - claim: >-
+      The biggest outliers at this point of a season (21% of games), in standard deviations: McDavid second,
+      between Lemieux 1995-96 and Gretzky 1983-84
+    sql: >
+      with games as (
+        select season, game_date, row_number() over (partition by season order by game_date, game_id) as n,
+          count(*) over (partition by season) as total
+        from marts.fct_games where game_type = 2 and is_final and season < 20262027
+      ), cutoff as (
+        select season, min(game_date) as cutoff_date from games where n >= total * 285.0 / 1344 group by season
+        union all select 20262027, date '2026-11-09'
+      ), g as (
+        select s.season, s.player_id, s.team_id, s.points, s.game_id from marts.fct_skater_games s
+        join cutoff c on c.season = s.season and s.game_date <= c.cutoff_date where s.game_type = 2
+      ), most as (
+        select season, max(n) as most from (select season, team_id, count(distinct game_id) as n from g group by all)
+        group by season
+      ), p as (select season, player_id, count(*) as gp, sum(points) / count(*) as ppg from g group by all),
+      pool as (select p.* from p join most using (season) where gp >= most / 2.0),
+      z as (
+        select season, player_id,
+          (ppg - avg(ppg) over (partition by season)) / stddev_samp(ppg) over (partition by season) as z
+        from pool
       )
-      select f.season, p.full_name, f.pts from first19 f join marts.dim_players p using (player_id)
-      order by f.pts desc, f.season desc, p.full_name limit 8
+      select z.season, d.full_name, round(z.z, 1) from z join marts.dim_players d using (player_id)
+      order by z.z desc limit 5
     value:
-      - [19881989, Mario Lemieux, 57]
-      - [19831984, Wayne Gretzky, 54]
-      - [19951996, Mario Lemieux, 53]
-      - [19841985, Wayne Gretzky, 51]
-      - [19921993, Mario Lemieux, 50]
-      - [20262027, Connor McDavid, 48]
-      - [19871988, Wayne Gretzky, 48]
-      - [19171918, Joe Malone, 48]
+      - [19951996, Mario Lemieux, 7.3]
+      - [20262027, Connor McDavid, 5.9]
+      - [19831984, Wayne Gretzky, 5.8]
+      - [19992000, Jaromir Jagr, 5.7]
+      - [19881989, Mario Lemieux, 5.6]
 
-  - claim: 1,268 career points in 813 regular-season games, 2026-27 included
+  - claim: 21% of the season played (finished regular-season games by 9 November, of the 1,344 scheduled)
     sql: >
-      select count(*), sum(points) from marts.fct_skater_games
-      where player_id = 8478402 and game_type = 2 and game_date <= '2026-11-09'
-    value: [813, 1268]
+      select count(*), (select total_regular_season_games from marts.dim_seasons where season = 20262027),
+        round(100.0 * count(*) / 1344) from marts.fct_games
+      where season = 20262027 and game_type = 2 and is_final and game_date <= '2026-11-09'
+    value: [285, 1344, 21]
 
-  - claim: Career points per game through 2025-26, minimum 400 games (D05) - McDavid third behind Gretzky and Lemieux
+  - claim: In on 62% of Edmonton's goals (48 of 77); next best Kaprizov, 49% of Minnesota's
     sql: >
-      with t as (
-        select player_id, sum(points) as pts, count(*) as gp from marts.fct_skater_games
-        where game_type = 2 and season <= 20252026 group by player_id having count(*) >= 400
-      )
-      select p.full_name, round(t.pts / t.gp, 2) as ppg from t join marts.dim_players p using (player_id)
-      order by t.pts / t.gp desc limit 3
-    value: [[Wayne Gretzky, 1.92], [Mario Lemieux, 1.88], [Connor McDavid, 1.54]]
+      with g as (
+        select player_id, team_id, goals, points from marts.fct_skater_games
+        where season = 20262027 and game_type = 2 and game_date <= '2026-11-09'
+      ), team_goals as (
+        select team_id, sum(goals) as tg from (
+          select team_id, goals from g
+          union all
+          select team_id, coalesce(goals, 0) from marts.fct_goalie_games
+          where season = 20262027 and game_type = 2 and game_date <= '2026-11-09'
+        ) group by team_id
+      ), p as (select player_id, team_id, sum(points) as pts from g group by all)
+      select d.full_name, t.tg, p.pts, round(100.0 * p.pts / t.tg) from p join team_goals t using (team_id)
+      join marts.dim_players d using (player_id)
+      order by p.pts / t.tg desc limit 2
+    value: [[Connor McDavid, 77, 48, 62], [Kirill Kaprizov, 63, 31, 49]]

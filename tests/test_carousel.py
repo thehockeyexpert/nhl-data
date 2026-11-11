@@ -89,3 +89,14 @@ def test_posts_folder_refuses_the_repo(monkeypatch):
 def test_the_checked_in_carousels_are_valid():
     for path in (carousel.make_post.REPO_ROOT / "carousels").glob("*.yml"):
         carousel.load(path)  # raises on any problem
+
+
+def test_mean_sd_matches_duckdb_stddev_samp():
+    from instagram.charts import mean_sd
+
+    values = [0.2, 0.5, 0.5, 1.1, 2.53]
+    mean, sd = mean_sd(values)
+    expected_mean, expected_sd = duckdb.connect().execute(
+        "select avg(v), stddev_samp(v) from unnest($v) as t(v)", {"v": values}).fetchone()
+    assert mean == pytest.approx(expected_mean)
+    assert sd == pytest.approx(expected_sd)

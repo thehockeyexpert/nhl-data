@@ -61,6 +61,8 @@ Any slide can set its own `label`, and its own `mode` (light or dark), which win
 | `points_leaders` | A season's regular-season points leaders, goalies included | `season`, `top` (5), `highlight` (a player_id; the leader by default) |
 | `points_histogram` | One player's games by points scored: 0, 1, 2, 3, 4, 5+ | `player_id`, `season` (career if left out), `highlight` (a bucket 0-5; the tallest by default) |
 | `goals_per_game` | Goals per game, season by season, as a line | `player_id` (the league if left out), `from_season`, `to_season` |
+| `points_per_game_spread` | Every skater's points per game as a histogram, the player in the accent, lines at the average and +1 to +5 standard deviations | `season`, `player_id` |
+| `start_outliers` | The biggest outliers ever in points per game, in standard deviations, every season cut off at the same share of its games (needs `through`) | `season`, `top` (5), `highlight` (a player_id) |
 | `birthplaces_donut` | Players by birth country | `season` (every NHL player if left out), `top` (5), `highlight` (a country code; the accent if it is a country) |
 
 One thing per chart gets the accent; everything else is ink (the style guide's accent rule).

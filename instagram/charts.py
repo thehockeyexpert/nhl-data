@@ -20,6 +20,12 @@ Charts:
   player_id, season (all seasons if left out), highlight (a bucket from 0 to 5; the tallest if left out).
 - goals_per_game: a line of goals per game, season by season, regular season. Settings: player_id (the league if
   left out: all goals per game played, shootouts left out), from_season, to_season. The latest point gets the accent.
+- points_per_game_spread: every skater's points per game in a season as a histogram (skaters with at least half the
+  most team games, D05), the player's bar in the accent with his points per game and how many standard deviations
+  he is above the mean. Settings: season, player_id.
+- start_outliers: the biggest outliers ever in points per game, in standard deviations above that season's mean, with
+  every season cut off at the same share of its games as `season` has played by the carousel's `through` date
+  (required). Settings: season, top (5), highlight (a player_id in `season`; the top row by default).
 - birthplaces_donut: where players were born, by country (`birth_country`, D24), as shares of a donut. Settings:
   season (the players who played a regular-season game that season; every NHL player if left out), top (5 countries,
   the rest grouped as Other), highlight (a country code; the carousel's accent if it is a country, else the biggest).
@@ -82,11 +88,7 @@ def points_leaders(c, con, top_y, bottom_y, through, season, top=5, highlight=No
         if highlight not in ids:
             raise SystemExit(f"points_leaders: player {highlight} is not in the top {top} of {season}")
         index = ids.index(highlight)
-    # bar_rows stacks its rows up from the bottom it is given; give it a bottom that centres them in the free space.
-    block = len(rows) * (ROW_TEXT_PX * 1.55 + 6 + TRACK_PX) + (len(rows) - 1) * ROW_GAP_PX
-    free_top, free_bottom = top_y + 30, bottom_y - FOOTER_PX - 25
-    bottom = free_bottom - max(0, (free_bottom - free_top - block) / 2) + FOOTER_PX + 25
-    bar_rows(c.ax, c.colours, c.font, [(name, points) for _, name, points in rows], bottom, highlight=index)
+    bar_rows_centred(c, [(name, points) for _, name, points in rows], top_y, bottom_y, index)
 
 
 # ---- points_histogram ----
@@ -209,6 +211,156 @@ def goals_per_game(c, con, top_y, bottom_y, through, player_id=None, from_season
     c.ax.plot(xs[-1], ys[-1], "o", color=c.colours["accent_shape"], markersize=_px_to_pt(28))
     _text(c, xs[-1], ys[-1] - 34, f"{values[-1]:.2f}", "number", 46, c.colours["accent_text"],
           ha="right" if len(series) > 1 else "center")
+
+
+# ---- points_per_game_spread and start_outliers ----
+
+POOL_SQL = """
+    -- skaters with at least half the most team games played so far (D05 for a season in progress)
+    with g as (
+        select player_id, team_id, points, game_id from marts.fct_skater_games
+        where season = $season and game_type = 2 and ($through is null or game_date <= $through)
+    ), most_team_games as (
+        select max(n) as most from (select team_id, count(distinct game_id) as n from g group by team_id)
+    ), p as (
+        select player_id, count(*) as gp, sum(points) as pts, sum(points) / count(*) as ppg from g group by player_id
+    )
+    select p.player_id, players.full_name, p.gp, p.pts, p.ppg
+    from p cross join most_team_games
+    inner join marts.dim_players as players using (player_id)
+    where p.gp >= most_team_games.most / 2.0
+"""
+
+
+def ppg_pool(con, season, through=None):
+    """[(player_id, name, games, points, points per game)] of the season's skaters with at least half the most team
+    games played (D05), regular season."""
+    rows = con.execute(POOL_SQL, {"season": season, "through": through}).fetchall()
+    if len(rows) < 2:
+        raise SystemExit(f"Not enough skaters in {season} to measure a spread")
+    return rows
+
+
+def mean_sd(values):
+    """Mean and sample standard deviation (DuckDB's stddev_samp)."""
+    mean = sum(values) / len(values)
+    return mean, math.sqrt(sum((v - mean) ** 2 for v in values) / (len(values) - 1))
+
+
+@chart
+def points_per_game_spread(c, con, top_y, bottom_y, through, season, player_id):
+    """Every pool skater's points per game in 0.1-wide bins; the player's bin gets the accent, with his number and
+    how many standard deviations he is above the mean. Thin lines mark the mean and +1 to +5 SD."""
+    rows = ppg_pool(con, season, through)
+    ppgs = [float(ppg) for *_, ppg in rows]
+    mean, sd = mean_sd(ppgs)
+    mine = next((float(ppg) for pid, *_, ppg in rows if pid == player_id), None)
+    if mine is None:
+        raise SystemExit(f"points_per_game_spread: player {player_id} is not in the {season} pool")
+    z = (mine - mean) / sd
+    width_bins = 0.1
+    n_bins = int(max(ppgs) / width_bins) + 1
+    counts = [0] * n_bins
+    for value in ppgs:
+        counts[min(int(value / width_bins), n_bins - 1)] += 1
+    mine_bin = min(int(mine / width_bins), n_bins - 1)
+
+    width = _width()
+    left, right = PAD_SIDE, width - PAD_SIDE
+    caption_y = bottom_y - 32 - 40
+    sd_label_y = caption_y - 62
+    base = sd_label_y - 48
+    top = top_y + 150
+    slot = (right - left) / n_bins
+
+    def x_of(value):
+        return left + (right - left) * value / (n_bins * width_bins)
+
+    for k in range(0, 6):  # the mean and +1 to +5 SD
+        x = x_of(mean + k * sd)
+        if x > right:
+            break
+        c.ax.plot([x, x], [top - 40, base], color=c.colours["grid"], linewidth=_px_to_pt(2), linestyle=(0, (4, 4)))
+        _text(c, x, sd_label_y, "avg" if k == 0 else f"+{k}", "name", 30, c.colours["muted_text"], ha="center")
+    biggest = max(counts)
+    for i, count in enumerate(counts):
+        if not count:
+            continue
+        height = max(6, (base - top) * count / biggest)
+        is_mine = i == mine_bin
+        c.ax.add_patch(FancyBboxPatch((left + i * slot + 2, base - height), slot - 4, height, linewidth=0,
+                                      facecolor=c.colours["accent_shape"] if is_mine else c.colours["ink"],
+                                      boxstyle=f"round,pad=0,rounding_size={min(4, height / 2)}"))
+    c.ax.plot([left, right], [base, base], color=c.colours["grid"], linewidth=_px_to_pt(3), solid_capstyle="butt")
+    mine_x = left + (mine_bin + 0.5) * slot
+    _text(c, mine_x, base - (base - top) * counts[mine_bin] / biggest - 70, f"{mine:.2f}", "number", 46,
+          c.colours["accent_text"], ha="right" if mine_x > width * 0.7 else "center")
+    _text(c, mine_x, base - (base - top) * counts[mine_bin] / biggest - 24, f"+{z:.1f} SD", "name", 32,
+          c.colours["accent_text"], ha="right" if mine_x > width * 0.7 else "center")
+    _text(c, width / 2, caption_y, f"Points per game · {len(rows)} skaters · lines in standard deviations", "body",
+          30, c.colours["muted_text"], ha="center")
+
+
+START_OUTLIERS_SQL = """
+    -- The share of the season played by `through`; each season cut off at the same share of its games
+    with share as (
+        select (select count(*) from marts.fct_games
+                where season = $season and game_type = 2 and is_final and game_date <= $through)
+             / (select total_regular_season_games from marts.dim_seasons where season = $season) as played
+    ), games as (
+        select season, game_date, row_number() over (partition by season order by game_date, game_id) as n,
+            count(*) over (partition by season) as total
+        from marts.fct_games where game_type = 2 and is_final and season < $season
+    ), cutoff as (
+        select season, min(game_date) as cutoff_date from games, share where n >= total * share.played group by season
+        union all
+        select $season, $through
+    ), g as (
+        select s.season, s.player_id, s.team_id, s.points, s.game_id from marts.fct_skater_games as s
+        inner join cutoff as c on c.season = s.season and s.game_date <= c.cutoff_date
+        where s.game_type = 2
+    ), most_team_games as (
+        select season, max(n) as most from (select season, team_id, count(distinct game_id) as n from g group by all)
+        group by season
+    ), p as (
+        select season, player_id, count(*) as gp, sum(points) / count(*) as ppg from g group by all
+    ), pool as (
+        select p.* from p inner join most_team_games using (season) where p.gp >= most_team_games.most / 2.0
+    ), z as (
+        select season, player_id, (ppg - avg(ppg) over (partition by season))
+            / stddev_samp(ppg) over (partition by season) as z
+        from pool
+    )
+    select z.season, z.player_id, players.full_name, round(z.z, 1) as z
+    from z inner join marts.dim_players as players using (player_id)
+    order by z.z desc
+    limit $top
+"""
+
+
+@chart
+def start_outliers(c, con, top_y, bottom_y, through, season, top=5, highlight=None):
+    """The biggest outliers in points per game, in standard deviations above the mean, with every season cut off at
+    the same share of its games as `season` has played by `through` (which is required)."""
+    if through is None:
+        raise SystemExit("start_outliers needs the carousel's through date")
+    rows = con.execute(START_OUTLIERS_SQL, {"season": season, "through": through, "top": top}).fetchall()
+    index = 0
+    if highlight is not None:
+        keys = [(s, pid) for s, pid, _, _ in rows]
+        if (season, highlight) not in keys:
+            raise SystemExit(f"start_outliers: player {highlight} in {season} is not in the top {top}")
+        index = keys.index((season, highlight))
+    bar_rows_centred(c, [(f"{name}, {season_label(s)}", float(z)) for s, _, name, z in rows], top_y, bottom_y,
+                     index)
+
+
+def bar_rows_centred(c, rows, top_y, bottom_y, highlight):
+    """bar_rows, centred in the space between the heading and the footer."""
+    block = len(rows) * (ROW_TEXT_PX * 1.55 + 6 + TRACK_PX) + (len(rows) - 1) * ROW_GAP_PX
+    free_top, free_bottom = top_y + 30, bottom_y - FOOTER_PX - 25
+    bottom = free_bottom - max(0, (free_bottom - free_top - block) / 2) + FOOTER_PX + 25
+    bar_rows(c.ax, c.colours, c.font, rows, bottom, highlight=highlight)
 
 
 # ---- birthplaces_donut ----

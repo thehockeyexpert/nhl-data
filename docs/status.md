@@ -111,6 +111,12 @@ Last updated: 2026-11-11
   the play-by-play build passes 11 of 11. 2007-08 and 2008-09 have almost no missed or blocked shots and almost
   no coordinates (`docs/data_coverage.md`, "Shots"). The MotherDuck guide is updated in `docs/motherduck_guide.md`;
   publishing it is left to the owner (`uv run python -m analyst.publish_guide`).
+- **Shootout totals, 2005-06 to today (2026-11-11).** `ingest.shootouts` (22 requests), `stg_nhl_stats__skater_shootouts`
+  and `fct_skater_shootouts`; 8 of 8 tests pass. 98% of player-seasons match the play-by-play exactly
+  (`docs/data_coverage.md`, "Shootouts"). Added to the daily run: 1 request a night, no cost.
+- **Next loads (approved 2026-11-11, in this order):** player pages for everyone in the player list (about 23,600
+  requests, about 6.5 hours), then the play-by-play before 2007-08 (45,810 games, about 12-13 hours; goals with
+  assists and periods, penalties). Hits and penalties from the 2007-08 onward files follow the same plan.
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 

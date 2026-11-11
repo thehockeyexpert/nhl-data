@@ -104,6 +104,18 @@ on the owner's laptop.
 - **Before 2007-08:** not loaded. Sampled 2026-11-11 (one game each from 1930 to 2005): goals with period, scorer and
   both assists, and penalties with their type, are present; shots appear from about 1997-98; no hits in any sample.
 
+## Shootouts
+
+Loaded 2026-11-11: the stats API's skater shootout report, one response per regular season from 2005-06 (the first
+season with shootouts), 22 requests; the current season refreshes nightly. `marts.fct_skater_shootouts` keeps the
+skaters with at least one attempt (the report also lists every other skater, with zeros).
+
+- **Against the play-by-play (2007-08 onward):** 4,823 of 4,928 player-seasons have the same attempts and goals in
+  both. Goals differ for 16 player-seasons (mostly 2009-10: 449 goals in the report, 432 in the play-by-play) and the
+  report has 90 more attempts in total (10 player-seasons appear only in the report). Unexplained; for shootouts use
+  `fct_skater_shootouts` and say which source a number comes from.
+- 2005-06 and 2006-07 come from the report only: our play-by-play starts in 2007-08.
+
 ## Skater stats per game
 
 Loaded 2026-10-17: the stats API's skater summary with `isGame=true`, 434 responses (date windows), 1.24 GB raw JSON.

@@ -76,6 +76,19 @@ models:
       - name: is_starter
         description: True if the goalie started the game.
 
+  - name: fct_skater_shootouts
+    description: >
+      One row per skater per regular season with at least one shootout attempt, 2005-06 onward (the NHL stats API's
+      shootout report): attempts, goals, game-deciding goals and success rate. Join to dim_players on player_id.
+      For a career rate, sum goals and attempts first. Minimums agreed 2026-11-11: 5 attempts a season, 25 a career.
+    columns:
+      - name: skater_shootout_key
+        description: season and player_id joined.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [not_null]
+
   - name: fct_skater_seasons
     description: >
       One row per skater per season and game type (2 regular season, 3 playoffs) with season totals, from the

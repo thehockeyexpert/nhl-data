@@ -61,6 +61,8 @@ other tables.
   `dim_players` on `shooting_player_id`, `goalie_in_net_id`, `assist1_player_id` (primary assist) or
   `assist2_player_id`. Coordinates: see `docs/data_coverage.md` for which end a team attacks
   (`home_team_defending_side`).
+- `marts.fct_skater_shootouts`: shootout attempts, goals, game-deciding goals and success rate per skater per
+  regular season, 2005-06 onward. Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
 - `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
   game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.
@@ -95,7 +97,7 @@ other tables.
 - **1987-88 playoffs:** the suspended Final game of 1988-05-24 counts in player statistics but is not in the games
   tables, so Edmonton and Boston players have one more game than their team. In `fct_skater_games` its 36 rows
   (game 1987030999) have an empty `team_id`.
-- A shootout goal is not a goal in player totals.
+- A shootout goal is not a goal in player totals. Shootout stats are in `fct_skater_shootouts`.
 
 ## Stat terms (full list in the repo's `docs/definitions.md`, "Stat terms")
 - **Strength:** "even strength" follows the NHL and includes 4-on-4 and 3-on-3; it is not 5-on-5. Say which one an

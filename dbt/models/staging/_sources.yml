@@ -51,5 +51,7 @@ sources:
           it holds only these events: the full responses stay as compressed files on the owner's laptop (2026-11-10).
       - name: nhl_stats__skater_season
         description: One row per season and game type (regular season, playoffs) of skater season totals from the NHL stats API's skater summary.
+      - name: nhl_stats__skater_shootout
+        description: One row per regular season (from 2005-06) of the NHL stats API's skater shootout report.
       - name: nhl_stats__team_season
         description: The NHL's official regular-season totals for every team-season, one response from the NHL stats API.

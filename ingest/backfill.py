@@ -17,7 +17,7 @@ import argparse
 import sys
 import time
 
-from ingest import goalies, play_by_play, schedule, skater_games, skaters, standings
+from ingest import goalies, play_by_play, schedule, shootouts, skater_games, skaters, standings
 from ingest.nhl_api import NhlApiClient, NhlApiError
 from ingest.raw_loader import connect, ensure_log, is_season_done, log_season_done
 from ingest.schedule import season_id, totals
@@ -30,6 +30,7 @@ JOBS = {
     "skater_games": skater_games,
     "standings": standings,
     "play_by_play": play_by_play,
+    "shootouts": shootouts,
 }
 
 

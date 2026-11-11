@@ -38,7 +38,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
 - `analyst/`: golden questions for checking the conversational query layer. `question_inbox.md` (gitignored, on the
   laptop only) is the owner's list of questions to triage: answerable now, needs a load or definition, or not in NHL data.
-- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (07:00 UTC: ingest the current season, play-by-play shots included, then the nightly dbt build; the full build on Sundays). Its logs are public.
+- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (07:00 UTC: ingest the current season, play-by-play shots and shootout totals included, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
 - `instagram/`: Instagram images drawn from MotherDuck (`carousel.py` story carousels; `make_post.py` shared drawing
   helpers and the older single post), following `style/`. Images are saved outside the repo.
@@ -103,6 +103,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest per-game skater stats, many seasons, resumable: `uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918`; nightly, the last game dates: `uv run python -m ingest.skater_games --season 20262027 --recent-days 3`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
 - Ingest play-by-play shots (full files kept on the laptop, outside the repo), one season: `uv run python -m ingest.play_by_play --season 20252026`; many seasons, resumable: `uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008`; nightly on GitHub, new games plus the last 3 days': `uv run python -m ingest.play_by_play --season 20262027 --recent-days 3`; after a laptop load, `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`
+- Ingest shootout totals per skater (2005-06 onward), many seasons, resumable: `uv run python -m ingest.backfill --job shootouts --from 20262027 --to 20052006`; nightly: `uv run python -m ingest.shootouts --season 20262027`
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`

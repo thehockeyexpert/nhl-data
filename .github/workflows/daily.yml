@@ -68,6 +68,10 @@ jobs:
       - name: Load the season's per-game skater stats
         run: uv run python -m ingest.skater_games --season "$SEASON" --recent-days 3
 
+      # Shootout totals per skater: 1 request; a response identical to the last one adds nothing.
+      - name: Load the season's shootout totals
+        run: uv run python -m ingest.shootouts --season "$SEASON"
+
       # Standings on the season's first day, for conferences and divisions: 2 requests, and nothing new after the first run.
       - name: Load the season's standings
         run: uv run python -m ingest.standings --season "$SEASON"

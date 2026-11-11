@@ -9,6 +9,7 @@ slides:
   - type: hook
     kicker: "CONNOR McDAVID · 2026-27"
     headline: ["Nobody has", "started like this", "in 30 years."]
+    image: {type: photo, commons: "File:Connor McDavid of the Edmonton Oilers.jpg", layout: panel, side: left, focus: [0.45, 0.45]}
 
   - type: reveal
     number: 48

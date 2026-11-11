@@ -120,6 +120,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
 - Render a story carousel (facts re-checked first; mixed mode unless `--mode light|dark`):
   `uv run python -m instagram.carousel render carousels/<name>.yml`; facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
+- Find a free-licence player photo on Wikimedia Commons: `uv run python -m instagram.photos search "<player>"`, then `download "File:..."` (saved in the git-ignored `assets/nhl/photos/`); a cut-out photo needs `uv run --group photos ...` to render
 - Render a race Reel (facts re-checked first): `uv run python -m instagram.race render reels/<name>.yml`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`

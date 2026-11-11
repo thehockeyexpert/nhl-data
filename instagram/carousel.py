@@ -29,7 +29,7 @@ from types import SimpleNamespace
 import matplotlib
 import yaml
 
-from instagram import make_post
+from instagram import make_post, photos
 from instagram.make_post import STYLE, _sized, text_width
 
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
@@ -42,7 +42,7 @@ RINK_LINES = {"light": ("#D7263D", "#2F6FEB"), "dark": ("#E0475A", "#5B8DEF")}  
 
 # The fields each slide takes: (required, optional).
 FIELDS = {
-    "hook": ({"kicker", "headline"}, set()),
+    "hook": ({"kicker", "headline"}, {"image"}),
     "reveal": ({"number", "label", "name"}, {"subtitle", "stats"}),
     "comparison": ({"top", "bottom"}, set()),
     "trend": ({"title", "lines", "games"}, {"subtitle", "axis_title", "metric"}),
@@ -101,6 +101,8 @@ def validate(data):
         problems += [f"{slide['type']}: unknown key '{key}'" for key in sorted(extra)]
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
+        if "image" in slide:
+            problems += [f"{slide['type']}: image: {p}" for p in image_problems(slide["image"])]
         rink = slide.get("rink", "illustration") if slide["type"] == "turning_point" else None
         if rink is not None and rink not in ("illustration", "none") and not (
                 isinstance(rink, dict) and set(rink) == {"goals_of", "season"}):
@@ -110,6 +112,35 @@ def validate(data):
             problems.append(f"fact {number}: needs claim, sql and value")
     if not data.get("facts"):
         problems.append("facts: every number on the slides needs a fact")
+    return problems
+
+
+IMAGE_KEYS = {"type", "commons", "file", "credit", "layout", "side", "focus"}
+
+
+def image_problems(image):
+    """Problems with a slide's image: field (style/style_guide.md, "NHL logos and headshots")."""
+    if not isinstance(image, dict):
+        return ["must be a mapping, for example {type: photo, commons: 'File:...jpg'}"]
+    problems = [f"unknown key '{key}'" for key in sorted(set(image) - IMAGE_KEYS)]
+    if image.get("type") != "photo":
+        problems.append("type must be photo (headshots and logos are not supported yet)")
+    if bool(image.get("commons")) == bool(image.get("file")):
+        problems.append("give either commons (a Wikimedia Commons file) or file (a photo in assets/nhl/photos/)")
+    if image.get("commons") and not str(image["commons"]).startswith("File:"):
+        problems.append("commons must be a Commons file title starting with File:")
+    if image.get("commons") and "credit" in image:
+        problems.append("a Commons photo's credit comes from Commons: leave credit out")
+    if image.get("file") and not image.get("credit"):
+        problems.append("a photo from assets/nhl/photos/ needs a credit:")
+    if image.get("layout", "panel") not in photos.LAYOUTS:
+        problems.append("layout must be panel or cutout")
+    if image.get("side", "left") not in ("left", "right"):
+        problems.append("side must be left or right")
+    focus = image.get("focus", [0.5, 0.4])
+    if not (isinstance(focus, list) and len(focus) == 2
+            and all(isinstance(v, (int, float)) and 0 <= v <= 1 for v in focus)):
+        problems.append("focus must be two numbers from 0 to 1: [across, down]")
     return problems
 
 
@@ -228,7 +259,7 @@ class Canvas:
     FONTS = {"C600": "footer", "C700": "title", "C800": "hero", "B500": "medium", "S600": "semi"}
 
     def __init__(self, c, font, height=H):
-        self.c, self.font = c, font
+        self.c, self.font, self.height = c, font, height
         self.fig, self.ax = make_post.new_canvas({"background": c.bg})
         if height != H:  # a taller frame, such as a 1080 x 1920 Reel
             self.fig.set_size_inches(W / 100, height / 100)
@@ -278,8 +309,22 @@ class Canvas:
 
         self.ax.add_patch(Polygon(points, closed=True, facecolor=fill, alpha=alpha, linewidth=0))
 
-    def handle(self, handle):
+    def picture(self, pixels, x, y, w, h):
+        """A picture (PIL image, RGB or RGBA) drawn at x, y with exactly w x h pixels, behind any text."""
+        import numpy
+
+        self.ax.imshow(numpy.asarray(pixels), extent=(x, x + w, y + h, y), origin="upper", aspect="auto",
+                       interpolation="antialiased", zorder=0.5)
+        self.ax.set_xlim(0, W)
+        self.ax.set_ylim(self.height, 0)
+
+    def handle(self, handle, on_photo=False):
+        """The handle, bottom right. Over a photo it sits on a small band of the background colour, to stay readable."""
         frame = STYLE["story"]["frame"]["handle"]
+        if on_photo:
+            width = self.width(handle.upper(), frame["size"], "C600", 1.5)
+            self.rect(frame["x_right"] - width - 14, frame["y"] - frame["size"] - 10, width + 28,
+                      frame["size"] + 24, self.c.bg)
         self.text(frame["x_right"], frame["y"], frame["size"], "C600", self.c.mut, handle.upper(), anchor="end",
                   spacing=1.5)
 
@@ -334,14 +379,45 @@ def arrow(cv, x1, y1, x2, y2, colour):
 
 # ---- The six slides ----
 
+PANEL_W = 470            # a photo panel on the hook: full height, 470 px wide (about 44% of the canvas)
+CUTOUT_MAX = (500, 810)  # a cut-out: at most 500 px wide and 60% of the canvas high
+CUTOUT_BOTTOM = 1236     # a cut-out stands just above the handle, which it must never cover
+
+
 def hook(cv, slide, ctx):
     c = cv.c
-    rink_half(cv, 200, 90, 800, 0.16 if c.dark else 0.14)
-    cv.text(M, 780, 40, "C700", c.accent, slide["kicker"], spacing=4)
+    image = slide.get("image")
+    left, right = M, W - M  # where the kicker and headline may go
+    if image is None or image.get("layout", "panel") == "cutout":
+        rink_half(cv, 200, 90, 800, 0.16 if c.dark else 0.14)
+    if image is not None:
+        path, credit = photos.resolve(image)
+        ctx.credits.append(credit)
+        side = image.get("side", "left")
+        if image.get("layout", "panel") == "panel":
+            x = 0 if side == "left" else W - PANEL_W
+            cv.picture(photos.cover(path, PANEL_W, H, tuple(image.get("focus", [0.5, 0.4]))), x, 0, PANEL_W, H)
+            left, right = (PANEL_W + 56, W - M) if side == "left" else (M, W - PANEL_W - 56)
+            ctx.handle_on_photo = side == "right"
+        else:
+            person = photos.cutout(path)
+            scale = min(CUTOUT_MAX[0] / person.width, CUTOUT_MAX[1] / person.height)
+            w, h = round(person.width * scale), round(person.height * scale)
+            x = W - M - w if side == "right" else M
+            cv.picture(person.resize((w, h)), x, CUTOUT_BOTTOM - h, w, h)
+            left, right = (M + w + 40, W - M) if side == "left" else (M, x - 40)
+    # kicker and headline at the reference sizes (40 and 150 px), smaller only when they must fit beside a photo
+    room = right - left
+    kicker_size = min(40, 40 * room / cv.width(slide["kicker"], 40, "C700", 4))
     lines = slide["headline"]
+    size = min(150, 150 * room / max(cv.width(line, 150, "C700") for line in lines))
+    gap = 140 * size / 150
+    # 32 px above the first line's capitals, as in the reference (780 above a 150 px headline from 920)
+    kicker_y = 1200 - (len(lines) - 1) * gap - size * 0.72 - 32
+    cv.text(left, kicker_y, kicker_size, "C700", c.accent, slide["kicker"], spacing=4 * kicker_size / 40)
     for i, line in enumerate(lines):
         last = i == len(lines) - 1
-        cv.text(M, 1200 - (len(lines) - 1 - i) * 140, 150, "C700", c.accent if last else c.ink, line)
+        cv.text(left, 1200 - (len(lines) - 1 - i) * gap, size, "C700", c.accent if last else c.ink, line)
 
 
 def reveal(cv, slide, ctx):
@@ -494,15 +570,23 @@ def posts_folder(name):
     return folder
 
 
+def caption_text(caption, credits):
+    """The caption with every photo credit added after it, once each, unless the caption already has it."""
+    text = str(caption).strip()
+    extra = [credit for credit in dict.fromkeys(credits) if credit not in text]
+    return text + ("\n" + "\n".join(extra) if extra else "") + "\n"
+
+
 def render(con, carousel, handle, mode=None):
     """Draw every slide, save them as 01.png, 02.png ... and caption.txt; returns the paths."""
     font = make_post.fonts()
-    ctx = SimpleNamespace(con=con, through=carousel.get("through"))
+    ctx = SimpleNamespace(con=con, through=carousel.get("through"), credits=[], handle_on_photo=False)
     canvases = []
     for slide in carousel["slides"]:
         cv = Canvas(colours(slide_mode(carousel, slide["type"], mode), carousel.get("accent")), font)
+        ctx.handle_on_photo = False
         DRAW[slide["type"]](cv, slide, ctx)
-        cv.handle(handle)
+        cv.handle(handle, on_photo=ctx.handle_on_photo)
         canvases.append(cv)
     folder = posts_folder(carousel["name"])
     folder.mkdir(parents=True, exist_ok=True)
@@ -515,7 +599,7 @@ def render(con, carousel, handle, mode=None):
         cv.save(path)
         paths.append(path)
     caption = folder / "caption.txt"
-    caption.write_text(str(carousel["caption"]).strip() + "\n", encoding="utf-8")
+    caption.write_text(caption_text(carousel["caption"], ctx.credits), encoding="utf-8")
     return paths + [caption]
 
 

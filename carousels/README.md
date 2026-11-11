@@ -1,7 +1,8 @@
 # Instagram story carousels
 
 Every post is a six-slide story carousel: the "Story carousels" section of `style/style_guide.md`. Each `.yml` file
-here is one carousel: the words, the caption and the facts behind them. Text only: no data files, no images.
+here is one carousel: the words, the caption and the facts behind them. Text only: no data files, no images (a photo
+is named here and kept in the git-ignored `assets/nhl/photos/`).
 
 ```
 uv run python -m instagram.carousel check  carousels/mcdavid-hot-start.yml               # re-run the facts only
@@ -27,7 +28,7 @@ The slides and `caption.txt` are saved outside the repo in `posts/<file name>/` 
 
 | Slide | Fields | Notes |
 |---|---|---|
-| `hook` | `kicker`, `headline` (three lines; the last is in the accent) | Full-bleed dark, faint half-rink behind the words |
+| `hook` | `kicker`, `headline` (three lines; the last is in the accent); optional `image` | Full-bleed dark, faint half-rink behind the words, or a photo |
 | `reveal` | `number`, `label` (two lines), `name`, `subtitle`, `stats` (up to four `{value, label}`) | The hero number in the accent |
 | `comparison` | `top` and `bottom`, each `{kicker, number, line}` | Top panel: the subject, in the accent. Bottom: the comparison, in ink |
 | `trend` | `title`, `subtitle`, `games`, `axis_title`, `lines` (`{player_id, season, name}`; the first is the subject) | Running points totals, drawn from MotherDuck at render time; labels at the line ends |
@@ -68,4 +69,33 @@ facts:
   - claim: "Reveal: 19 games, 48 points"
     sql: select count(*), sum(points) from marts.fct_skater_games where ...
     value: [19, 48]          # one value, a list for one row, or a list of rows
+```
+
+## Photos (`image:` on the hook)
+
+Allowed since 2026-11-11 (`docs/decisions.md`; `style/style_guide.md`, "NHL logos and headshots"). One photo, on the
+hook only for now; headshots and logos are not supported yet.
+
+```yaml
+image: {type: photo, commons: "File:Connor McDavid of the Edmonton Oilers.jpg", layout: panel, side: left, focus: [0.45, 0.45]}
+image: {type: photo, file: my-photo.jpg, credit: "Photo: Jane Smith", layout: cutout, side: right}
+```
+
+| Key | What it is |
+|---|---|
+| `commons` | A Wikimedia Commons file title. Downloaded into `assets/nhl/photos/` on the first render, after checking the licence is CC BY, CC BY-SA or public domain; the credit comes from Commons |
+| `file` + `credit` | A photo the owner saved in `assets/nhl/photos/`, and its credit for the caption |
+| `layout` | `panel` (default): the photo fills a full-height strip, 470 px wide, on one side. `cutout`: the background is removed and the person stands beside the headline, above the handle (needs `--group photos`, below) |
+| `side` | `left` (default) or `right`. A panel on the right puts the handle on a small band of the background colour |
+| `focus` | Where to centre a panel's crop, as fractions across and down the photo (default `[0.5, 0.4]`) |
+
+The kicker and headline shrink only as much as they must to fit beside the photo. Every photo's credit is added to
+`caption.txt` automatically, with the change made ("cropped" or "background removed"), as CC BY and CC BY-SA require.
+
+Finding a photo, and rendering with a cut-out (background removal downloads a free model, about 170 MB, once):
+
+```
+uv run python -m instagram.photos search "Connor McDavid"
+uv run python -m instagram.photos download "File:Connor McDavid of the Edmonton Oilers.jpg"
+uv run --group photos python -m instagram.carousel render carousels/<name>.yml
 ```

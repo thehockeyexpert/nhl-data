@@ -16,6 +16,9 @@ dependencies = [
 dev = [
     "pytest>=9.1.1",
 ]
+photos = [
+    "rembg[cpu]>=2.0.87",
+]
 
 [tool.pytest.ini_options]
 # Lets the tests import the ingest/ folder from the project root.

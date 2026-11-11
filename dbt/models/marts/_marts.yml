@@ -549,6 +549,42 @@ models:
       - name: population
         description: The GeoNames population of the matched place (today's figure, not at the player's birth).
 
+  - name: fct_hits
+    description: >
+      One row per hit from the play-by-play, regular season and playoffs, from 2007-08 (docs/data_coverage.md,
+      "Hits and penalties"). hitting_player_id threw the hit, hittee_player_id took it. Incremental.
+    columns:
+      - name: hit_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
+  - name: fct_penalties
+    description: >
+      One row per penalty from the play-by-play, regular season and playoffs, from 2007-08 (docs/data_coverage.md,
+      "Hits and penalties"). penalty_desc_key is the NHL's penalty kind (hooking, fighting...), penalty_type_code its
+      class (MIN, MAJ, MIS, GAM, MAT, BEN, PS). is_fight marks a fighting penalty: one per player per fight
+      (definition 1, owner 2026-11-11). A penalty served by a teammate has served_by_player_id. Incremental.
+    columns:
+      - name: penalty_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
   - name: fct_shots
     description: >
       One row per shot attempt (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season

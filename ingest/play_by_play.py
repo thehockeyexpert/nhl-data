@@ -10,7 +10,8 @@ Two steps, decided by the owner on 2026-11-10 (docs/decisions.md):
    The folder is the environment variable NHL_PBP_DIR, or nhl-data-files/play_by_play in your home folder.
 2. Load: the shot events (shots on goal, missed shots, blocked shots, goals) of the season's files are gathered on
    this computer into one Parquet file next to them, then bulk-loaded into raw.nhl_web__pbp_shot in a single
-   statement. Everything else stays in the files. A response already loaded is not added again.
+   statement; hits and penalties go the same way into raw.nhl_web__pbp_event (decided 2026-11-11). Everything else
+   stays in the files. A response already loaded is not added again.
 
 Whole season (the laptop): every finished game whose file is not on disk yet is downloaded, so a stopped run can be
 restarted, and a rerun fills the local archive with games the nightly run loaded.
@@ -41,6 +42,8 @@ JOB = "play_by_play"
 PBP_URL = "https://api-web.nhle.com/v1/gamecenter/{game_id}/play-by-play"
 SHOT_TABLE = "nhl_web__pbp_shot"
 SHOT_EVENTS = ("shot-on-goal", "missed-shot", "blocked-shot", "goal")
+EVENT_TABLE = "nhl_web__pbp_event"
+OTHER_EVENTS = ("hit", "penalty")  # loaded into EVENT_TABLE
 
 # Regular season and playoffs.
 GAME_TYPES = (2, 3)
@@ -111,9 +114,14 @@ def download(client, season, game_ids, folder, verbose=True, refetch=()):
 
 def gather_shots(season, game_ids, folder):
     """Write these games' shot events to one local Parquet file and return its path. Runs on this computer only."""
+    return gather_events(season, game_ids, folder, SHOT_TABLE, SHOT_EVENTS)
+
+
+def gather_events(season, game_ids, folder, table, kinds):
+    """Write these games' events of the given kinds to one local Parquet file and return its path (this computer only)."""
     season_folder = folder / str(season)
     files = [str(season_folder / f"{game_id}.json.gz") for game_id in game_ids]
-    parquet = season_folder / f"{SHOT_TABLE}.parquet"
+    parquet = season_folder / f"{table}.parquet"
     local = duckdb.connect(":memory:")
     try:
         local.execute(
@@ -137,7 +145,7 @@ def gather_shots(season, game_ids, folder):
                     payload_hash,
                     event
                 from events
-                where event ->> 'typeDescKey' in {SHOT_EVENTS}
+                where event ->> 'typeDescKey' in {kinds}
             ) to '{str(parquet).replace("'", "''")}' (format parquet, compression zstd)
             """,
             [files, season],
@@ -148,12 +156,14 @@ def gather_shots(season, game_ids, folder):
 
 
 def load(client, con, season, game_ids, folder, verbose, refetch=()):
-    """Download what is needed of game_ids, then load their shots. Returns {table: [requests, rows added]}."""
+    """Download what is needed of game_ids, then load their shots, hits and penalties.
+    Returns {table: [requests, rows added]}; the requests are counted once, under the shot table."""
     requests = download(client, season, game_ids, folder, verbose, refetch)
-    added = 0
+    added = events = 0
     if game_ids:
         added = append_events_file(con, SHOT_TABLE, gather_shots(season, game_ids, folder))
-    return {SHOT_TABLE: [requests, added]}
+        events = append_events_file(con, EVENT_TABLE, gather_events(season, game_ids, folder, EVENT_TABLE, OTHER_EVENTS))
+    return {SHOT_TABLE: [requests, added], EVENT_TABLE: [0, events]}
 
 
 def run(season, client, con, verbose=True, folder=None):
@@ -187,12 +197,16 @@ def main():
     client = NhlApiClient()
     try:
         if args.recent_days:
-            requests, added = run_recent(args.season, client, con, args.recent_days)[SHOT_TABLE]
+            counts = run_recent(args.season, client, con, args.recent_days)
         else:
             ensure_log(con)
-            requests, added = run(args.season, client, con)[SHOT_TABLE]
-            log_season_done(con, JOB, args.season, requests, added)
-        print(f"  requests {requests}, new shot rows {added}, {time.monotonic() - started:.0f} s")
+            counts = run(args.season, client, con)
+        requests, added = counts[SHOT_TABLE]
+        events = counts[EVENT_TABLE][1]
+        if not args.recent_days:
+            log_season_done(con, JOB, args.season, requests, added + events)
+        print(f"  requests {requests}, new shot rows {added}, new hit and penalty rows {events}, "
+              f"{time.monotonic() - started:.0f} s")
     finally:
         client.close()
         con.close()

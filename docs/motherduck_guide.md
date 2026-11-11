@@ -38,8 +38,11 @@ other tables.
   blocker, both assists on goals, shot type and coordinates. 2007-08 and 2008-09 have goals and shots on goal only
   (almost no missed or blocked shots) and almost no coordinates: shot attempts and locations start in 2009-10.
 
+- **Hits and penalties from the play-by-play:** `fct_hits` (2009-10 onward) and `fct_penalties` (2007-08 onward),
+  regular season and playoffs. A fight is a fighting penalty (`is_fight`), one per player per fight.
+
 **Not loaded:**
-- Play-by-play before 2007-08, and events other than shots: hits, penalties and fights, giveaways, takeaways, faceoffs.
+- Play-by-play before 2007-08, and the other events: giveaways, takeaways, faceoffs, stoppages.
 - Team game statistics (power play, penalties), shifts, game duration.
 - Players' seasons in other leagues (junior, college), arena locations and travel.
 
@@ -61,6 +64,11 @@ other tables.
   `dim_players` on `shooting_player_id`, `goalie_in_net_id`, `assist1_player_id` (primary assist) or
   `assist2_player_id`. Coordinates: see `docs/data_coverage.md` for which end a team attacks
   (`home_team_defending_side`).
+- `marts.fct_hits`: one row per hit, 2009-10 onward. `hitting_player_id` threw it, `hittee_player_id` took it;
+  `hitting_team_id`, `hit_team_id`. Hits are counted by arena scorers, so counts differ between arenas.
+- `marts.fct_penalties`: one row per penalty, 2007-08 onward. `committed_by_player_id`, `drawn_by_player_id`,
+  `served_by_player_id`, `penalized_team_id`; `penalty_desc_key` is the kind (hooking, fighting...),
+  `penalty_type_code` the class (MIN, MAJ, MIS, GAM, MAT, BEN, PS), `penalty_minutes`. `is_fight` for fights.
 - `marts.fct_skater_shootouts`: shootout attempts, goals, game-deciding goals and success rate per skater per
   regular season, 2005-06 onward. Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
@@ -110,11 +118,13 @@ other tables.
 - **Formulas:** save % = saves / shots against; GAA = goals against x 3,600 / `time_on_ice_seconds`.
 - **Faceoff %** is empty for players who took no faceoffs, and there are no raw win and loss counts.
 - **Primary and secondary assists:** only from 2007-08, in `fct_shots` (goals, `assist1_player_id` and
-  `assist2_player_id`, shootouts left out). Not in the season or game totals. Not in the data: the number of
-  penalties, penalties drawn.
+  `assist2_player_id`, shootouts left out). Not in the season or game totals. The number of penalties and penalties
+  drawn: `fct_penalties`, from 2007-08 only.
 - **Shot attempts** (Corsi/SAT: on goal + missed + blocked) and **unblocked attempts** (Fenwick/USAT: on goal +
   missed) come from `fct_shots`, from 2009-10 only. Leave shootout attempts out.
-- **Not loaded, never estimate:** expected goals and anything built on them, shifts, zone starts, hits, takeaways,
+- **Hits** only from 2009-10 and **penalty and fight counts** only from 2007-08 (`fct_hits`, `fct_penalties`):
+  never treat earlier seasons as zero.
+- **Not loaded, never estimate:** expected goals and anything built on them, shifts, zone starts, takeaways,
   giveaways, Game Score, and any play-by-play before 2007-08. Say they are not loaded.
 - **Other sites' seasons:** a single year such as "2018" means 2018-19. Convert with
   `start_year * 10000 + start_year + 1`.

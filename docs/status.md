@@ -111,6 +111,12 @@ Last updated: 2026-11-11
   the play-by-play build passes 11 of 11. 2007-08 and 2008-09 have almost no missed or blocked shots and almost
   no coordinates (`docs/data_coverage.md`, "Shots"). The MotherDuck guide is updated in `docs/motherduck_guide.md`;
   publishing it is left to the owner (`uv run python -m analyst.publish_guide`).
+- **Hits and penalties, from the play-by-play (2026-11-11).** `raw.nhl_web__pbp_event` (loaded from the laptop files,
+  no new downloads, and nightly), `stg_nhl_web__pbp_events`, `fct_hits` (1,033,173, from 2009-10) and `fct_penalties`
+  (207,017 from 2007-08, 15,884 fights); 26 of 26 play-by-play models and tests pass. Every event's team matches the
+  roster (`docs/data_coverage.md`, "Hits and penalties").
+- **Venues and EBUGs (2026-11-11):** seeds `venues` (every regular-season and playoff venue, 230 names in 159
+  buildings, by the owner's arena rule) and `ebug_appearances` (6).
 - **Shootout totals, 2005-06 to today (2026-11-11).** `ingest.shootouts` (22 requests), `stg_nhl_stats__skater_shootouts`
   and `fct_skater_shootouts`; 8 of 8 tests pass. 98% of player-seasons match the play-by-play exactly
   (`docs/data_coverage.md`, "Shootouts"). Added to the daily run: 1 request a night, no cost.

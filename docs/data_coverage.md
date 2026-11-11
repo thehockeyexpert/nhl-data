@@ -104,7 +104,25 @@ on the owner's laptop.
 - **Before 2007-08:** not loaded. Sampled 2026-11-11 (one game each from 1930 to 2005): goals with period, scorer and
   both assists, and penalties with their type, are present; shots appear from about 1997-98; no hits in any sample.
 
-## Shootouts
+## Hits and penalties (play-by-play)
+
+Loaded 2026-11-11 from the same laptop files as the shots (no new downloads), and nightly from then on:
+`raw.nhl_web__pbp_event`, `marts.fct_hits` and `marts.fct_penalties`.
+
+- **Hits: 1,033,173 in 22,194 games, 2009-10 to today.** 2007-08 and 2008-09 have no hit events at all (like their
+  missed and blocked shots). The play-by-play before 2007-08 has no hits in any game sampled.
+- **Penalties: 207,017, 2007-08 to today**, of which 15,884 are fighting penalties (`is_fight`; every one a 5-minute
+  major). A fight is one fighting penalty per player (definition 1, owner 2026-11-11), so one fight between two
+  players is two rows. About 250 to 350 penalties a season name no player (bench minors and the like).
+- **Team check:** every hit's team is the hitter's team, and every penalty's team the penalised player's team, on the
+  game's roster in the downloaded files: 2.1 million events, no exception (checked 2026-11-11).
+- **Fights per regular-season game** (fighting penalties / 2): 0.53 in 2007-08, 0.59 in 2008-09, then down to 0.18 in
+  2018-19 and 2019-20, about 0.23 to 0.25 since.
+- **Before 2007-08:** penalties (fights included) are in the play-by-play back to at least 1930 in the samples; to be
+  loaded with the older play-by-play (approved 2026-11-11). Which season fighting data becomes reliable is to be
+  stated after that load.
+
+## Shootout totals (skaters)
 
 Loaded 2026-11-11: the stats API's skater shootout report, one response per regular season from 2005-06 (the first
 season with shootouts), 22 requests; the current season refreshes nightly. `marts.fct_skater_shootouts` keeps the

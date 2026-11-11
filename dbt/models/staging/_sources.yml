@@ -44,6 +44,10 @@ sources:
         description: One row per season and game type (regular season, playoffs) of per-game goalie stats from the NHL stats API.
       - name: nhl_stats__skater_game
         description: One row per date window (season, game type, first and last date) of per-game skater stats from the NHL stats API.
+      - name: nhl_web__pbp_event
+        description: >
+          One row per hit or penalty from api-web.nhle.com's play-by-play, each event exactly as received, with the game
+          and the hash of its whole response; loaded from the same laptop files as nhl_web__pbp_shot (2026-11-11).
       - name: nhl_web__pbp_shot
         description: >
           One row per shot event (shot on goal, missed shot, blocked shot, goal) from api-web.nhle.com's play-by-play,

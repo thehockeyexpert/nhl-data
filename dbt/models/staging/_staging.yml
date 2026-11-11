@@ -229,6 +229,24 @@ models:
         description: The NHL's player ID.
         data_tests: [not_null]
 
+  - name: stg_nhl_web__pbp_events
+    description: >
+      One row per hit or penalty from the play-by-play, regular season and playoffs, newest version of each game.
+      Incremental: a game loaded again replaces all its earlier rows.
+    columns:
+      - name: event_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: event_type
+        description: hit or penalty, as the NHL names them.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [hit, penalty]
+
   - name: stg_nhl_web__pbp_shots
     description: >
       One row per shot event (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season and

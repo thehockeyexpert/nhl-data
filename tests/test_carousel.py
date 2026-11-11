@@ -78,17 +78,50 @@ def test_check_facts_flags_a_changed_answer():
     assert [(claim, ok) for claim, ok, _ in carousel.check_facts(con, data)] == [("right", True), ("wrong", False)]
 
 
-def test_running_points_counts_the_first_games_in_date_order():
+def fake_marts():
     con = duckdb.connect()
     con.execute("create schema marts")
     con.execute("""create table marts.fct_skater_games as select * from (values
-        (1, 20262027, 2, date '2026-10-03', 12, 2), (1, 20262027, 2, date '2026-10-01', 10, 1),
-        (1, 20262027, 2, date '2026-10-02', 11, 0), (1, 20262027, 3, date '2026-10-04', 13, 9),
-        (1, 20262027, 2, date '2026-10-09', 14, 5))
-        as t(player_id, season, game_type, game_date, game_id, points)""")
-    assert carousel.running_points(con, 1, 20262027, 3) == [1, 1, 3]
-    with pytest.raises(SystemExit):  # the through date leaves only three games
-        carousel.running_points(con, 1, 20262027, 4, through=datetime.date(2026, 10, 5))
+        (1, 20252026, 2, date '2025-10-09', 9, 1, 0, 1), (1, 20262027, 2, date '2026-10-03', 12, 2, 1, 1),
+        (1, 20262027, 2, date '2026-10-01', 10, 1, 1, 0), (1, 20262027, 2, date '2026-10-02', 11, 0, 0, 0),
+        (1, 20262027, 3, date '2026-10-04', 13, 9, 9, 0), (1, 20262027, 2, date '2026-10-09', 14, 5, 2, 3))
+        as t(player_id, season, game_type, game_date, game_id, points, goals, assists)""")
+    return con
+
+
+def test_running_totals_count_the_first_games_in_date_order():
+    con = fake_marts()
+    assert carousel.running_totals(con, 1, 3, season=20262027) == [1, 1, 3]
+    assert carousel.running_totals(con, 1, 3, season=20262027, metric="goals") == [1, 1, 2]
+    assert carousel.running_totals(con, 1, 4, metric="goals") == [0, 1, 1, 2]  # career: 2025-26 first
+    with pytest.raises(SystemExit):  # the through date leaves only three games that season
+        carousel.running_totals(con, 1, 4, season=20262027, through=datetime.date(2026, 10, 5))
+    with pytest.raises(SystemExit):
+        carousel.running_totals(con, 1, 3, metric="shots")
+
+
+def test_goal_locations_attack_downwards_from_either_end():
+    con = duckdb.connect()
+    con.execute("create schema marts")
+    con.execute("""create table marts.fct_shots as select * from (values
+        (7, 20252026, 2, true, false, true, 'left', 80, 10),     -- home attacks +x: 80 ft deep, 10 ft to his left
+        (7, 20252026, 2, true, false, false, 'left', -80, -10),  -- away attacks -x: the same spot
+        (7, 20252026, 2, true, false, true, 'right', 60, 5),     -- home attacks -x: a shot from its own half
+        (7, 20252026, 2, true, true, true, 'left', 85, 0),       -- shootout: left out
+        (7, 20252026, 2, false, false, true, 'left', 85, 0))     -- not a goal: left out
+        as t(shooting_player_id, season, game_type, is_goal, is_shootout, is_home_shooter,
+             home_team_defending_side, x_coord, y_coord)""")
+    points, own_half = carousel.goal_locations(con, 7, 20252026)
+    assert points == [(52.5, 80), (52.5, 80)]
+    assert own_half == 1
+
+
+def test_rink_must_be_a_known_kind():
+    slides = [dict(s) for s in SIX]
+    slides[4]["rink"] = {"goals_of": 1, "season": 20252026}
+    assert carousel.validate(story(slides=slides)) == []
+    slides[4]["rink"] = "passes"
+    assert any(p.startswith("turning_point: rink must be") for p in carousel.validate(story(slides=slides)))
 
 
 def test_posts_folder_refuses_the_repo(monkeypatch):

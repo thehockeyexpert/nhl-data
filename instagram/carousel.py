@@ -45,7 +45,7 @@ FIELDS = {
     "hook": ({"kicker", "headline"}, set()),
     "reveal": ({"number", "label", "name"}, {"subtitle", "stats"}),
     "comparison": ({"top", "bottom"}, set()),
-    "trend": ({"title", "lines", "games"}, {"subtitle", "axis_title", "chart"}),
+    "trend": ({"title", "lines", "games"}, {"subtitle", "axis_title", "metric"}),
     "turning_point": ({"title", "stats"}, {"subtitle", "stats_title", "rink"}),
     "conclusion": ({"kicker", "headline"}, {"context", "question", "call"}),
 }
@@ -99,6 +99,12 @@ def validate(data):
         extra = set(slide) - required - optional - {"type"}
         problems += [f"{slide['type']}: needs '{key}'" for key in sorted(missing)]
         problems += [f"{slide['type']}: unknown key '{key}'" for key in sorted(extra)]
+        if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
+            problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
+        rink = slide.get("rink", "illustration") if slide["type"] == "turning_point" else None
+        if rink is not None and rink not in ("illustration", "none") and not (
+                isinstance(rink, dict) and set(rink) == {"goals_of", "season"}):
+            problems.append("turning_point: rink must be illustration, none, or {goals_of: <player_id>, season: <id>}")
     for number, fact in enumerate(data.get("facts") or [], start=1):
         if not isinstance(fact, dict) or not {"claim", "sql", "value"} <= set(fact):
             problems.append(f"fact {number}: needs claim, sql and value")
@@ -146,12 +152,18 @@ def check_facts(con, carousel):
 
 # ---- Data for the trend slide ----
 
-def running_points(con, player_id, season, games, through=None):
-    """The player's running points total over his first `games` regular-season games of the season."""
+METRICS = ("points", "goals", "assists")
+
+
+def running_totals(con, player_id, games, season=None, metric="points", through=None):
+    """The player's running total of `metric` over his first `games` regular-season games: of the season, or of his
+    career when no season is given."""
+    if metric not in METRICS:
+        raise CarouselError(f"trend: metric must be one of {', '.join(METRICS)}")
     rows = con.execute(
-        """
-        select points from marts.fct_skater_games
-        where player_id = $player and season = $season and game_type = 2
+        f"""
+        select {metric} from marts.fct_skater_games
+        where player_id = $player and game_type = 2 and ($season is null or season = $season)
             and ($through is null or game_date <= $through)
         order by game_date, game_id
         limit $games
@@ -159,12 +171,38 @@ def running_points(con, player_id, season, games, through=None):
         {"player": player_id, "season": season, "games": games, "through": through},
     ).fetchall()
     if len(rows) < games:
-        raise CarouselError(f"trend: player {player_id} has only {len(rows)} games in {season}, not {games}")
+        where = f"in {season}" if season else "in his career"
+        raise CarouselError(f"trend: player {player_id} has only {len(rows)} games {where}, not {games}")
     totals, running = [], 0
-    for (points,) in rows:
-        running += points
+    for (value,) in rows:
+        running += value
         totals.append(running)
     return totals
+
+
+def goal_locations(con, player_id, season):
+    """(points, own_half): the player's regular-season goals of the season (shootouts left out) as (across, depth) in
+    feet on a half rink, attacking downwards, and the number scored from his own half (not drawable on a half rink).
+
+    The attacking end comes from home_team_defending_side, which the NHL gives per period: a home team defending the
+    left attacks towards +x. Depth is feet from the centre line (the goal line is at 89); across is 0 to 85 feet from
+    the shooter's right-hand boards, so the shooter's left is on the right of the drawing, as seen from centre ice.
+    """
+    rows = con.execute(
+        """
+        select x_coord, y_coord,
+            case when (is_home_shooter and home_team_defending_side = 'left')
+                   or (not is_home_shooter and home_team_defending_side = 'right') then 1 else -1 end as dir
+        from marts.fct_shots
+        where shooting_player_id = $player and season = $season and game_type = 2 and is_goal and not is_shootout
+            and home_team_defending_side in ('left', 'right')
+        """,
+        {"player": player_id, "season": season},
+    ).fetchall()
+    if not rows:
+        raise CarouselError(f"turning_point: no goals with locations for player {player_id} in {season}")
+    points = [(42.5 + d * y, d * x) for x, y, d in rows if d * x > 0]
+    return points, len(rows) - len(points)
 
 
 # ---- Drawing primitives ----
@@ -309,8 +347,12 @@ def hook(cv, slide, ctx):
 def reveal(cv, slide, ctx):
     c = cv.c
     number = str(slide["number"])
-    cv.text(M - 14, 720, 600, "C800", cv.fit(c.accent, 3), number, spacing=-18)
-    label_x = max(M + 600, M - 14 + cv.width(number, 600, "C800", -18) + 40)
+    # 600 px as in the reference; a wider number (three digits) shrinks until its two-line label fits beside it
+    label_w = max(cv.width(line, 34, "C700", 4) for line in slide["label"][:2])
+    room = (W - M) - (M - 14) - 40 - label_w
+    size = min(600, 600 * room / cv.width(number, 600, "C800", -18))
+    cv.text(M - 14, 720, size, "C800", cv.fit(c.accent, 3), number, spacing=-18 * size / 600)
+    label_x = max(M + 600, M - 14 + cv.width(number, size, "C800", -18 * size / 600) + 40)
     for i, line in enumerate(slide["label"][:2]):
         cv.text(label_x, 676 + 40 * i, 34, "C700", c.mut, line, spacing=4)
     cv.text(M, 850, 104, "C700", c.ink, slide["name"])
@@ -350,10 +392,11 @@ def trend(cv, slide, ctx):
     a, a_text = cv.fit(c.accent, 3), cv.fit(c.accent, 4.5)
     title_block(cv, slide)
     games = slide["games"]
-    series = [(line, running_points(ctx.con, line["player_id"], line["season"], games, ctx.through))
+    metric = slide.get("metric", "points")
+    series = [(line, running_totals(ctx.con, line["player_id"], games, line.get("season"), metric, ctx.through))
               for line in slide["lines"]]
     top_value = max(totals[-1] for _, totals in series)
-    step = 20 if top_value > 40 else 10
+    step = next(s for s in (5, 10, 20, 50, 100, 200, 250, 500, 1000) if math.ceil(top_value / s) <= 4)
     y_max = step * math.ceil(top_value / step)
     x0, x1, y0, y1 = M + 60, W - M - 170, 1170, 420
 
@@ -366,9 +409,10 @@ def trend(cv, slide, ctx):
     for value in range(0, y_max + 1, step):
         cv.hairline(x0, x1 + 150, ys(value), alpha_scale=0.8 if value else 2)
         cv.text(x0 - 16, ys(value) + 9, 26, "C600", c.mut, value, anchor="end")
-    ticks = sorted({1, games, *range(5, games - 2, 5)})
+    x_step = next(s for s in (5, 10, 25, 50, 100, 250, 500) if games / s <= 5)
+    ticks = sorted({1, games, *(m for m in range(x_step, games, x_step) if m <= games - 0.4 * x_step)})
     for game in ticks:
-        cv.text(xs(game), y0 + 42, 26, "C600", c.mut, game, anchor="middle")
+        cv.text(xs(game), y0 + 42, 26, "C600", c.mut, f"{game:,}", anchor="middle")
     cv.text((x0 + x1) / 2, y0 + 80, 22, "C600", c.mut, slide.get("axis_title", "GAME NUMBER"), anchor="middle",
             spacing=2.5)
 
@@ -385,7 +429,9 @@ def trend(cv, slide, ctx):
         cv.circle(xs(games), end_y, 9, colour, alpha=alpha, stroke=c.bg, stroke_px=4)
         label_y = max(end_y - 4, label_y + 66)  # the reference's offsets: just above the point, 66 px apart
         cv.text(xs(games) + 22, label_y, 30, "S600", label_colour, f"{line['name']} {totals[-1]}", alpha=label_alpha)
-        cv.text(xs(games) + 22, label_y + 30, 22, "C600", c.mut, make_post.season_label(line["season"]), spacing=1.5)
+        if line.get("season"):  # a career line needs no season under its name
+            cv.text(xs(games) + 22, label_y + 30, 22, "C600", c.mut, make_post.season_label(line["season"]),
+                    spacing=1.5)
 
 
 def turning_point(cv, slide, ctx):
@@ -399,9 +445,20 @@ def turning_point(cv, slide, ctx):
         for i, line in enumerate(stat["label"][:2]):
             cv.text(M + 150, y - 36 + 32 * i, 24, "C700", c.mut, line, spacing=3)
         cv.hairline(M, M + 400, y + 30)
-    if slide.get("rink", "illustration") == "illustration":
-        rx, ry, rw = 560, 420, 440
-        s = rw / 85
+    rink = slide.get("rink", "illustration")
+    rx, ry, rw = 560, 420, 440
+    s = rw / 85
+    if isinstance(rink, dict):  # real goal locations from the play-by-play: no illustration label needed
+        rink_half(cv, rx, ry, rw, 0.45 if c.dark else 0.4)
+        points, own_half = goal_locations(ctx.con, rink["goals_of"], rink["season"])
+        for across, depth in points:
+            cv.circle(rx + across * s, ry + min(depth, 100) * s, 9, a, alpha=0.85, stroke=c.bg, stroke_px=2)
+        lines = [f"{len(points)} OF HIS {len(points) + own_half} GOALS, {make_post.season_label(rink['season'])}"]
+        if own_half:
+            lines.append(f"{own_half} SCORED FROM HIS OWN HALF")
+        for i, line in enumerate(lines):
+            cv.text(rx + rw / 2, ry + 100 * s + 48 + 32 * i, 22, "C600", c.mut, line, anchor="middle", spacing=2)
+    elif rink == "illustration":
         rink_half(cv, rx, ry, rw, 0.45 if c.dark else 0.4)
         for (fx1, fy1), (fx2, fy2) in (((70, 40), (48, 78)), ((14, 60), (38, 80))):
             arrow(cv, rx + fx1 * s, ry + fy1 * s, rx + fx2 * s, ry + fy2 * s, a)

@@ -1,0 +1,150 @@
+# How underrated is Steven Stamkos? A story carousel (style/style_guide.md, "Story carousels").
+# Draft by Claude, 2026-11-11: every number below comes from a query under facts, run against MotherDuck that day.
+# Career totals stop at 2025-26 (the last finished season), so the facts don't change while 2026-27 goes on.
+# "Since 2005-06": the seasons in which both Stamkos (from 2008-09) and the players he is compared with played.
+accent: TBL                  # 16 of his 18 finished seasons were with Tampa Bay (NSH is the alternative)
+mode: mixed
+
+slides:
+  - type: hook
+    kicker: "STEVEN STAMKOS · 2008-09 TO 2025-26"
+    headline: ["Third in goals.", "First in finishing.", "Still underrated?"]
+
+  - type: reveal
+    number: 624
+    label: ["CAREER", "GOALS"]
+    name: Steven Stamkos
+    subtitle: Third since 2005-06, behind only Ovechkin and Crosby.
+    stats:
+      - {value: "2", label: ROCKET RICHARDS}
+      - {value: "60", label: GOALS IN 2011-12}
+      - {value: "41", label: GOALS PER 82 GAMES}
+      - {value: "1,246", label: GAMES}
+
+  - type: comparison
+    top: {kicker: "STEVEN STAMKOS · GOALS PER 100 SHOTS", number: 17, line: "on 3,712 shots"}
+    bottom: {kicker: "ALEX OVECHKIN · GOALS PER 100 SHOTS", number: 13, line: "on 7,108 shots"}
+
+  - type: trend
+    title: Ahead of Crosby
+    subtitle: Career goals, game by game, through his 1,246th.
+    metric: goals            # lines without a season: running career totals by career game number
+    games: 1246
+    axis_title: GAMES PLAYED
+    lines:
+      - {player_id: 8474564, name: Stamkos}
+      - {player_id: 8471214, name: Ovechkin}
+      - {player_id: 8471675, name: Crosby}
+
+  - type: turning_point
+    title: The finisher
+    subtitle: 39% of his goals came on the power play.
+    stats_title: HIS 624 GOALS BY STRENGTH
+    stats:
+      - {value: "377", label: [EVEN, STRENGTH]}
+      - {value: "242", label: [POWER, PLAY], accent: true}
+      - {value: "5", label: [SHORT, HANDED]}
+    rink: {goals_of: 8474564, season: 20252026}   # his real goal locations from the play-by-play
+
+  - type: conclusion
+    kicker: "MISSED 158 OF HIS TEAMS' GAMES"
+    headline: ["Elite", "finisher."]
+    context:
+      - "His 60 goals in 2011-12:"
+      - one of six 60-goal seasons since 2005-06.
+    question: Is he a Hall of Famer?
+
+caption: |
+  How underrated is Steven Stamkos? 624 goals, third since 2005-06 behind only Ovechkin and Crosby, and the best
+  shooting percentage of the top 10 goal scorers of his era: 16.8%, against Ovechkin's 13.1%.
+
+  Ovechkin still scores more per game (48 per 82 games to Stamkos's 41), but nobody near the top has converted his
+  chances like Stamkos. Two Rocket Richard trophies, a 60-goal season, and 624 goals despite missing 158 of his
+  teams' games. Is he a Hall of Famer? Tell us in the comments.
+
+  Regular season, 2008-09 to 2025-26. Data: NHL.
+
+facts:
+  - claim: "Reveal: the top three goal scorers since 2005-06, through 2025-26 - Ovechkin 929, Crosby 654, Stamkos 624"
+    sql: >
+      select d.full_name, sum(s.goals) as g from marts.fct_skater_seasons s join marts.dim_players d using (player_id)
+      where s.game_type = 2 and s.season between 20052006 and 20252026
+      group by all order by g desc limit 3
+    value: [[Alex Ovechkin, 929], [Sidney Crosby, 654], [Steven Stamkos, 624]]
+
+  - claim: >-
+      Stamkos through 2025-26: 1,246 games, 624 goals, 3,712 shots, 17 goals per 100 shots, 41 goals per 82 games;
+      377 even-strength, 242 power-play and 5 short-handed goals, 39% on the power play
+    sql: >
+      select sum(games_played), sum(goals), sum(shots), round(100.0 * sum(goals) / sum(shots)),
+        round(82.0 * sum(goals) / sum(games_played)), sum(even_strength_goals), sum(power_play_goals),
+        sum(short_handed_goals), round(100.0 * sum(power_play_goals) / sum(goals))
+      from marts.fct_skater_seasons where player_id = 8474564 and game_type = 2 and season <= 20252026
+    value: [1246, 624, 3712, 17, 41, 377, 242, 5, 39]
+
+  - claim: >-
+      Comparison: of the top 10 goal scorers since 2005-06, Stamkos has the best shooting % (16.8, 17 per 100 shots);
+      Ovechkin is 7th (13.1, 13 per 100) on 7,108 shots, and scores 48 per 82 games
+    sql: >
+      with c as (
+        select player_id, sum(games_played) as gp, sum(goals) as g, sum(shots) as sh
+        from marts.fct_skater_seasons where game_type = 2 and season between 20052006 and 20252026
+        group by player_id order by g desc limit 10
+      ), r as (select *, rank() over (order by g / sh desc) as rk from c)
+      select d.full_name, r.rk, r.sh, round(100.0 * r.g / r.sh, 1), round(100.0 * r.g / r.sh),
+        round(82.0 * r.g / r.gp)
+      from r join marts.dim_players d using (player_id)
+      where r.player_id in (8474564, 8471214) order by r.rk
+    value: [[Steven Stamkos, 1, 3712, 16.8, 17, 41], [Alex Ovechkin, 7, 7108, 13.1, 13, 48]]
+
+  - claim: "Reveal: two Rocket Richard trophies (2009-10, 2011-12)"
+    sql: >
+      select string_agg(r.season::varchar, ',' order by r.season) from marts.fct_award_results r
+      join marts.dim_trophies t using (trophy_id)
+      where r.player_id = 8474564 and r.is_winner and t.trophy_name like 'Maurice%Richard Trophy'
+    value: "20092010,20112012"
+
+  - claim: "60 goals in 2011-12, one of six 60-goal seasons since 2005-06"
+    sql: >
+      select (select goals from marts.fct_skater_seasons
+              where player_id = 8474564 and game_type = 2 and season = 20112012),
+        count(*) from marts.fct_skater_seasons where game_type = 2 and season >= 20052006 and goals >= 60
+    value: [60, 6]
+
+  - claim: "Trend: career goals after 1,246 games - Stamkos 624, Ovechkin 761, Crosby 582"
+    sql: >
+      with g as (
+        select player_id, goals, row_number() over (partition by player_id order by game_date, game_id) as n
+        from marts.fct_skater_games where game_type = 2 and player_id in (8474564, 8471214, 8471675)
+      ), r as (select player_id, n, sum(goals) over (partition by player_id order by n) as running from g)
+      select d.full_name, r.running from r join marts.dim_players d using (player_id)
+      where r.n = 1246 order by r.running desc
+    value: [[Alex Ovechkin, 761], [Steven Stamkos, 624], [Sidney Crosby, 582]]
+
+  - claim: "Conclusion: he missed 158 of his teams' 1,404 regular-season games in the seasons he played (to 2025-26)"
+    sql: >
+      with his as (
+        select season, team_id from marts.fct_skater_games
+        where player_id = 8474564 and game_type = 2 and season <= 20252026
+      )
+      select count(*), (select count(*) from his), count(*) - (select count(*) from his)
+      from marts.fct_team_games t
+      where t.game_type = 2 and exists (select 1 from his h where h.season = t.season and h.team_id = t.team_id)
+    value: [1404, 1246, 158]
+
+  - claim: >-
+      Turning point map: 42 regular-season goals in 2025-26 with locations (shootouts left out); 40 in the attacking
+      half, 2 from his own half; every goal in zone O is beyond the blue line (a check on the attacking direction)
+    sql: >
+      with s as (
+        select x_coord, zone_code,
+          case when (is_home_shooter and home_team_defending_side = 'left')
+                 or (not is_home_shooter and home_team_defending_side = 'right') then 1 else -1 end as dir
+        from marts.fct_shots
+        where shooting_player_id = 8474564 and season = 20252026 and game_type = 2 and is_goal and not is_shootout
+          and home_team_defending_side in ('left', 'right')
+      )
+      select count(*), count(*) filter (where dir * x_coord > 0), count(*) filter (where dir * x_coord <= 0),
+        count(*) filter (where zone_code = 'O' and dir * x_coord < 25)
+      from s
+    value: [42, 40, 2, 0]

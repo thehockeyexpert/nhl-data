@@ -1013,6 +1013,7 @@ dependencies = [
     { name = "duckdb" },
     { name = "httpx" },
     { name = "matplotlib" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -1026,6 +1027,7 @@ requires-dist = [
     { name = "duckdb", specifier = ">=1.5.6" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "matplotlib", specifier = ">=3.11.2" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
 ]
 
 [package.metadata.requires-dev]

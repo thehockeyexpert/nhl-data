@@ -125,8 +125,9 @@ def fonts():
 
 # ---- Data ----
 
-def points_leaders(con, season, top):
-    """The regular season's points leaders so far, goalies included (D15), and the last game date counted."""
+def points_leaders(con, season, top, through=None, with_ids=False):
+    """The regular season's points leaders, goalies included (D15), and the last game date counted. With through
+    (a date), only games up to that date count. With with_ids, each row is (player_id, name, points)."""
     query = """
         with scoring as (
             select player_id, goals, assists, game_date
@@ -135,16 +136,21 @@ def points_leaders(con, season, top):
             select player_id, coalesce(goals, 0), coalesce(assists, 0), game_date
             from marts.fct_goalie_games where season = $season and game_type = 2
         )
-        select players.full_name, sum(scoring.goals + scoring.assists) as points, sum(scoring.goals) as goals,
-            max(max(scoring.game_date)) over () as through
+        select scoring.player_id, players.full_name, sum(scoring.goals + scoring.assists) as points,
+            sum(scoring.goals) as goals, max(max(scoring.game_date)) over () as through
         from scoring
         inner join marts.dim_players as players on players.player_id = scoring.player_id
+        where $through is null or scoring.game_date <= $through
         group by scoring.player_id, players.full_name
         order by points desc, goals desc, players.full_name
         limit $top
     """
-    rows = con.execute(query, {"season": season, "top": top}).fetchall()
-    return [(name, points) for name, points, _, _ in rows], rows[0][3]
+    rows = con.execute(query, {"season": season, "top": top, "through": through}).fetchall()
+    if not rows:
+        raise SystemExit(f"No regular-season points found for season {season}")
+    if with_ids:
+        return [(player_id, name, points) for player_id, name, points, _, _ in rows], rows[0][4]
+    return [(name, points) for _, name, points, _, _ in rows], rows[0][4]
 
 
 def season_label(season):
@@ -210,9 +216,10 @@ def header_and_footer(ax, fig, colours, font, label, title, subtitle, handle):
     return footer_y
 
 
-def bar_rows(ax, colours, font, rows, bottom):
-    """Leaderboard rows sitting just above the footer: name and value, then a bar on a track. The leader's bar and
-    number get the accent; every other bar, every name and the other numbers are ink."""
+def bar_rows(ax, colours, font, rows, bottom, highlight=0):
+    """Leaderboard rows sitting just above the footer: name and value, then a bar on a track. The highlighted row's
+    bar and number (the leader unless told otherwise) get the accent; every other bar, every name and the other
+    numbers are ink."""
     width = STYLE["canvas"]["width_px"]
     content = width - 2 * PAD_SIDE
     row_height = ROW_TEXT_PX * 1.55 + 6 + TRACK_PX
@@ -224,10 +231,10 @@ def bar_rows(ax, colours, font, rows, bottom):
         ax.text(PAD_SIDE, baseline, name, fontproperties=_sized(font["name"], ROW_TEXT_PX), color=colours["ink"],
                 va="baseline")
         ax.text(width - PAD_SIDE, baseline, f"{value}", fontproperties=_sized(font["number"], ROW_TEXT_PX),
-                color=colours["accent_text"] if i == 0 else colours["ink"], va="baseline", ha="right")
+                color=colours["accent_text"] if i == highlight else colours["ink"], va="baseline", ha="right")
         track_y = y + ROW_TEXT_PX * 1.55 + 6
-        for bar_width, colour in ((content, colours["bar_track"]),
-                                  (content * value / biggest, colours["accent_shape"] if i == 0 else colours["ink"])):
+        bar_colour = colours["accent_shape"] if i == highlight else colours["ink"]
+        for bar_width, colour in ((content, colours["bar_track"]), (content * value / biggest, bar_colour)):
             ax.add_patch(FancyBboxPatch((PAD_SIDE, track_y), bar_width, TRACK_PX, linewidth=0, facecolor=colour,
                                         boxstyle=f"round,pad=0,rounding_size={TRACK_RADIUS_PX}"))
 

@@ -1,0 +1,38 @@
+# The career goal race: Ovechkin, Stamkos and Crosby, game by game through their first 1,246 regular-season games
+# (Stamkos's total through 2025-26). Companion Reel to carousels/stamkos-finisher.yml.
+# Draft by Claude, 2026-11-11: the numbers on screen come from the query under facts, re-checked on every render.
+accent: TBL
+mode: dark
+kicker: "CAREER GOALS · GAME BY GAME"
+title: The goal race
+subtitle: Ovechkin, Stamkos and Crosby, through 1,246 games.
+metric: goals
+games: 1246
+axis_title: GAMES PLAYED
+seconds: 15
+lines:
+  - {player_id: 8474564, name: Stamkos}
+  - {player_id: 8471214, name: Ovechkin}
+  - {player_id: 8471675, name: Crosby}
+
+caption: |
+  Three of the best goal scorers of the era, game by game. After 1,246 regular-season games: Ovechkin 761,
+  Stamkos 624, Crosby 582. Stamkos reached 1,246 games at the end of 2025-26.
+
+  Regular season. Data: NHL.
+
+facts:
+  - claim: "Career goals after 1,246 regular-season games - Ovechkin 761, Stamkos 624, Crosby 582"
+    sql: >
+      with g as (
+        select player_id, goals, row_number() over (partition by player_id order by game_date, game_id) as n
+        from marts.fct_skater_games where game_type = 2 and player_id in (8474564, 8471214, 8471675)
+      ), r as (select player_id, n, sum(goals) over (partition by player_id order by n) as running from g)
+      select d.full_name, r.running from r join marts.dim_players d using (player_id)
+      where r.n = 1246 order by r.running desc
+    value: [[Alex Ovechkin, 761], [Steven Stamkos, 624], [Sidney Crosby, 582]]
+
+  - claim: "Stamkos had played 1,246 regular-season games at the end of 2025-26"
+    sql: >
+      select count(*) from marts.fct_skater_games where player_id = 8474564 and game_type = 2 and season <= 20252026
+    value: 1246

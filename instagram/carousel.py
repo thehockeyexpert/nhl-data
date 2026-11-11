@@ -227,9 +227,12 @@ class Canvas:
 
     FONTS = {"C600": "footer", "C700": "title", "C800": "hero", "B500": "medium", "S600": "semi"}
 
-    def __init__(self, c, font):
+    def __init__(self, c, font, height=H):
         self.c, self.font = c, font
         self.fig, self.ax = make_post.new_canvas({"background": c.bg})
+        if height != H:  # a taller frame, such as a 1080 x 1920 Reel
+            self.fig.set_size_inches(W / 100, height / 100)
+            self.ax.set_ylim(height, 0)
 
     def text(self, x, y, size, face, colour, text, anchor="start", spacing=0.0, alpha=1.0):
         """Text with its baseline at y, like SVG <text>: anchor start, middle or end; spacing in pixels."""

@@ -44,6 +44,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `style/`: the style guide, `style.json` and `new_post_prompt.md`. The reference designs (`style/*.html`) stay on the
   laptop and are gitignored.
 - `carousels/`: one YAML file per post. See `carousels/README.md`.
+- `reels/`: one YAML file per Reel (a game-by-game race, rendered as an MP4 by `instagram/race.py`). See `reels/README.md`.
 
 ## Instagram posts
 - **Every post is a six-slide story carousel** ("Story carousels" in `style/style_guide.md`): hook, reveal,
@@ -107,6 +108,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
 - Render a story carousel (facts re-checked first; mixed mode unless `--mode light|dark`):
   `uv run python -m instagram.carousel render carousels/<name>.yml`; facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
+- Render a race Reel (facts re-checked first): `uv run python -m instagram.race render reels/<name>.yml`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
 - Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records tag:geonames --indirect-selection empty --no-populate-cache`

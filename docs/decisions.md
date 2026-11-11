@@ -3,6 +3,13 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-11: daily run moved to 07:00 UTC
+
+**Decision (owner, 2026-11-11).** `.github/workflows/daily.yml` runs at 07:00 UTC instead of 11:00 UTC (cron
+`0 7 * * *`). Nothing else in the workflow changed, and the cost is unchanged (the same run, four hours earlier). A
+late game not yet final at 07:00 is picked up the next night: the per-game skater and play-by-play loads fetch the
+last 3 days again, and the data checks wait two days for recent games.
+
 ## 2026-11-10: play-by-play shots, files on the laptop
 
 **Decision (owner, 2026-11-10).** Tier 2 starts with `fct_shots`. This settles the Tier 2 storage question in

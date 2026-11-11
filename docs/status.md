@@ -29,7 +29,8 @@ Last updated: 2026-11-11
 - **Exceptions.** 97 rows in `dbt/seeds/check_exceptions.csv`, each approved by the owner. Exceptions can now name a
   single team (`team_id`). From 2022-23, an era rule in `goalie_saves_add_up` allows saves that are exactly 1 too
   high, watched by `checks.goalie_saves_plus_one_by_season` with a 2% limit.
-- **Daily run started (2026-10-15).** `.github/workflows/daily.yml`, 11:00 UTC daily, full build on Sundays.
+- **Daily run started (2026-10-15).** `.github/workflows/daily.yml`, 11:00 UTC daily (07:00 UTC from
+  2026-11-11), full build on Sundays.
   - First manual run passed: schedule 32 requests, 22 new rows; goalies 2 requests, 1 new row. All checks pass.
   - 20 of the 21 changed schedule weeks differed only in `ticketsLink` / `ticketsLinkFr`. The loader now ignores
     those two fields when deciding whether a response changed (`compare_hash`); the response is still stored as
@@ -231,7 +232,8 @@ Last updated: 2026-11-11
 
 ## Daily run (started 2026-10-15)
 
-- **Workflow:** `.github/workflows/daily.yml`. Every day at 11:00 UTC, and by hand from the Actions tab.
+- **Workflow:** `.github/workflows/daily.yml`. Every day at 07:00 UTC (11:00 UTC until 2026-11-10), and by hand from
+  the Actions tab.
   1. Install the locked packages and run `uv run pytest` (no network, no database).
   2. Ingest the season in the repository variable `CURRENT_SEASON`: `ingest.schedule`, `ingest.goalies`,
      `ingest.skaters`, `ingest.skater_games --recent-days 3`, `ingest.standings`, then

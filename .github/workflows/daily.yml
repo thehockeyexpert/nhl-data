@@ -9,7 +9,7 @@ name: daily
 
 on:
   schedule:
-    - cron: "0 11 * * *"   # 11:00 UTC (07:00 Eastern in summer time), after the last West Coast games
+    - cron: "0 7 * * *"   # 07:00 UTC
   workflow_dispatch:       # "Run workflow" button on the Actions tab
     inputs:
       build:

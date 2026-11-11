@@ -73,6 +73,9 @@ api-web.nhle.com. Only the shot events are in MotherDuck; the full responses are
 - **Zone** is from the shooter's side: 8,317 of 8,572 non-shootout goals are in zone O, 131 in D, 124 in N.
 - **2026-27** (loaded 2026-11-10 from the laptop, 285 finished games): 32,718 events; the same checks pass (shooting
   team for every event, goals match every score, coordinates on every event).
+- **2024-25** (loaded 2026-11-10 from the laptop, 1,398 games: 1,312 regular season, 86 playoff): 167,558 events in
+  the raw layer: 70,828 shots on goal, 41,030 missed, 47,096 blocked, 8,604 goals (508 shootout attempts). Coordinates
+  on every event. Goals against the scores and the shooting team against the rosters: not yet checked.
 - **Not yet checked:** seasons before 2025-26. Sampled earlier (one game per season) without coordinates in 2007-08 and
   2008-09 (`docs/status.md`).
 

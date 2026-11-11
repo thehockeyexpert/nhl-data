@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 ## Done
 
@@ -102,10 +102,25 @@ Last updated: 2026-11-10
     today). Passes on 2025-26 and 2026-27; no exceptions needed.
   - Nightly in the daily run: new games plus the last 3 days' games fetched again (estimate about 0.4 CU-hours a
     month, $0). MotherDuck query history is not available on the free plan, so costs come from run timings.
+  - 2026-27 loaded from the laptop on 2026-11-10 (285 games, 32,718 events) before the first nightly run.
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 
 ## In progress
+
+- **`fct_shots` backfill, 2024-25 back to 2007-08** (owner's decision, 2026-11-10; `docs/decisions.md`). Run on the
+  laptop, newest season first: `uv run python -m ingest.backfill --job play_by_play --from 20232024 --to 20072008`.
+  - **2024-25:** loaded into `raw.nhl_web__pbp_shot` on 2026-11-10 (1,398 games, 1,312 regular season and 86 playoff;
+    167,558 events). Not yet in `fct_shots`: no dbt build has run since. Shooting team not yet checked against the
+    rosters.
+  - **2023-24:** the download stopped at 496 games when the laptop restarted overnight (2026-11-10, about 23:17
+    local). Nothing from it reached MotherDuck: a season's shots are loaded only after all its games are downloaded.
+    Resumed 2026-11-11; files already on disk are skipped. Remaining: 17 seasons from 2023-24, roughly 23 minutes
+    each (2025-26 took 23.3 min), so about 6 to 7 hours.
+  - **After the backfill:** for each season, check the shooting team against the rosters and record the counts in
+    `docs/data_coverage.md` ("Shots"), as for 2025-26; then
+    `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`; then update the guide's
+    coverage (it still says shots are not loaded) and publish it.
 
 - **G01 ("best record against teams above .500"):** `goalie_records_vs_above_500` is built under the revised D01
   (headline: opponent above the league median by points % before the game, with at least 10 games played; second
@@ -156,17 +171,7 @@ Last updated: 2026-11-10
    ignored.
 3. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
    `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
-4. **Parked, not started: `fct_skater_games`** (one row per skater per game, all history, same keys).
-   - Recommended source: the stats API skater summary with `isGame=true`, in date windows under its 10,000-row cap
-     (1980-81 and 2025-26 both reach the cap). About 2.3 to 2.5 million rows, 300 to 450 requests, about 1.2 GB
-     raw JSON (estimates). Whether the API filters by date is not yet verified. Nightly: one request per game date.
-   - Alternative: the box score, one request per game (70,459 games, about 20 hours); about 0.8 GB raw. Sampled
-     back to 1917-18.
-   - Must be an incremental model (re-reading 1.2 GB of JSON every build could cost an estimated 7 to 20 CU-hours a
-     month, more than the free 10). With it: about 0.2 CU-hours once, $0 a month.
-5. **`fct_shots`, other seasons** (2007-08 to 2024-25; 2025-26 and 2026-27 loaded). Waiting for the owner's decision
-   after the 2025-26 trial (`docs/decisions.md`, 2026-11-10). Before each season: check the shooting team against the
-   rosters, as for 2025-26. Earlier estimates, before the trial:
+4. **`fct_shots`, other seasons:** in progress (see "In progress"). Earlier estimates, before the trial:
    - 24,542 games from 2007-08 to 2025-26, one request each (about 7 to 10 hours). Sampled sizes: about 35 KB per
      game in 2007-09, 100 to 150 KB from 2009-10; about 2.8 GB raw JSON in all. About 2.6 million shot attempts.
    - Shot coordinates: present in every sampled game from 2009-10 on, absent in the sampled games of 2007-08 and
@@ -174,7 +179,7 @@ Last updated: 2026-11-10
    - Raw JSON in MotherDuck would mean about 49,000 statements (about 13.6 CU-hours, over the monthly allowance).
      Recommended: raw play-by-play as compressed files on the laptop (about 0.3 to 0.4 GB), shots bulk-loaded into
      MotherDuck (a handful of statements, $0). Nightly: 8 to 15 games, about 2 MB, small enough for `raw`.
-6. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
+5. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
    - Terms: free for non-commercial use, credit MoneyPuck.com wherever shown; ask before scraping anything not
      offered for download ([moneypuck.com/data.htm](https://moneypuck.com/data.htm)).
    - About 2.08 million shots, 2007-08 to 2024-25 plus the current season nightly; no blocked shots; CSV in zip.
@@ -228,8 +233,10 @@ Last updated: 2026-11-10
 
 - **Workflow:** `.github/workflows/daily.yml`. Every day at 11:00 UTC, and by hand from the Actions tab.
   1. Install the locked packages and run `uv run pytest` (no network, no database).
-  2. Ingest the season in the repository variable `CURRENT_SEASON`: `ingest.schedule`, then `ingest.goalies`. The
-     goalie load is needed nightly, or `goalie_games_covered` fails for newly finished games.
+  2. Ingest the season in the repository variable `CURRENT_SEASON`: `ingest.schedule`, `ingest.goalies`,
+     `ingest.skaters`, `ingest.skater_games --recent-days 3`, `ingest.standings`, then
+     `ingest.play_by_play --recent-days 3` (shots, from 2026-11-10). The goalie load is needed nightly, or
+     `goalie_games_covered` fails for newly finished games.
   3. The nightly dbt build; on Sundays the full `dbt build` instead. A manual run can choose either.
 - **Token:** the repository secret `MOTHERDUCK_TOKEN`, a separate token on the owner's own MotherDuck user, used only
   by GitHub (`docs/decisions.md`).
@@ -266,10 +273,12 @@ Last updated: 2026-11-10
   Proposed defaults await confirmation: D02, D08, D12, D16, D21 and D22.
 - **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
 - **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
-  fights, and the storage decision for play-by-play.
+  fights. The play-by-play storage question is settled (`docs/decisions.md`, 2026-11-10): fights would come from the
+  files on the laptop.
 - **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
 
 ## Not started
 
-- Team, skater and play-by-play loads; player pages (college and junior seasons); arena coordinates.
+- Team game statistics; play-by-play events other than shots (hits, penalties, fights); shifts; player pages
+  (college and junior seasons); arena coordinates.
 - Answers to the golden questions (beyond G01). The conversational layer itself is item 3 under "Next".

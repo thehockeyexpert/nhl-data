@@ -16,8 +16,10 @@ The newest decision is first.
 - **Nightly** (`daily.yml`): finished games not loaded yet, plus the last 3 days' games fetched again for the NHL's
   corrections. The runner keeps the files in its temporary folder, deleted after the job; the log prints counts only.
   The owner reruns the season script on the laptop now and then to keep the local archive complete.
-- **Loaded so far:** 2025-26 (trial) and 2026-27 (285 games, 290 s, from the laptop before the first nightly run). The
-  other seasons wait for the owner's decision.
+- **Loaded so far:** 2025-26 (trial) and 2026-27 (285 games, 290 s, from the laptop before the first nightly run).
+- **Older seasons (owner, 2026-11-10, after the trial):** load every season back to 2007-08 from the laptop with
+  `ingest.backfill --job play_by_play`, newest first. 2024-25 loaded the same evening; the run stopped partway
+  through 2023-24 when the laptop restarted and was resumed on 2026-11-11 (`docs/status.md`).
 
 **Trial, 2025-26 (measured 2026-11-10, from the laptop).** MotherDuck query history is not available on the free plan
 ("Query History is not available on your plan"), so compute comes from the run's own timings and dbt's log.

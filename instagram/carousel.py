@@ -30,7 +30,7 @@ import matplotlib
 import yaml
 
 from instagram import make_post
-from instagram.make_post import STYLE, _sized, readable, text_width
+from instagram.make_post import STYLE, _sized, text_width
 
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
 
@@ -231,9 +231,6 @@ class Canvas:
         self.c, self.font = c, font
         self.fig, self.ax = make_post.new_canvas({"background": c.bg})
 
-    def fit(self, colour, minimum, background=None):
-        return readable(colour, background or self.c.bg, minimum)
-
     def text(self, x, y, size, face, colour, text, anchor="start", spacing=0.0, alpha=1.0):
         """Text with its baseline at y, like SVG <text>: anchor start, middle or end; spacing in pixels."""
         font = self.font[self.FONTS[face]]
@@ -337,11 +334,11 @@ def arrow(cv, x1, y1, x2, y2, colour):
 def hook(cv, slide, ctx):
     c = cv.c
     rink_half(cv, 200, 90, 800, 0.16 if c.dark else 0.14)
-    cv.text(M, 780, 40, "C700", cv.fit(c.accent, 4.5), slide["kicker"], spacing=4)
+    cv.text(M, 780, 40, "C700", c.accent, slide["kicker"], spacing=4)
     lines = slide["headline"]
     for i, line in enumerate(lines):
         last = i == len(lines) - 1
-        cv.text(M, 1200 - (len(lines) - 1 - i) * 140, 150, "C700", cv.fit(c.accent, 4.5) if last else c.ink, line)
+        cv.text(M, 1200 - (len(lines) - 1 - i) * 140, 150, "C700", c.accent if last else c.ink, line)
 
 
 def reveal(cv, slide, ctx):
@@ -351,7 +348,7 @@ def reveal(cv, slide, ctx):
     label_w = max(cv.width(line, 34, "C700", 4) for line in slide["label"][:2])
     room = (W - M) - (M - 14) - 40 - label_w
     size = min(600, 600 * room / cv.width(number, 600, "C800", -18))
-    cv.text(M - 14, 720, size, "C800", cv.fit(c.accent, 3), number, spacing=-18 * size / 600)
+    cv.text(M - 14, 720, size, "C800", c.accent, number, spacing=-18 * size / 600)
     label_x = max(M + 600, M - 14 + cv.width(number, size, "C800", -18 * size / 600) + 40)
     for i, line in enumerate(slide["label"][:2]):
         cv.text(label_x, 676 + 40 * i, 34, "C700", c.mut, line, spacing=4)
@@ -370,8 +367,8 @@ def comparison(cv, slide, ctx):
     c = cv.c
     cv.rect(0, 0, W, 690, c.panel)
     top, bottom = slide["top"], slide["bottom"]
-    cv.text(M, 230, 30, "C700", cv.fit(c.accent, 4.5, c.panel), top["kicker"], spacing=4)
-    cv.text(M - 10, 610, 400, "C800", cv.fit(c.accent, 3, c.panel), top["number"], spacing=-12)
+    cv.text(M, 230, 30, "C700", c.accent, top["kicker"], spacing=4)
+    cv.text(M - 10, 610, 400, "C800", c.accent, top["number"], spacing=-12)
     if top.get("line"):
         cv.text(M + 480, 556, 46, "S600", c.ink, top["line"])
     cv.text(M, 800, 30, "C700", c.mut, bottom["kicker"], spacing=4)
@@ -389,7 +386,7 @@ def title_block(cv, slide):
 def trend(cv, slide, ctx):
     """Running totals: the first line is the subject (accent, 8 px); the others ink at 85% and 40% (4 px)."""
     c = cv.c
-    a, a_text = cv.fit(c.accent, 3), cv.fit(c.accent, 4.5)
+    a = a_text = c.accent
     title_block(cv, slide)
     games = slide["games"]
     metric = slide.get("metric", "points")
@@ -436,7 +433,7 @@ def trend(cv, slide, ctx):
 
 def turning_point(cv, slide, ctx):
     c = cv.c
-    a, a_text = cv.fit(c.accent, 3), cv.fit(c.accent, 4.5)
+    a = a_text = c.accent
     title_block(cv, slide)
     if slide.get("stats_title"):
         cv.text(M, 520, 24, "C700", c.mut, slide["stats_title"], spacing=3)
@@ -472,7 +469,7 @@ def conclusion(cv, slide, ctx):
     cv.text(M, 330, 40, "C700", c.mut, slide["kicker"], spacing=4)
     lines = slide["headline"]
     for i, line in enumerate(lines[:2]):
-        cv.text(M, 520 + 180 * i, 190, "C700", cv.fit(c.accent, 4.5) if i == 1 else c.ink, line)
+        cv.text(M, 520 + 180 * i, 190, "C700", c.accent if i == 1 else c.ink, line)
     for i, line in enumerate((slide.get("context") or [])[:2]):
         cv.text(M, 800 + 52 * i, 40, "B500", c.mut, line)
     if slide.get("question"):

@@ -31,9 +31,8 @@
     "source": "Google Fonts, free (OFL)"
   },
   "accent_rule": {
-    "min_contrast_bars_and_shapes": 3.0,
-    "min_contrast_text": 4.5,
-    "method": "If the accent's WCAG contrast against the background is below the minimum, mix it toward white (dark background) or black (light background) in 4% steps until it passes. Keep the hue."
+    "min_contrast": 3.0,
+    "method": "One shade per accent, the same on light and dark slides. If the team colour's WCAG contrast is below the minimum on any background (both palettes and both comparison panels), change its lightness, keeping hue and saturation, to the shade whose lowest contrast is highest (about 3.4:1)."
   },
   "team_accents": {
     "ANA": {

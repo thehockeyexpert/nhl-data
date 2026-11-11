@@ -144,3 +144,13 @@ def test_mean_sd_matches_duckdb_stddev_samp():
         "select avg(v), stddev_samp(v) from unnest($v) as t(v)", {"v": values}).fetchone()
     assert mean == pytest.approx(expected_mean)
     assert sd == pytest.approx(expected_sd)
+
+
+def test_the_accent_is_one_shade_readable_on_every_background():
+    from instagram.make_post import STYLE, backgrounds, contrast, palette
+
+    for code in {**STYLE["team_accents"], **STYLE["country_accents"]}:
+        dark, light = palette("dark", code), palette("light", code)
+        assert dark["accent"] == dark["accent_text"] == light["accent"] == light["accent_shape"]
+        assert min(contrast(light["accent"], bg) for bg in backgrounds()) >= 3.0, code
+    assert palette("light", "CAN")["accent"] != STYLE["country_accents"]["CAN"]["accent"]  # 2.9:1, so it moves

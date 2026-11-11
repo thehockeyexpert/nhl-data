@@ -70,7 +70,7 @@ Alternate between light and dark.
 ## The accent rule
 - **The accent belongs to the subject.** Anthony names the team or country for each post, and its colour comes from `team_accents` or `country_accents`.
 - **Only one thing gets the accent:** the leader's bar, the highlighted slice, or the latest point on a line. Everything else is ink.
-- **Readability:** bars and shapes need contrast of at least 3:1 against the background, and text needs at least 4.5:1. If a colour falls short, shade it toward white on dark backgrounds, or toward black on light ones, until it passes, keeping the hue. Examples are Bruins gold on light and Kings black on dark.
+- **One shade on every slide:** a carousel's accent is the same colour on light and dark slides. It needs contrast of at least 3:1 (the WCAG minimum for large text) against both backgrounds and both comparison panels. If the team colour falls short anywhere, its lightness changes, keeping the hue and saturation, to the shade that reads best on all of them. No colour reaches 4.5:1 on both a light and a dark background, so the accent is for large text, numbers and shapes only; small text stays ink or muted. Examples: Lightning navy becomes a brighter blue, Bruins gold a deeper gold, Kings black a mid grey.
 
 ## Rules for anything posted
 - Facts and figures from the NHL data only, with no NHL or team logos or photos.

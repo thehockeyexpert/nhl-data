@@ -14,6 +14,7 @@ Google Fonts' GitHub repository the first time, into nhl-data-files/fonts.
 """
 
 import argparse
+import colorsys
 import json
 import os
 from pathlib import Path
@@ -103,11 +104,28 @@ def palette(mode, accent_code):
         if code not in known:
             raise SystemExit(f"Unknown --accent {accent_code}: use one of {', '.join(sorted(known))}")
         accent = known[code]["accent"]
-    rule = STYLE["accent_rule"]
-    colours["accent"] = accent
-    colours["accent_shape"] = readable(accent, colours["background"], rule["min_contrast_bars_and_shapes"])
-    colours["accent_text"] = readable(accent, colours["background"], rule["min_contrast_text"])
+    colours["accent"] = colours["accent_shape"] = colours["accent_text"] = one_shade(accent)
     return colours
+
+
+def backgrounds():
+    """Every background accent colour can sit on: both palettes and both comparison panels."""
+    return [STYLE["palettes"][f"fresh_ice_{m}"]["background"] for m in ("light", "dark")] + list(
+        STYLE["story"]["comparison_panel"].values())
+
+
+def one_shade(accent):
+    """The single shade of the accent used on light and dark slides alike, so a carousel's accent never changes.
+    A colour with the minimum contrast on every background is kept. Otherwise its lightness moves (same hue and
+    saturation) to the shade whose lowest contrast across the backgrounds is highest. No colour reaches 4.5:1 on
+    both a light and a dark background; the best is about 4:1, and 3:1 is the WCAG minimum for large text."""
+    bgs = backgrounds()
+    worst = lambda colour: min(contrast(colour, bg) for bg in bgs)  # noqa: E731
+    if worst(accent) >= STYLE["accent_rule"]["min_contrast"]:
+        return accent
+    hue, _, saturation = colorsys.rgb_to_hls(*(v / 255 for v in _rgb(accent)))
+    shades = [_hex([v * 255 for v in colorsys.hls_to_rgb(hue, step / 200, saturation)]) for step in range(201)]
+    return max(shades, key=worst)
 
 
 # ---- Fonts ----

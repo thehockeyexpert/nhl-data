@@ -36,7 +36,8 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `dbt/`: the dbt project (`models/staging`, `models/marts`, `macros`).
 - `tests/`: Python tests for the ingest code.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
-- `analyst/`: golden questions for checking the conversational query layer.
+- `analyst/`: golden questions for checking the conversational query layer. `question_inbox.md` (gitignored, on the
+  laptop only) is the owner's list of questions to triage: answerable now, needs a load or definition, or not in NHL data.
 - `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (07:00 UTC: ingest the current season, play-by-play shots included, then the nightly dbt build; the full build on Sundays). Its logs are public.
 - `data/`: local scratch, gitignored.
 - `instagram/`: Instagram images drawn from MotherDuck (`carousel.py` story carousels; `make_post.py` shared drawing

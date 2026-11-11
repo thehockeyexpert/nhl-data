@@ -253,3 +253,6 @@ dbt/.user.yml
 
 # The Instagram reference designs stay on the laptop
 style/*.html
+
+# The owner's question inbox stays on the laptop (post ideas before they are posted)
+analyst/question_inbox.md

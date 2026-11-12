@@ -134,6 +134,31 @@ skaters with at least one attempt (the report also lists every other skater, wit
   `fct_skater_shootouts` and say which source a number comes from.
 - 2005-06 and 2006-07 come from the report only: our play-by-play starts in 2007-08.
 
+## Player pages (seasons in every league)
+
+Loaded 2026-11-11 and 2026-11-12: the NHL's player page for everyone in the player list (23,575 people, every one
+with a page), full pages as files on the laptop, season totals in `raw.nhl_web__player_season_total` (622,606
+entries). `marts.fct_player_league_seasons` holds 622,462 rows for 23,242 people in 1,895 leagues (81,040 NHL rows);
+333 people have a page with no season totals. Pages are a snapshot: the 2026-27 rows are as of the load.
+
+- **Exact repeats:** 144 entries appear word for word twice on the same page; each is kept once.
+- **NHL skater seasons against `fct_skater_seasons`** (regular season and playoffs): 69,714 of the pages' 69,727
+  player-seasons are in our stats, and 69,392 have the same games, goals and points. Of the 322 that differ, 249 are
+  2026-27 (the pages were fetched after the stats' nightly load) and 71 are 1910s and 1920s, mostly games played.
+  Unexplained. The 13 not in our stats are 1919-20 and 1927-28 playoffs (10) and three 2026-27 seasons. Every
+  skater-season with games in our stats is on the pages. For NHL totals use `fct_skater_seasons`.
+- **NHL goalie seasons against `fct_goalie_games`:** 6,720 of 6,731 are in our stats; 6,696 have the same games played.
+- Every NHL player in `dim_players` (8,838) has at least one NHL row on their page.
+- **Repeated keys:** 336 players have more than one entry with the same season, league, game type and sequence that
+  differ in team or stats (472 cases, most often J20 Nationell, J18 Nationell, ECHL, AHL, KHL, PCHA). Unexplained.
+  All are kept; the key is the player plus a hash of the entry.
+- **Game types 6 and 7** appear only for the W-Cup (171 and 1 entries); unverified, not labelled.
+- **Fields by era and league:** games, goals, assists, points and penalty minutes are on nearly every entry; plus-minus,
+  power-play and shorthanded figures, shots and time on ice only on some (mostly NHL and recent seasons).
+- **Save percentage** is a fraction, except 3 entries above 1 (unexplained; kept as received).
+- **Coverage of other leagues** is whatever the NHL lists: a missing league or season is not proof a player never
+  played there.
+
 ## Skater stats per game
 
 Loaded 2026-10-17: the stats API's skater summary with `isGame=true`, 434 responses (date windows), 1.24 GB raw JSON.

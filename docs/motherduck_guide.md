@@ -41,6 +41,9 @@ other tables.
 - **Hits and penalties from the play-by-play:** `fct_hits` (2009-10 onward) and `fct_penalties` (2007-08 onward),
   regular season and playoffs. A fight is a fighting penalty (`is_fight`), one per player per fight.
 
+- **Players' seasons in every league** (player pages): `fct_player_league_seasons`, for everyone in the player list:
+  junior, college, minor and major pro, international tournaments and the NHL, as the NHL's player pages record them.
+
 **Not loaded:**
 - Play-by-play before 2007-08, and the other events: giveaways, takeaways, faceoffs, stoppages.
 - Team game statistics (power play, penalties), shifts, game duration.
@@ -71,6 +74,11 @@ other tables.
   `penalty_type_code` the class (MIN, MAJ, MIS, GAM, MAT, BEN, PS), `penalty_minutes`. `is_fight` for fights.
 - `marts.fct_skater_shootouts`: shootout attempts, goals, game-deciding goals and success rate per skater per
   regular season, 2005-06 onward. Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
+- `marts.fct_player_league_seasons`: one row per player, season, league, team and game type (2 regular season,
+  3 playoffs), in every league on the player's NHL page. `league_abbrev` as the NHL writes it (OHL, AHL, NCAA, WC-A...).
+  `is_before_first_nhl_season` for paths to the NHL. A player can have several rows in a season (traded, several
+  leagues): sum them. For NHL totals use `fct_skater_seasons` and `fct_goalie_games`; use this table for other leagues.
+  Coverage of other leagues is only what the NHL lists, so "no row" does not prove someone never played there.
 - `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
 - `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
   game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.

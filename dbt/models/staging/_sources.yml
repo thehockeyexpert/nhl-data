@@ -53,6 +53,11 @@ sources:
           One row per shot event (shot on goal, missed shot, blocked shot, goal) from api-web.nhle.com's play-by-play,
           each event exactly as received, with the game and the hash of its whole response. Unlike the other raw tables
           it holds only these events: the full responses stay as compressed files on the owner's laptop (2026-11-10).
+      - name: nhl_web__player_season_total
+        description: >
+          One row per season-total entry (season, league, team, game type) of a player page from api-web.nhle.com,
+          each entry exactly as received, with the player, the page's URL and the hash of the whole page. The full
+          pages stay as compressed files on the owner's laptop (2026-11-11).
       - name: nhl_stats__skater_season
         description: One row per season and game type (regular season, playoffs) of skater season totals from the NHL stats API's skater summary.
       - name: nhl_stats__skater_shootout

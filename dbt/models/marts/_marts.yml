@@ -204,6 +204,61 @@ models:
       - name: is_in_player_list
         description: False for the few players found only in the stats, not in the NHL's player list.
 
+  - name: fct_player_league_seasons
+    description: >
+      One row per player, season, league, team and game type, in every league the NHL's player pages list (junior,
+      college, minor and major pro, international tournaments, the NHL). Use it for players' paths before, during and
+      after the NHL. For NHL seasons, fct_skater_seasons and fct_goalie_games remain the main source. Leagues are as
+      the NHL abbreviates them; the pages' coverage of other leagues is the NHL's, and can be incomplete
+      (docs/data_coverage.md, "Player pages"). A player can have several rows in one season (traded, or several leagues).
+    columns:
+      - name: season_total_key
+        description: player_id and a hash of the page entry.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_players')
+                field: player_id
+      - name: full_name
+        description: The player's name, from dim_players.
+      - name: season
+        description: The season in the NHL's 8-digit form, for example 20152016, whatever the league.
+        data_tests: [not_null]
+      - name: game_type
+        description: As the page records it. 2 = regular season, 3 = playoffs; 6 and 7 seen only for W-Cup (unverified).
+        data_tests: [not_null]
+      - name: league_abbrev
+        description: The league's abbreviation as the NHL writes it, for example NHL, OHL, AHL, NCAA, WC-A.
+        data_tests: [not_null]
+      - name: is_nhl
+        description: True for the NHL's own rows (league_abbrev NHL).
+      - name: sequence
+        description: The order of the player's teams within a season and league, as the page records it.
+      - name: team_name
+        description: The team's name as the page shows it (in English where the page offers several languages).
+      - name: first_nhl_season
+        description: The player's first NHL regular-season or playoff season, from dim_players. Empty if none.
+      - name: is_before_first_nhl_season
+        description: >
+          True for seasons before first_nhl_season. The debut season itself is false, even for its non-NHL rows.
+          Empty for people with no NHL game.
+      - name: penalty_minutes
+        description: Penalty minutes (pim on the page).
+      - name: avg_toi_seconds
+        description: Average time on ice per game, in seconds (skaters; recent NHL seasons only).
+      - name: time_on_ice_seconds
+        description: Total time on ice in seconds (goalies).
+      - name: faceoff_win_pct
+        description: Faceoff win share as a fraction (0.5 = 50%), as received.
+      - name: shooting_pct
+        description: Shooting percentage as a fraction, as received.
+      - name: save_pct
+        description: Save percentage as a fraction, as received (3 entries are above 1, unexplained).
+
   - name: fct_draft_picks
     description: >
       One row per NHL draft pick, 1963 onward, from the NHL records site. player_id is empty for picks who never

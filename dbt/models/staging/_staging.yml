@@ -247,6 +247,29 @@ models:
               arguments:
                 values: [hit, penalty]
 
+  - name: stg_nhl_web__player_season_totals
+    description: >
+      One row per season-total entry of a player page (season, league, team, game type), from the newest version of
+      each player's page. Covers every league the page lists, not only the NHL.
+    columns:
+      - name: season_total_key
+        description: >
+          player_id and a hash of the whole entry. A few players have two entries with the same season, league, game
+          type and sequence that differ in team or stats, so those fields alone are not a key.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The NHL's player ID.
+        data_tests: [not_null]
+      - name: season
+        description: The season in the NHL's 8-digit form, for example 20152016, whatever the league.
+        data_tests: [not_null]
+      - name: league_abbrev
+        description: The league's abbreviation as the NHL writes it, for example NHL, OHL, AHL, NCAA, WC-A.
+        data_tests: [not_null]
+      - name: game_type
+        description: As the page records it. 2 = regular season, 3 = playoffs; 6 and 7 seen only for W-Cup (unverified).
+        data_tests: [not_null]
+
   - name: stg_nhl_web__pbp_shots
     description: >
       One row per shot event (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season and

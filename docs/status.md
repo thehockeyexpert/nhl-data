@@ -120,6 +120,11 @@ Last updated: 2026-11-11
 - **Shootout totals, 2005-06 to today (2026-11-11).** `ingest.shootouts` (22 requests), `stg_nhl_stats__skater_shootouts`
   and `fct_skater_shootouts`; 8 of 8 tests pass. 98% of player-seasons match the play-by-play exactly
   (`docs/data_coverage.md`, "Shootouts"). Added to the daily run: 1 request a night, no cost.
+- **Player pages (finished 2026-11-12).** 23,575 pages (15,378 requests in the last run, 257 min; stopped once when
+  VS Code closed and resumed). `stg_nhl_web__player_season_totals` and `fct_player_league_seasons` (622,462 rows,
+  23,242 people, 1,895 leagues; tag `player_pages`, rebuilt Sundays, not nightly): 15 of 15 tests pass. NHL rows
+  match our stats for 99.5% of skater and goalie seasons (`docs/data_coverage.md`, "Player pages"). The guide is
+  updated in `docs/motherduck_guide.md`; publishing it is left to the owner.
 - **Next loads (approved 2026-11-11, in this order):** player pages for everyone in the player list (about 23,600
   requests, about 6.5 hours), then the play-by-play before 2007-08 (45,810 games, about 12-13 hours; goals with
   assists and periods, penalties). Hits and penalties from the 2007-08 onward files follow the same plan.

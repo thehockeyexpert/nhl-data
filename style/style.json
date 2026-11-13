@@ -232,7 +232,8 @@
    "trend",
    "turning_point",
    "conclusion",
-   "statement"
+   "statement",
+   "question"
   ],
   "default_mode": "mixed",
   "mixed": {
@@ -242,7 +243,8 @@
    "trend": "light",
    "turning_point": "light",
    "conclusion": "dark",
-   "statement": "dark"
+   "statement": "dark",
+   "question": "dark"
   },
   "comparison_panel": {
    "light": "#E4EAF0",

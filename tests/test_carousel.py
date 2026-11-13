@@ -70,6 +70,18 @@ def test_a_statement_has_1_to_3_headline_lines_and_an_optional_kicker():
     assert carousel.slide_mode(story(), "statement") == "dark"
 
 
+def test_a_question_slide_has_1_to_3_lines_and_an_optional_call():
+    for lines in (["Who wins?"], ["Draisaitl or McDavid:", "who'd you take?"], ["A", "B", "C"]):
+        assert carousel.validate(story(slides=SIX[:2] + [{"type": "question", "question": lines}])) == []
+    assert carousel.validate(story(slides=SIX[:2] + [{"type": "question", "question": ["Q?"], "call": "C"}])) == []
+    for bad in ([], ["1", "2", "3", "4"], "not a list"):
+        problems = carousel.validate(story(slides=SIX[:2] + [{"type": "question", "question": bad}]))
+        assert "question: question must be a list of 1 to 3 lines of text" in problems
+    assert "question: unknown key 'kicker'" in carousel.validate(
+        story(slides=SIX[:2] + [{"type": "question", "question": ["Q?"], "kicker": "K"}]))
+    assert carousel.slide_mode(story(), "question") == "dark"
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

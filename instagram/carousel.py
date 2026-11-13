@@ -36,7 +36,8 @@ from instagram.make_post import STYLE, _sized, text_width
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
-SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement"]
+SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement",
+               "question"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -51,10 +52,11 @@ FIELDS = {
     "turning_point": ({"title", "stats"}, {"subtitle", "stats_title", "rink"}),
     "conclusion": ({"kicker", "headline"}, {"context", "question", "call"}),
     "statement": ({"headline"}, {"kicker"}),
+    "question": ({"question"}, {"call"}),
 }
 
-# Slides whose `headline` is a list of 1 to N lines of text.
-HEADLINE_LINES = {"statement": 3}
+# Fields written as a list of 1 to N lines of text: {(slide type, field): N}.
+LINE_FIELDS = {("statement", "headline"): 3, ("question", "question"): 3}
 
 
 # ---- Reading and checking a carousel file ----
@@ -105,11 +107,12 @@ def validate(data):
         extra = set(slide) - required - optional - {"type"}
         problems += [f"{slide['type']}: needs '{key}'" for key in sorted(missing)]
         problems += [f"{slide['type']}: unknown key '{key}'" for key in sorted(extra)]
-        if slide["type"] in HEADLINE_LINES and "headline" in slide:
-            most = HEADLINE_LINES[slide["type"]]
-            lines = slide["headline"]
+        for (kind, field), most in LINE_FIELDS.items():
+            if slide["type"] != kind or field not in slide:
+                continue
+            lines = slide[field]
             if not (isinstance(lines, list) and 1 <= len(lines) <= most and all(isinstance(x, str) and x for x in lines)):
-                problems.append(f"{slide['type']}: headline must be a list of 1 to {most} lines of text")
+                problems.append(f"{kind}: {field} must be a list of 1 to {most} lines of text")
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
         if "image" in slide:
@@ -587,8 +590,25 @@ def statement(cv, slide, ctx):
         cv.text(M, first_y + i * gap, size, "C700", c.accent if i == len(lines) - 1 else c.ink, line)
 
 
+def question(cv, slide, ctx):
+    """The conclusion's question and call on their own, for when the verdict is a separate statement slide: the
+    question in 1 to 3 lines at the conclusion's 96 px (smaller only when a line would not fit), the call below it
+    at 34 px in muted text, the block centred a little above the middle like the statement."""
+    c = cv.c
+    lines = slide["question"]
+    size = min(96, 96 * (W - 2 * M) / max(cv.width(line, 96, "C700") for line in lines))
+    gap = 104 * size / 96
+    call = slide.get("call", "Tell us in the comments.")
+    # From the top of the first line's capitals to the call's baseline (the conclusion puts it 80 px lower).
+    block = size * 0.72 + (len(lines) - 1) * gap + 80
+    first_y = 620 - block / 2 + size * 0.72
+    for i, line in enumerate(lines):
+        cv.text(M, first_y + i * gap, size, "C700", c.ink, line)
+    cv.text(M, first_y + (len(lines) - 1) * gap + 80, 34, "S600", c.mut, call)
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
-        "conclusion": conclusion, "statement": statement}
+        "conclusion": conclusion, "statement": statement, "question": question}
 
 
 # ---- Rendering ----

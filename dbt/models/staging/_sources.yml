@@ -67,5 +67,21 @@ sources:
         description: One row per season and game type (regular season, playoffs) of skater season totals from the NHL stats API's skater summary.
       - name: nhl_stats__skater_shootout
         description: One row per regular season (from 2005-06) of the NHL stats API's skater shootout report.
+      - name: nhl_stats__team_game_penalties
+        description: >
+          One row per season and game type (or recent dates, nightly) of the NHL stats API's per-game team penalties
+          report (isGame=true), from 2026-11-13.
+      - name: nhl_stats__team_game_penaltykill
+        description: >
+          One row per season and game type (or recent dates, nightly) of the NHL stats API's per-game team penalty-kill
+          report (isGame=true), from 2026-11-13.
+      - name: nhl_stats__team_game_powerplay
+        description: >
+          One row per season and game type (or recent dates, nightly) of the NHL stats API's per-game team power-play
+          report (isGame=true), from 2026-11-13.
+      - name: nhl_stats__team_game_summary
+        description: >
+          One row per season and game type (or recent dates, nightly) of the NHL stats API's per-game team summary
+          report (isGame=true), from 2026-11-13.
       - name: nhl_stats__team_season
         description: The NHL's official regular-season totals for every team-season, one response from the NHL stats API.

@@ -15,11 +15,16 @@ for the moving ones, the method and the leader matter more than the exact number
 - **T04** One-goal games since 2005-06 (D07: overtime wins in, shootout games out), by win %: New Jersey .549 (306 W,
   168 L, 83 OTL in 557), Nashville .546, Vegas .544, Washington .532.
 - **T05** Shots per game 2025-26: Colorado 33.7, Carolina 32.2, Anaheim 30.8.
-- **T06** Not answerable: team power-play percentage needs team game statistics, which are not loaded.
+- **T06** Edmonton 30.6% (68 power-play goals in 222 opportunities), Dallas 28.6% (71 in 248), Minnesota 25.2% (65
+  in 258). Power-play goals / opportunities summed over the season (`fct_team_game_stats`); matches the NHL's season report.
 - **T07** Bench minors since 1990-91: Colorado lineage (with Quebec) 334 in 2,783 games (0.120 a game), Chicago 307,
   Vancouver 306. Per game Colorado also leads (Utah 0.115 in 183 games). From the play-by-play penalties (code BEN).
-- **T08** Partly answerable: by regulation minutes (60 a game, regular season and playoffs) Montreal 481,200 (8,020
-  games), Toronto 469,020, Boston 465,720. Overtime minutes (D19) need overtime rules by era, not built yet.
+- **T08** Regulation plus overtime (D19, regular season and playoffs, re-run 2026-11-13 with
+  `reference.overtime_rules`): Montreal 488,108 minutes (481,200 regulation in 8,020 games + 6,908 overtime),
+  Toronto 474,923 (469,020 + 5,903), Boston 472,203 (465,720 + 6,483). Overtime ends at the overtime goal
+  (`fct_shots`); with no goal the full overtime counts (10 minutes in full 1928-29 to 1942-43); the 2019-20 playoff
+  round-robin shootouts use that season's regular-season overtime. 4 tied playoff games (1919, 1927 twice, 1951) have
+  no recorded overtime length and add 0: Montreal 1, Toronto 1, Boston 3 of them, not enough to change the order.
 - **T09** Travel (D20, regular season): most in one season Vancouver 1975-76, 116,152 km (then Vancouver 1971-72 and
   California 1974-75). 2025-26: Dallas 81,671 km most, NY Islanders 46,603 least. 3 games (Atlantic City, 1929-30)
   have no arena coordinates.

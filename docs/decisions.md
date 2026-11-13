@@ -3,6 +3,17 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-13: team game statistics
+
+**Decision (owner, 2026-11-13).** Load the NHL stats API's per-game team reports (summary, power play, penalty kill,
+penalties; `isGame=true`), regular season and playoffs, all history, one raw table per report
+(`raw.nhl_stats__team_game_*`), and nightly for the last 3 game dates. Modelled as `marts.fct_team_game_stats`, one
+row per team per game, for power-play and penalty-kill questions (T06).
+- **Estimate:** about 880 requests once (15 minutes), about 300 MB of JSON before compression; 8 requests a night.
+  $0 a month (inside the free plan's storage and compute).
+- **Loaded:** 110 seasons, 872 requests in 15.1 minutes. Per-game power-play goals and opportunities summed by team
+  match the NHL's season power-play report exactly (2025-26, 2010-11, 1985-86, regular season and playoffs).
+
 ## 2026-11-13: play events (faceoffs, giveaways, takeaways, stoppages) and overtime rules
 
 **Decision (owner, 2026-11-13).** Load the play-by-play's faceoffs, giveaways, takeaways, stoppages and period start

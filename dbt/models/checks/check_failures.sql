@@ -1193,6 +1193,91 @@ birthplace_coverage as (
     where players.birthplace_key is not null
     having count(birthplaces.latitude) < 0.95 * count(*)
 
+),
+
+team_game_stats as (
+
+    select * from {{ ref('fct_team_game_stats') }}
+
+),
+
+team_game_stats_checked as (
+
+    -- Finished team-games between two NHL teams, with the two-day lag for a season in progress. The NHL keeps no team
+    -- stats for the early playoff games against PCHA and WCHL teams (1917-18 to 1925-26).
+    select team_game_stats.*
+    from team_game_stats
+    inner join {{ ref('dim_teams') }} as team on team.team_id = team_game_stats.team_id
+    inner join {{ ref('dim_teams') }} as opponent on opponent.team_id = team_game_stats.opponent_team_id
+    where team.is_nhl_team
+      and opponent.is_nhl_team
+      and (team_game_stats.season in (select season from finished_seasons)
+           or team_game_stats.game_date <= current_date - 2)
+
+),
+
+team_game_stats_covered as (
+
+    -- Every finished regular-season or playoff game between NHL teams has the NHL's team stats for both teams.
+    select
+        'team_game_stats_covered' as check_name,
+        season,
+        game_id,
+        'no row in the NHL team reports for this team and game' as detail,
+        team_id
+    from team_game_stats_checked
+    where not has_team_stats
+
+),
+
+team_game_stats_match_games as (
+
+    -- The team report's goals equal the final score, minus the one goal a shootout win adds to the winner's score.
+    select
+        'team_game_stats_match_games' as check_name,
+        checked.season,
+        checked.game_id,
+        'final score ' || checked.goals_for || '-' || checked.goals_against
+            || ', team report ' || checked.stats_goals_for || '-' || checked.stats_goals_against as detail,
+        checked.team_id
+    from team_game_stats_checked as checked
+    inner join games on games.game_id = checked.game_id
+    where checked.has_team_stats
+      and (checked.stats_goals_for != checked.goals_for
+               - case when games.last_period_type = 'SO' and checked.goals_for > checked.goals_against then 1 else 0 end
+           or checked.stats_goals_against != checked.goals_against
+               - case when games.last_period_type = 'SO' and checked.goals_against > checked.goals_for then 1 else 0 end)
+
+),
+
+team_special_teams_mirror as (
+
+    -- One team's power play is the other's penalty kill: power-play goals against equal the opponent's power-play
+    -- goals, short-handed goals equal the opponent's short-handed goals against, times short-handed equal the
+    -- opponent's opportunities; and no team scores more power-play goals than it had opportunities.
+    select
+        'team_special_teams_mirror' as check_name,
+        team.season,
+        team.game_id,
+        'PPGA ' || coalesce(team.power_play_goals_against::varchar, '-') || ' vs opponent PPG '
+            || coalesce(opponent.power_play_goals::varchar, '-')
+            || ', SHG ' || coalesce(team.short_handed_goals::varchar, '-') || ' vs opponent SHGA '
+            || coalesce(opponent.short_handed_goals_against::varchar, '-')
+            || ', TSH ' || coalesce(team.times_short_handed::varchar, '-') || ' vs opponent PPO '
+            || coalesce(opponent.power_play_opportunities::varchar, '-')
+            || ', PPG ' || coalesce(team.power_play_goals::varchar, '-') || ' of PPO '
+            || coalesce(team.power_play_opportunities::varchar, '-') as detail,
+        team.team_id
+    from team_game_stats_checked as team
+    inner join team_game_stats_checked as opponent
+        on opponent.game_id = team.game_id and opponent.team_id = team.opponent_team_id
+    where team.has_team_stats
+      and opponent.has_team_stats
+      and (team.power_play_goals_against is distinct from opponent.power_play_goals
+           or team.short_handed_goals is distinct from opponent.short_handed_goals_against
+           or team.times_short_handed is distinct from opponent.power_play_opportunities
+           or team.power_play_goals > team.power_play_opportunities)
+
 )
 
 select * from season_facts_present
@@ -1280,3 +1365,9 @@ union all
 select * from birthplace_manual_fixes_valid
 union all
 select * from birthplace_coverage
+union all
+select * from team_game_stats_covered
+union all
+select * from team_game_stats_match_games
+union all
+select * from team_special_teams_mirror

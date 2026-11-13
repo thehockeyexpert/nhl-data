@@ -173,6 +173,10 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Team game statistics (2026-11-13).** Power play, penalty kill, penalties and shots per team per game, all
+  history, from the stats API's team reports: `fct_team_game_stats` (872 requests, 15 minutes; nightly for the last 3
+  game dates). Three new checks (covered, goals match, power play mirrors penalty kill), proven to fail on a
+  throwaway in-memory copy. T06 answered; T08 re-run with the overtime rules.
 - **Play events and overtime rules (2026-11-13).** Faceoffs, giveaways, takeaways, stoppages and period markers
   from 2009-10 (3.18 million rows, back-loaded from the laptop files in about a minute, nightly from then on):
   `fct_faceoffs`, `fct_giveaways`, `fct_takeaways`, `fct_stoppages`; 51 of 51 play-by-play models and tests pass;
@@ -219,7 +223,7 @@ Last updated: 2026-11-13
 ## Next
 
 1. **Blind run of the golden questions** through the Claude.ai Project, compared with `analyst/golden_answers.md`.
-   T08 still needs a small table of overtime rules by era (D19); T06 needs team game statistics (not loaded).
+   T06 and T08 answered by direct SQL (2026-11-13).
 2. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
 3. **Watch the daily run:** compare the Billing page with the estimates below.
 4. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
@@ -318,5 +322,5 @@ Last updated: 2026-11-13
 
 ## Not started
 
-- Team game statistics (power play, penalties per team game), shifts, game duration.
+- Shifts, game duration.
 - Travel and road-trip tables (venue coordinates and `dim_team_home_cities` are in place).

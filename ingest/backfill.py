@@ -1,5 +1,5 @@
-"""Load many seasons, newest first: schedule and results (default), goalie games, skater seasons, skater games, standings
-or play-by-play shots.
+"""Load many seasons, newest first: schedule and results (default), goalie games, skater seasons, skater games, standings,
+play-by-play shots or team game stats.
 
 Run it with:  uv run python -m ingest.backfill --from 20242025 --to 19171918
               uv run python -m ingest.backfill --job goalies --from 20262027 --to 19171918
@@ -7,6 +7,7 @@ Run it with:  uv run python -m ingest.backfill --from 20242025 --to 19171918
               uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918
               uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918
               uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 19171918
+              uv run python -m ingest.backfill --job team_games --from 20262027 --to 19171918
 
 Safe to stop (Ctrl+C) and restart with the same command: seasons that already
 finished are skipped without any requests, and a half-finished season is redone
@@ -17,7 +18,7 @@ import argparse
 import sys
 import time
 
-from ingest import goalies, play_by_play, schedule, shootouts, skater_games, skaters, standings
+from ingest import goalies, play_by_play, schedule, shootouts, skater_games, skaters, standings, team_games
 from ingest.nhl_api import NhlApiClient, NhlApiError
 from ingest.raw_loader import connect, ensure_log, is_season_done, log_season_done
 from ingest.schedule import season_id, totals
@@ -31,6 +32,7 @@ JOBS = {
     "standings": standings,
     "play_by_play": play_by_play,
     "shootouts": shootouts,
+    "team_games": team_games,
 }
 
 

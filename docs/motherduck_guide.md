@@ -38,6 +38,10 @@ estimate it from other tables.
 - From 2009-10: `fct_faceoffs` (`winning_player_id`, `losing_player_id`, teams, zone: faceoff wins and losses),
   `fct_giveaways` and `fct_takeaways` (`player_id`, `team_id`; arena-counted, goalies included), `fct_stoppages`
   (`stoppage_reason`: icing, offside...).
+- `fct_team_game_stats`: one row per team per game: power play (`power_play_goals`, `power_play_opportunities`),
+  penalty kill (`times_short_handed`, `power_play_goals_against`), `short_handed_goals`, penalties, shots. PP% = sum
+  of goals / sum of opportunities; PK% = 1 - goals against / times short-handed. Opportunities from 1977-78, shots
+  1959-60, PP time 1997-98. Its goals leave out the shootout goal: use `goals_for` for scores.
 - `fct_skater_shootouts`: shootout attempts, goals, game-deciding goals per skater per regular season, from 2005-06.
   Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `fct_player_league_seasons`: one row per player, season, league, team and game type in every league on the
@@ -70,8 +74,7 @@ estimate it from other tables.
   `has_winner` false for the unfinished 1919 Final), `bridge_playoff_series_games`.
 - `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
-**Not loaded, never estimate:** shifts, zone starts, team game
-statistics, game duration, expected goals, Game Score. Travel distances are not stored. Compute them (D20) as the
+**Not loaded, never estimate:** shifts, zone starts, expected goals, Game Score. Travel distances are not stored. Compute them (D20) as the
 great-circle distance between the arenas of a team's consecutive regular-season games (`fct_games.venue_name` joins
 `reference.venues.venue_name` for coordinates), from the home arena (`dim_team_home_cities`) to a season-opening road
 game and back home after a season-ending one.
@@ -128,6 +131,9 @@ game and back home after a season-ending one.
   to overtime and ended tied. For "decided in OT or a shootout" add `NOT is_tie`.
 - OTL exists only in regular-season games of seasons that gave a point for an overtime loss; otherwise, and in every
   playoff game, it is L. From 1999-00 to 2003-04 a goalie's overtime loss is L while the team gets OTL.
+- **Minutes played (D19):** 60 a game plus overtime: up to the first overtime goal in `fct_shots` (`period_number` 4
+  on, not shootout; earlier periods at full length); with no goal, the full overtime from `reference.overtime_rules`
+  (10 minutes played in full 1928-29 to 1942-43, whatever was scored). Shootouts add nothing.
 - Standings points (D02): 2 for a win, 1 for a tie, 1 for an OT or shootout loss where that season's rules give it.
 
 ## Definitions

@@ -423,3 +423,63 @@ models:
         description: What was expected and what was found.
       - name: team_id
         description: The team concerned, for checks about a team or a team's season.
+
+  - name: stg_nhl_stats__team_game_summary
+    description: >
+      One row per team per game, regular season and playoffs, from the NHL stats API's per-game team summary report.
+      Incremental: each build reads only raw responses loaded since the last build; the newest row per game and team wins.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: team_id
+        description: The NHL's team ID.
+        data_tests: [not_null]
+
+  - name: stg_nhl_stats__team_game_powerplay
+    description: >
+      One row per team per game, regular season and playoffs, from the NHL stats API's per-game team power-play report.
+      Incremental: each build reads only raw responses loaded since the last build; the newest row per game and team wins.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: team_id
+        description: The NHL's team ID.
+        data_tests: [not_null]
+
+  - name: stg_nhl_stats__team_game_penaltykill
+    description: >
+      One row per team per game, regular season and playoffs, from the NHL stats API's per-game team penalty-kill report.
+      Incremental: each build reads only raw responses loaded since the last build; the newest row per game and team wins.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: team_id
+        description: The NHL's team ID.
+        data_tests: [not_null]
+
+  - name: stg_nhl_stats__team_game_penalties
+    description: >
+      One row per team per game, regular season and playoffs, from the NHL stats API's per-game team penalties report.
+      Incremental: each build reads only raw responses loaded since the last build; the newest row per game and team wins.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: team_id
+        description: The NHL's team ID.
+        data_tests: [not_null]

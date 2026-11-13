@@ -71,8 +71,8 @@ questions:
     theme: team
     question: Who led the league in power-play percentage in 2025-26?
     difficulty: easy
-    needs: [team_game_stats]
-    answerable_now: false
+    needs: [fct_team_game_stats]
+    answerable_now: true
     definitions: []
 
   # --- season
@@ -607,12 +607,10 @@ questions:
     approved_on: 2026-11-13
     difficulty: hard
     needs: [fct_games, game_duration]
-    answerable_now: partly
-    blocked_on:
-      - overtime rules by era (full overtime length when nobody scored), a small table of our own
+    answerable_now: true
     definitions: [D03, D11, D19]
     flags: [ambiguous, partial_history]
-    review_note: Overtime length is not in our tables. It comes from the time of the winning goal (play-by-play) and from the overtime rules of each era (10-minute non-sudden-death regular-season overtime before 1942). Shootouts add no minutes.
+    review_note: Overtime length comes from the time of the overtime goal (play-by-play) and, with no goal, from reference.overtime_rules (10-minute non-sudden-death regular-season overtime before 1942). Shootouts add no minutes.
   - id: T09
     source: owner
     theme: team

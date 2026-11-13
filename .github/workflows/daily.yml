@@ -68,6 +68,11 @@ jobs:
       - name: Load the season's per-game skater stats
         run: uv run python -m ingest.skater_games --season "$SEASON" --recent-days 3
 
+      # Power play, penalty kill, penalties and shots per team per game: 4 reports for the last 3 game dates (8 requests
+      # at most). A season never loaded in full is loaded in full first.
+      - name: Load the season's per-game team stats
+        run: uv run python -m ingest.team_games --season "$SEASON" --recent-days 3
+
       # Shootout totals per skater: 1 request; a response identical to the last one adds nothing.
       - name: Load the season's shootout totals
         run: uv run python -m ingest.shootouts --season "$SEASON"

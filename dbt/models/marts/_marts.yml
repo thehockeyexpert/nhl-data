@@ -795,3 +795,52 @@ models:
           The zone as received (O, D or N), from the shooter's side: 97% of 2025-26 non-shootout goals are in zone O.
       - name: reason
         description: For a missed or blocked shot, the NHL's reason (for example wide-of-net), as received.
+
+  - name: fct_team_game_stats
+    description: >
+      One row per team per finished regular-season or playoff game, all history: power play, penalty kill, penalties
+      and shots from the NHL stats API's per-game team reports. Empty means not recorded, never zero: power-play
+      opportunities and times short-handed from 1977-78, shots from 1959-60, power-play and short-handed time from
+      1997-98 (docs/data_coverage.md, "Team game statistics"). Power-play % = sum of power_play_goals / sum of
+      power_play_opportunities; penalty-kill % = 1 - sum of power_play_goals_against / sum of times_short_handed.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined, as in fct_team_games.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+      - name: team_id
+        description: The team. Joins to dim_teams.
+        data_tests: [not_null]
+      - name: power_play_goals
+        description: Power-play goals scored.
+      - name: power_play_opportunities
+        description: Power-play opportunities (from 1977-78).
+      - name: power_play_seconds
+        description: Time on the power play, in seconds (from 1997-98).
+      - name: short_handed_goals_against
+        description: Short-handed goals allowed while on the power play.
+      - name: times_short_handed
+        description: Times short-handed, the opponent's power-play opportunities (from 1977-78).
+      - name: power_play_goals_against
+        description: Power-play goals allowed.
+      - name: short_handed_goals
+        description: Short-handed goals scored.
+      - name: short_handed_seconds
+        description: Time short-handed, in seconds (from 1997-98).
+      - name: penalty_minutes
+        description: Penalty minutes.
+      - name: penalties_drawn
+        description: Penalties drawn as the NHL reports them; equal to the opponent's penalties in 99% of games.
+      - name: bench_minors
+        description: Bench minor penalties.
+      - name: stats_goals_for
+        description: Goals for as the team report gives them; the shootout goal is left out (checked by team_game_stats_match_games).
+      - name: has_team_stats
+        description: False when the NHL's team reports have no row for this team and game.

@@ -164,13 +164,32 @@ Loaded 2026-11-13 from the laptop's play-by-play files, and nightly from then on
 - **Giveaways and takeaways** are counted by arena scorers, so counts differ between arenas, as with hits.
 - **Stoppage reasons** as the NHL names them: goalie-stopped-after-sog, icing, offside, puck-in-netting...
 
+## Team game statistics
+
+`marts.fct_team_game_stats` (2026-11-13), from the NHL stats API's per-game team reports. Observed when loaded:
+- **Power-play opportunities and times short-handed: 1977-78 onward.** Before that the NHL's fields are empty from
+  1933-34 and hold a few stray values before (37 opportunities in all against 495 power-play goals), so the mart
+  leaves them empty before 1977-78. Power-play goals, short-handed goals and penalties exist from 1917-18.
+- **Shots from 1959-60; power-play and short-handed time from 1997-98.**
+- **Goals leave out the shootout goal:** the report's goals equal the final score except for the shootout winner, one
+  goal fewer (all 2,628 shootout games).
+- **No rows for playoff games against PCHA and WCHL teams** (1917-18 to 1925-26, 43 games): the NHL keeps no team
+  stats for them.
+- **Penalties drawn** equal the opponent's penalties in 99% of games: the opponent's count, not a separate stat.
+- Checked: power-play goals against equal the opponent's power-play goals, short-handed goals the opponent's
+  short-handed goals against, times short-handed the opponent's opportunities, in every game; season sums match the
+  NHL's season report.
+
 ## Overtime rules
 
 `reference.overtime_rules` (2026-11-13). The play-by-play shows the early regular-season eras: before 1921-22 no
 game ended tied and overtime goals came as late as the 17th minute; 1921-22 to 1926-27 goals to the 20th minute and
 ties; 1927-28 goals only to the 10th minute; from 1928-29 up to four overtime goals in one game (the 10-minute period
 was played in full). Playoff overtime has always been sudden death, never with two overtime goals in a game, up to
-6 overtime periods.
+6 overtime periods. Two playoff games are recorded as ties although an overtime goal was scored (1930-03-26 MTL-CHI
+2-2, 1934-03-25 CHI-MTL 1-1), both second games of two-game total-goals series; unexplained beyond that. Four tied
+playoff games went to overtime with no goal and no recorded overtime length (1919-03-26, 1927-04-07, 1927-04-11,
+1951-03-31), so their overtime minutes are unknown.
 
 ## Shootout totals (skaters)
 

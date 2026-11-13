@@ -36,6 +36,11 @@ models:
 seeds:
   nhl_data:
     +schema: reference
+    league_levels:
+      +column_types:
+        from_season: integer
+        to_season: integer
+        counts_before_nhl: boolean
     game_type_labels:
       +column_types:
         season: integer

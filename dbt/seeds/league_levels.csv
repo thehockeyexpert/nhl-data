@@ -1,0 +1,1162 @@
+league_level_key,league_abbrev,from_season,to_season,level,counts_before_nhl,league_group,note
+(none),(none),,,unknown,false,(none),no league given
+13U AAA,13U AAA,,,youth,false,13U AAA,"youth: age group, bantam, midget or minor"
+14U AA,14U AA,,,youth,false,14U AA,"youth: age group, bantam, midget or minor"
+14U AAA,14U AAA,,,youth,false,14U AAA,"youth: age group, bantam, midget or minor"
+15U AAA,15U AAA,,,youth,false,15U AAA,"youth: age group, bantam, midget or minor"
+16U AAA,16U AAA,,,youth,false,16U AAA,"youth: age group, bantam, midget or minor"
+18U AA,18U AA,,,youth,false,18U AA,"youth: age group, bantam, midget or minor"
+18U AAA,18U AAA,,,youth,false,18U AAA,"youth: age group, bantam, midget or minor"
+20 Elit,20 Elit,,,junior,true,20 Elit,junior
+4-Nations,4-Nations,,,tournament,false,4-Nations,"tournament, national team, select team or exhibition"
+5-Nations,5-Nations,,,tournament,false,5-Nations,"tournament, national team, select team or exhibition"
+6-Nations,6-Nations,,,tournament,false,6-Nations,"tournament, national team, select team or exhibition"
+8-Nations,8-Nations,,,tournament,false,8-Nations,"tournament, national team, select team or exhibition"
+A-Cup,A-Cup,,,tournament,false,A-Cup,"tournament, national team, select team or exhibition"
+AAHA,AAHA,,,youth,false,AAHA,"youth: age group, bantam, midget or minor"
+AAHL,AAHL,,19501951,senior,false,AAHL,"American Amateur HL, senior"
+AAHL@19511952,AAHL,19511952,,senior,false,AAHL@19511952,senior or minor (unclear)
+AASHA,AASHA,,,youth,false,AASHA,"youth: age group, bantam, midget or minor"
+AAU,AAU,,,senior,false,AAU,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+ABCHL,ABCHL,,,senior,false,ABCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+ABHL,ABHL,,,youth,false,ABHL,"youth: age group, bantam, midget or minor"
+ACAC,ACAC,,,college,true,ACAC,college or university
+ACC-U14,ACC-U14,,,youth,false,ACC-U14,"youth: age group, bantam, midget or minor"
+ACC-U15,ACC-U15,,,youth,false,ACC-U15,"youth: age group, bantam, midget or minor"
+ACH,ACH,,,unknown,false,ACH,unclear
+ACHA,ACHA,,,college,true,ACHA,club college hockey (judgement call: counted)
+ACHL,ACHL,,,minor_pro,true,ACHL,minor pro or second tier
+ACSHL,ACSHL,,,senior,false,ACSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+AEHL U15,AEHL U15,,,youth,false,AEHL U15,"youth: age group, bantam, midget or minor"
+AEHL U15 AA,AEHL U15 AA,,,youth,false,AEHL U15 AA,"youth: age group, bantam, midget or minor"
+AEHL U16,AEHL U16,,,youth,false,AEHL U16,"youth: age group, bantam, midget or minor"
+AEHL U18,AEHL U18,,,youth,false,AEHL U18,"youth: age group, bantam, midget or minor"
+AFHL,AFHL,,,senior,false,AFHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+AH,AH,,,college,true,NCAA Division I,college or university
+AHA,AHA,,,minor_pro,true,AHA,minor pro or second tier
+AHA-B,AHA-B,,,senior,false,AHA-B,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+AHAA,AHAA,,,senior,false,AHAA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+AHBPL,AHBPL,,,youth,false,AHBPL,"youth: age group, bantam, midget or minor"
+AHL,AHL,,,minor_pro,true,AHL,minor pro or second tier
+AHMMPL,AHMMPL,,,youth,false,AHMMPL,"youth: age group, bantam, midget or minor"
+AHMPL,AHMPL,,,youth,false,AHMPL,"youth: age group, bantam, midget or minor"
+AIHA,AIHA,,,senior,false,AIHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Air Canada Cup,Air Canada Cup,,,tournament,false,Air Canada Cup,"tournament, national team, select team or exhibition"
+AJBHL,AJBHL,,,junior,true,AJBHL,junior
+AJHL,AJHL,,,junior,true,AJHL,junior
+AJHL-B,AJHL-B,,,junior,true,AJHL-B,junior
+Al-Cup,Al-Cup,,,tournament,false,Al-Cup,"tournament, national team, select team or exhibition"
+Alberta Cup,Alberta Cup,,,tournament,false,Alberta Cup,"tournament, national team, select team or exhibition"
+ALLIANCE U14,ALLIANCE U14,,,youth,false,ALLIANCE U14,"youth: age group, bantam, midget or minor"
+ALLIANCE U15,ALLIANCE U15,,,youth,false,ALLIANCE U15,"youth: age group, bantam, midget or minor"
+ALLIANCE U16,ALLIANCE U16,,,youth,false,ALLIANCE U16,"youth: age group, bantam, midget or minor"
+ALLIANCE U18,ALLIANCE U18,,,youth,false,ALLIANCE U18,"youth: age group, bantam, midget or minor"
+Allsvenskan,Allsvenskan,,,minor_pro,true,Swedish second tier,Swedish second tier
+Alpenliga,Alpenliga,,,major_pro,true,Alpenliga,"Alpine league, top clubs of Austria, Italy, Slovenia (1991-99)"
+AlpsHL,AlpsHL,,,minor_pro,true,AlpsHL,"Alps HL, mostly second-tier clubs"
+Alx-Cup,Alx-Cup,,,tournament,false,Alx-Cup,"tournament, national team, select team or exhibition"
+AMBAAHL,AMBAAHL,,,youth,false,AMBAAHL,"youth: age group, bantam, midget or minor"
+AMBHL,AMBHL,,,youth,false,AMBHL,"youth: age group, bantam, midget or minor"
+AMBHL AA,AMBHL AA,,,youth,false,AMBHL AA,"youth: age group, bantam, midget or minor"
+AMHA,AMHA,,,youth,false,AMHA,"youth: age group, bantam, midget or minor"
+AMHL,AMHL,,,youth,false,AMHL,"youth: age group, bantam, midget or minor"
+AMMHL,AMMHL,,,youth,false,AMMHL,"youth: age group, bantam, midget or minor"
+APHL,APHL,,,minor_pro,true,APHL,minor pro or second tier
+AS-Game,AS-Game,,,tournament,false,AS-Game,"tournament, national team, select team or exhibition"
+ASHL,ASHL,,,senior,false,ASHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+AsianHL,AsianHL,,,major_pro,true,AsianHL,top league of its country or era
+AtJHL,AtJHL,,,junior,true,AtJHL,junior
+Atom,Atom,,,youth,false,Atom,"youth: age group, bantam, midget or minor"
+AUAA,AUAA,,,college,true,Canadian university,college or university
+Australia,Australia,,,major_pro,true,Australia,top league of its country
+Austria,Austria,,,major_pro,true,Austria,top league of its country or era
+Austria U20,Austria U20,,,junior,true,Austria U20,junior
+Austria-Jr.,Austria-Jr.,,,junior,true,Austria-Jr.,junior
+Aut-Cup,Aut-Cup,,,tournament,false,Aut-Cup,"tournament, national team, select team or exhibition"
+AWHL,AWHL,,,minor_pro,true,AWHL,minor pro or second tier
+AYBHL,AYBHL,,,youth,false,AYBHL,"youth: age group, bantam, midget or minor"
+AYHL,AYHL,,,youth,false,AYHL,"youth: age group, bantam, midget or minor"
+AYHL 13U,AYHL 13U,,,youth,false,AYHL 13U,"youth: age group, bantam, midget or minor"
+AYHL 14U,AYHL 14U,,,youth,false,AYHL 14U,"youth: age group, bantam, midget or minor"
+AYHL 15U,AYHL 15U,,,youth,false,AYHL 15U,"youth: age group, bantam, midget or minor"
+AYHL 16U,AYHL 16U,,,youth,false,AYHL 16U,"youth: age group, bantam, midget or minor"
+AYHL 16UA,AYHL 16UA,,,youth,false,AYHL 16UA,"youth: age group, bantam, midget or minor"
+AYHL 18U,AYHL 18U,,,youth,false,AYHL 18U,"youth: age group, bantam, midget or minor"
+AYMBHL,AYMBHL,,,youth,false,AYMBHL,"youth: age group, bantam, midget or minor"
+Bantam,Bantam,,,youth,false,Bantam,"youth: age group, bantam, midget or minor"
+BC U18,BC U18,,,youth,false,BC U18,"youth: age group, bantam, midget or minor"
+BC Zone U15,BC Zone U15,,,tournament,false,BC Zone U15,"tournament, national team, select team or exhibition"
+BCAHA,BCAHA,,,youth,false,BCAHA,"youth: age group, bantam, midget or minor"
+BCBHL,BCBHL,,,youth,false,BCBHL,"youth: age group, bantam, midget or minor"
+BCEHL U17,BCEHL U17,,,youth,false,BCEHL U17,"youth: age group, bantam, midget or minor"
+BCEHL U18,BCEHL U18,,,youth,false,BCEHL U18,"youth: age group, bantam, midget or minor"
+BCHL,BCHL,,,junior,true,BCHL,junior
+BCIHA,BCIHA,,,senior,false,BCIHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+BCJBL,BCJBL,,,junior,true,BCJBL,junior
+BCJHL,BCJHL,,,junior,true,BCJHL,junior
+BCMML,BCMML,,,youth,false,BCMML,"youth: age group, bantam, midget or minor"
+BCSHL,BCSHL,,,senior,false,BCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+BDHL,BDHL,,,senior,false,BDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+BEAST 15U,BEAST 15U,,,youth,false,BEAST 15U,"youth: age group, bantam, midget or minor"
+BEAST 16U,BEAST 16U,,,youth,false,BEAST 16U,"youth: age group, bantam, midget or minor"
+BEAST 18U,BEAST 18U,,,youth,false,BEAST 18U,"youth: age group, bantam, midget or minor"
+Belarus,Belarus,,,major_pro,true,Belarus,top league of its country or era
+Belarus U18,Belarus U18,,,youth,false,Belarus U18,"youth: age group, bantam, midget or minor"
+Belarus Vysshaya,Belarus Vysshaya,,,minor_pro,true,Belarus Vysshaya,minor pro or second tier
+Belarus-2,Belarus-2,,,minor_pro,true,Belarus-2,minor pro or second tier
+Belarus2,Belarus2,,,minor_pro,true,Belarus2,minor pro or second tier
+Belgium,Belgium,,,major_pro,true,Belgium,top league of its country or era
+BelOpen,BelOpen,,,tournament,false,BelOpen,"tournament, national team, select team or exhibition"
+BH-Cup,BH-Cup,,,tournament,false,BH-Cup,"tournament, national team, select team or exhibition"
+BHL,BHL,,,senior,false,BHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Big Ten,Big Ten,,,college,true,NCAA Division I,college or university
+Big-3,Big-3,,,tournament,false,Big-3,"tournament, national team, select team or exhibition"
+Big-4,Big-4,,,senior,false,Big-4,"Alberta Big Four, senior amateur (1919-22)"
+Big-6,Big-6,,,tournament,false,Big-6,"tournament, national team, select team or exhibition"
+Brick Invitational,Brick Invitational,,,tournament,false,Brick Invitational,"tournament, national team, select team or exhibition"
+Britain,Britain,,,major_pro,true,Britain,top British league
+Britain-2,Britain-2,,,minor_pro,true,Britain-2,minor pro or second tier
+BSrHA,BSrHA,,,senior,false,BSrHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+C-Cup,C-Cup,,,tournament,false,C-Cup,"tournament, national team, select team or exhibition"
+CABAAHL,CABAAHL,,,youth,false,CABAAHL,"youth: age group, bantam, midget or minor"
+CABHL,CABHL,,,youth,false,CABHL,"youth: age group, bantam, midget or minor"
+CAHL,CAHL,,19501951,senior,false,CAHL,"Canadian Amateur HL, senior"
+CAHL@19511952,CAHL,19511952,,junior,true,CAHL,"Central Alberta HL, junior (Edmonton Oil Kings)"
+CAHS,CAHS,,,school,false,CAHS,prep school
+CAIHL,CAIHL,,,senior,false,CAIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Cal-Pro,Cal-Pro,,,minor_pro,true,Cal-Pro,minor pro or second tier
+CalHL,CalHL,,,senior,false,CalHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Can-Am,Can-Am,,,minor_pro,true,Can-Am,minor pro or second tier
+Can-Cup,Can-Cup,,,tournament,false,Can-Cup,"tournament, national team, select team or exhibition"
+Can-Pro,Can-Pro,,,minor_pro,true,Can-Pro,minor pro or second tier
+CBHL,CBHL,,19501951,senior,false,CBHL,Cape Breton senior
+CBHL@19511952,CBHL,19511952,,junior,true,CBHL,junior B (judgement call)
+CBJHL,CBJHL,,,junior,true,CBJHL,Cape Breton junior
+CBSHL,CBSHL,,,senior,false,CBSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+CCHA,CCHA,,,college,true,NCAA Division I,college or university
+CCHL,CCHL,,,junior,true,CCHL,junior
+CCHL2,CCHL2,,,junior,true,CCHL2,junior
+CCJHL,CCJHL,,,junior,true,CCJHL,junior
+CCPHL,CCPHL,,,minor_pro,true,CCPHL,minor pro or second tier
+CCSHL,CCSHL,,,senior,false,CCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+CEGEP,CEGEP,,,college,true,CEGEP,Quebec college (judgement call)
+CEHL,CEHL,,,senior,false,CEHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Cen-Cup,Cen-Cup,,,tournament,false,Cen-Cup,"tournament, national team, select team or exhibition"
+CFBHL,CFBHL,,,youth,false,CFBHL,"youth: age group, bantam, midget or minor"
+CFHL U18,CFHL U18,,,youth,false,CFHL U18,"youth: age group, bantam, midget or minor"
+Ch-Cup,Ch-Cup,,,tournament,false,Ch-Cup,"tournament, national team, select team or exhibition"
+CHA,CHA,,19501951,major_pro,true,CHA,"Canadian Hockey Association (1909-10), pro"
+CHA@19511952,CHA,19511952,,college,true,NCAA Division I,College Hockey America
+Champions HL,Champions HL,,,tournament,false,Champions HL,"tournament, national team, select team or exhibition"
+CHL,CHL,,,minor_pro,true,CHL,"Central Hockey League, every era"
+CHL T1,CHL T1,,,minor_pro,true,CHL T1,minor pro or second tier
+CIAU,CIAU,,,college,true,Canadian university,college or university
+Circle K Classic,Circle K Classic,,,tournament,false,Circle K Classic,"tournament, national team, select team or exhibition"
+CIS,CIS,,,major_pro,true,Soviet/Russian top league,top league of its country or era
+CIS-2,CIS-2,,,minor_pro,true,Russian second tier,minor pro or second tier
+CIS-3,CIS-3,,,senior,false,CIS-3,third tier or lower in Europe (judgement call: not counted)
+CIS-Jr.,CIS-Jr.,,,junior,true,CIS-Jr.,junior
+CIS-Q,CIS-Q,,,major_pro,true,Soviet/Russian top league,CIS top-league qualification
+CISAA,CISAA,,,school,false,CISAA,school or prep hockey
+CISSA,CISSA,,,youth,false,CISSA,"youth: age group, bantam, midget or minor"
+City Sr.,City Sr.,,,senior,false,City Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+CJHL,CJHL,,,junior,true,CJHL,junior
+CMHA,CMHA,,,senior,false,CMHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+CMJHL,CMJHL,,,junior,true,WCJHL/WHL junior,junior
+CNDHL,CNDHL,,,senior,false,CNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+COJCHL,COJCHL,,,junior,true,COJCHL,junior
+COJHL,COJHL,,,junior,true,COJHL,junior
+ColHL,ColHL,,,minor_pro,true,ColHL,minor pro or second tier
+CoMHL,CoMHL,,,senior,false,CoMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Commer.,Commer.,,,senior,false,Commer.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Con-Cup,Con-Cup,,,tournament,false,Con-Cup,"tournament, national team, select team or exhibition"
+ConHL,ConHL,,,senior,false,ConHL,"Continental HL, semi-pro senior"
+Continental Cup,Continental Cup,,,tournament,false,Continental Cup,"tournament, national team, select team or exhibition"
+CPHL,CPHL,,,minor_pro,true,CPHL,minor pro or second tier
+Croatia,Croatia,,,major_pro,true,Croatia,top league of its country or era
+CSHL,CSHL,,,junior,true,CSHL,Central States junior (judgement call)
+CSJHL,CSJHL,,,junior,true,CSJHL,junior
+CSrHL,CSrHL,,,senior,false,CSrHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+CSSBHL,CSSBHL,,,youth,false,CSSBHL,"youth: age group, bantam, midget or minor"
+CSSHL,CSSHL,,,school,false,CSSHL,school or prep hockey
+CSSHL U15,CSSHL U15,,,school,false,CSSHL U15,school or prep hockey
+CSSHL U15 AAA,CSSHL U15 AAA,,,school,false,CSSHL U15 AAA,school or prep hockey
+CSSHL U16,CSSHL U16,,,school,false,CSSHL U16,school or prep hockey
+CSSHL U17,CSSHL U17,,,school,false,CSSHL U17,school or prep hockey
+CSSHL U18,CSSHL U18,,,school,false,CSSHL U18,school or prep hockey
+CSSHLE U18,CSSHLE U18,,,school,false,CSSHLE U18,school or prep hockey
+CSSHLV U15,CSSHLV U15,,,school,false,CSSHLV U15,school or prep hockey
+CSSVHL,CSSVHL,,,school,false,CSSVHL,prep school
+CVJHL,CVJHL,,,junior,true,CVJHL,junior
+CWG,CWG,,,tournament,false,CWG,"tournament, national team, select team or exhibition"
+CWUAA,CWUAA,,,college,true,Canadian university,college or university
+Czech,Czech,,,major_pro,true,Czech top league,top league of its country or era
+Czech U16,Czech U16,,,youth,false,Czech U16,"youth: age group, bantam, midget or minor"
+Czech U16 2,Czech U16 2,,,youth,false,Czech U16 2,"youth: age group, bantam, midget or minor"
+Czech U18,Czech U18,,,youth,false,Czech U18,"youth: age group, bantam, midget or minor"
+Czech U18 2,Czech U18 2,,,youth,false,Czech U18 2,"youth: age group, bantam, midget or minor"
+Czech U20,Czech U20,,,junior,true,Czech junior,junior
+Czech U20 2,Czech U20 2,,,junior,true,Czech U20 2,junior
+Czech U20 3,Czech U20 3,,,junior,true,Czech U20 3,junior
+Czech-2,Czech-2,,,minor_pro,true,Czech second tier,minor pro or second tier
+Czech-3,Czech-3,,,senior,false,Czech-3,third tier or lower in Europe (judgement call: not counted)
+Czech-Jr.,Czech-Jr.,,,junior,true,Czech junior,junior
+Czech2,Czech2,,,minor_pro,true,Czech second tier,minor pro or second tier
+Czech3,Czech3,,,senior,false,Czech3,third tier or lower in Europe (judgement call: not counted)
+Czechia,Czechia,,,major_pro,true,Czech top league,top league of its country or era
+Czechia U16,Czechia U16,,,youth,false,Czechia U16,"youth: age group, bantam, midget or minor"
+Czechia U16 2,Czechia U16 2,,,youth,false,Czechia U16 2,"youth: age group, bantam, midget or minor"
+Czechia U17,Czechia U17,,,youth,false,Czechia U17,"youth: age group, bantam, midget or minor"
+Czechia U17 2,Czechia U17 2,,,youth,false,Czechia U17 2,"youth: age group, bantam, midget or minor"
+Czechia U18,Czechia U18,,,youth,false,Czechia U18,"youth: age group, bantam, midget or minor"
+Czechia U18 2,Czechia U18 2,,,youth,false,Czechia U18 2,"youth: age group, bantam, midget or minor"
+Czechia U19,Czechia U19,,,junior,true,Czechia U19,junior
+Czechia U20,Czechia U20,,,junior,true,Czech junior,junior
+Czechia U20 2,Czechia U20 2,,,junior,true,Czechia U20 2,junior
+Czechia U20 3,Czechia U20 3,,,junior,true,Czechia U20 3,junior
+Czechia2,Czechia2,,,minor_pro,true,Czech second tier,minor pro or second tier
+Czechia3,Czechia3,,,senior,false,Czechia3,third tier or lower in Europe (judgement call: not counted)
+Czechia4,Czechia4,,,senior,false,Czechia4,third tier or lower in Europe (judgement call: not counted)
+CzR-U17,CzR-U17,,,youth,false,CzR-U17,"youth: age group, bantam, midget or minor"
+CzR-U18,CzR-U18,,,youth,false,CzR-U18,"youth: age group, bantam, midget or minor"
+CzRep,CzRep,,,major_pro,true,Czech top league,top league of its country or era
+CzRep-2,CzRep-2,,,minor_pro,true,Czech second tier,minor pro or second tier
+CzRep-3,CzRep-3,,,senior,false,CzRep-3,third tier or lower in Europe (judgement call: not counted)
+CzRep-Jr.,CzRep-Jr.,,,junior,true,Czech junior,junior
+CzRep-Q,CzRep-Q,,,major_pro,true,Czech top league,Czech top-league qualification
+DEL,DEL,,,major_pro,true,German top league,top league of its country or era
+DEL2,DEL2,,,minor_pro,true,German second tier,minor pro or second tier
+Den-2,Den-2,,,minor_pro,true,Den-2,minor pro or second tier
+Den-Jr.,Den-Jr.,,,junior,true,Den-Jr.,junior
+Den-U17,Den-U17,,,youth,false,Den-U17,"youth: age group, bantam, midget or minor"
+Denmark,Denmark,,,major_pro,true,Denmark,top league of its country or era
+Denmark U17,Denmark U17,,,youth,false,Denmark U17,"youth: age group, bantam, midget or minor"
+Denmark U20,Denmark U20,,,junior,true,Denmark U20,junior
+Denmark2,Denmark2,,,minor_pro,true,Denmark2,minor pro or second tier
+DHL Cup,DHL Cup,,,tournament,false,DHL Cup,"tournament, national team, select team or exhibition"
+Division 1,Division 1,,,minor_pro,true,Division 1,"Swedish Division 1: second tier until 1999, third tier after (judgement call)"
+Division 2,Division 2,,,senior,false,Division 2,third tier or lower in Europe (judgement call: not counted)
+Division 3,Division 3,,,senior,false,Division 3,third tier or lower in Europe (judgement call: not counted)
+Division 4,Division 4,,,senior,false,Division 4,third tier or lower in Europe (judgement call: not counted)
+DN-Cup,DN-Cup,,,tournament,false,DN-Cup,"tournament, national team, select team or exhibition"
+DNL,DNL,,,junior,true,German junior,German under-19/20 league (DNL)
+DNL U20,DNL U20,,,junior,true,German junior,junior
+DNL2,DNL2,,,junior,true,DNL2,German under-19/20 second tier
+EAHL,EAHL,,,senior,false,EAHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+EBEL,EBEL,,,major_pro,true,EBEL,top league of its country or era
+EBJCHL,EBJCHL,,,junior,true,EBJCHL,junior
+EBJL,EBJL,,,junior,true,EBJL,Eastern Junior Elite (judgement call)
+ECAC,ECAC,,,college,true,NCAA Division I,college or university
+ECAC-2,ECAC-2,,,college,true,NCAA lower divisions,college or university
+ECAC-3,ECAC-3,,,college,true,NCAA lower divisions,college or university
+ECAHA,ECAHA,,,senior,false,ECAHA,"Eastern Canada AHA (1905-08), mixed amateur and pro"
+ECEL 16U,ECEL 16U,,,youth,false,ECEL 16U,"youth: age group, bantam, midget or minor"
+ECEL 18U,ECEL 18U,,,youth,false,ECEL 18U,"youth: age group, bantam, midget or minor"
+ECEL U16,ECEL U16,,,youth,false,ECEL U16,"youth: age group, bantam, midget or minor"
+ECHA,ECHA,,,senior,false,ECHA,"Eastern Canada HA (1908-09), mixed amateur and pro"
+ECHL,ECHL,,19501951,senior,false,ECHL,Eastern Canada / Quebec senior league
+ECHL@19511952,ECHL,19511952,,minor_pro,true,ECHL,ECHL
+Ed-Cup,Ed-Cup,,,tournament,false,Ed-Cup,"tournament, national team, select team or exhibition"
+EEHL,EEHL,,,minor_pro,true,EEHL,Eastern European HL (1995-2004)
+EEHL-2,EEHL-2,,,senior,false,EEHL-2,third tier or lower in Europe (judgement call: not counted)
+EEHL-B,EEHL-B,,,senior,false,EEHL-B,third tier or lower in Europe (judgement call: not counted)
+EHF 16U Elite,EHF 16U Elite,,,youth,false,EHF 16U Elite,"youth: age group, bantam, midget or minor"
+EHF 18U Elite,EHF 18U Elite,,,youth,false,EHF 18U Elite,"youth: age group, bantam, midget or minor"
+EHL,EHL,,19901991,minor_pro,true,EHL,Eastern Hockey League (1954-73) and its successor
+EHL@19911992,EHL,19911992,,junior,true,EHL,"Eastern Hockey League, junior (from 2013)"
+EHL Midget,EHL Midget,,,youth,false,EHL Midget,"youth: age group, bantam, midget or minor"
+EHL-Sr.,EHL-Sr.,,,senior,false,EHL-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+EHT,EHT,,,tournament,false,EHT,"tournament, national team, select team or exhibition"
+EJC-18,EJC-18,,,tournament,false,EJC-18,international tournament
+EJC-18 B,EJC-18 B,,,tournament,false,EJC-18 B,international tournament
+EJC-18 C,EJC-18 C,,,tournament,false,EJC-18 C,international tournament
+EJC-19,EJC-19,,,tournament,false,EJC-19,international tournament
+EJC-A,EJC-A,,,tournament,false,EJC-A,international tournament
+EJC-B,EJC-B,,,tournament,false,EJC-B,international tournament
+EJC-C,EJC-C,,,tournament,false,EJC-C,international tournament
+EJC-D,EJC-D,,,tournament,false,EJC-D,international tournament
+EJEPL 16U,EJEPL 16U,,,youth,false,EJEPL 16U,"youth: age group, bantam, midget or minor"
+EJEPL 18U,EJEPL 18U,,,youth,false,EJEPL 18U,"youth: age group, bantam, midget or minor"
+EJHL,EJHL,,,junior,true,EJHL,junior
+EJrHL,EJrHL,,,junior,true,EJrHL,junior
+Elite Jr. A,Elite Jr. A,,,junior,true,Swiss junior,junior
+Elite Novizen,Elite Novizen,,,youth,false,Elite Novizen,"youth: age group, bantam, midget or minor"
+EMHA,EMHA,,,youth,false,EMHA,"youth: age group, bantam, midget or minor"
+EMHABAA,EMHABAA,,,youth,false,EMHABAA,"youth: age group, bantam, midget or minor"
+EmJHL,EmJHL,,,junior,true,EmJHL,junior
+ENBHL,ENBHL,,,senior,false,ENBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+EOHL,EOHL,,,senior,false,EOHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+EOJHL,EOJHL,,,junior,true,EOJHL,junior
+EOPHL,EOPHL,,,minor_pro,true,EOPHL,minor pro or second tier
+EPHL,EPHL,,19501951,minor_pro,true,EPHL,Eastern Pro HL (1914-15)
+EPHL@19511952,EPHL,19511952,,minor_pro,true,EPHL,Eastern Professional HL (1959-63)
+ERBHL,ERBHL,,,youth,false,ERBHL,"youth: age group, bantam, midget or minor"
+ESMBAA,ESMBAA,,,youth,false,ESMBAA,"youth: age group, bantam, midget or minor"
+ESrHL,ESrHL,,,senior,false,ESrHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+ETABHL,ETABHL,,,youth,false,ETABHL,"youth: age group, bantam, midget or minor"
+ETAHL,ETAHL,,,youth,false,ETAHL,"youth: age group, bantam, midget or minor"
+ETAHL U14,ETAHL U14,,,youth,false,ETAHL U14,"youth: age group, bantam, midget or minor"
+ETAHL U15,ETAHL U15,,,youth,false,ETAHL U15,"youth: age group, bantam, midget or minor"
+ETAHL U16,ETAHL U16,,,youth,false,ETAHL U16,"youth: age group, bantam, midget or minor"
+ETAHL U18,ETAHL U18,,,youth,false,ETAHL U18,"youth: age group, bantam, midget or minor"
+ETAMMHL,ETAMMHL,,,youth,false,ETAMMHL,"youth: age group, bantam, midget or minor"
+ETSHL,ETSHL,,,senior,false,ETSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+EuroHL,EuroHL,,,tournament,false,EuroHL,"tournament, national team, select team or exhibition"
+Exhib.,Exhib.,,,tournament,false,Exhib.,"tournament, national team, select team or exhibition"
+Exhibition,Exhibition,,,tournament,false,Exhibition,"tournament, national team, select team or exhibition"
+EYOF,EYOF,,,tournament,false,EYOF,"tournament, national team, select team or exhibition"
+FAHL,FAHL,,,senior,false,FAHL,Federal Amateur HL (1903-08)
+FHHL,FHHL,,,senior,false,FHHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Fin-Jr.,Fin-Jr.,,,junior,true,Finnish junior,junior
+Fin-U17,Fin-U17,,,youth,false,Fin-U17,"youth: age group, bantam, midget or minor"
+Fin-U18,Fin-U18,,,youth,false,Fin-U18,"youth: age group, bantam, midget or minor"
+Finland,Finland,,,major_pro,true,Liiga,top league of its country or era
+Finland-2,Finland-2,,,minor_pro,true,Finnish second tier,minor pro or second tier
+Finland-3,Finland-3,,,senior,false,Finland-3,third tier or lower in Europe (judgement call: not counted)
+Finland-4,Finland-4,,,senior,false,Finland-4,third tier or lower in Europe (judgement call: not counted)
+Finland-AA,Finland-AA,,,major_pro,true,Liiga,top league of its country or era
+FInland-Jr.,FInland-Jr.,,,junior,true,Finnish junior,junior
+Finland-Q,Finland-Q,,,major_pro,true,Liiga,Finnish top-league qualification
+Fr-Tour,Fr-Tour,,,tournament,false,Fr-Tour,"tournament, national team, select team or exhibition"
+France,France,,,major_pro,true,France,top league of its country or era
+France U18,France U18,,,youth,false,France U18,"youth: age group, bantam, midget or minor"
+France U22,France U22,,,junior,true,France U22,junior
+France-2,France-2,,,minor_pro,true,France-2,minor pro or second tier
+GBHL,GBHL,,,senior,false,GBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+GBJCHL,GBJCHL,,,junior,true,GBJCHL,junior
+Ger-Jr.,Ger-Jr.,,,junior,true,German junior,junior
+German-2,German-2,,,minor_pro,true,German second tier,minor pro or second tier
+German-3,German-3,,,senior,false,German-3,third tier or lower in Europe (judgement call: not counted)
+German-5,German-5,,,senior,false,German-5,third tier or lower in Europe (judgement call: not counted)
+Germany,Germany,,,major_pro,true,German top league,top league of its country or era
+Germany U16 2,Germany U16 2,,,youth,false,Germany U16 2,"youth: age group, bantam, midget or minor"
+Germany U17,Germany U17,,,youth,false,Germany U17,"youth: age group, bantam, midget or minor"
+Germany2,Germany2,,,minor_pro,true,German second tier,minor pro or second tier
+Germany3,Germany3,,,senior,false,Germany3,third tier or lower in Europe (judgement call: not counted)
+Germany4,Germany4,,,senior,false,Germany4,third tier or lower in Europe (judgement call: not counted)
+GFSHL,GFSHL,,,senior,false,GFSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+GHL,GHL,,,junior,true,GHL,Golden Horseshoe junior B
+GLJCHL,GLJCHL,,,junior,true,GLJCHL,junior
+GLJHL,GLJHL,,,junior,true,GLJHL,junior
+GMHL,GMHL,,,junior,true,GMHL,junior
+GMOHL,GMOHL,,,junior,true,GMOHL,junior
+GNMHL,GNMHL,,,youth,false,GNMHL,midget
+GNML,GNML,,,senior,false,GNML,"Grand North Muskoka League, senior"
+GOHL,GOHL,,,junior,true,GOHL,junior B
+GOJHL,GOJHL,,,junior,true,GOJHL,junior
+GPAC,GPAC,,,college,true,GPAC,college or university
+GSHL,GSHL,,,senior,false,GSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+GTBHL,GTBHL,,,youth,false,GTBHL,"youth: age group, bantam, midget or minor"
+GTHL,GTHL,,,youth,false,GTHL,"youth: age group, bantam, midget or minor"
+GTHL U15,GTHL U15,,,youth,false,GTHL U15,"youth: age group, bantam, midget or minor"
+GTHL U16,GTHL U16,,,youth,false,GTHL U16,"youth: age group, bantam, midget or minor"
+GTHL U18,GTHL U18,,,youth,false,GTHL U18,"youth: age group, bantam, midget or minor"
+GTMMHL,GTMMHL,,,youth,false,GTMMHL,"youth: age group, bantam, midget or minor"
+GTMMHL AA,GTMMHL AA,,,youth,false,GTMMHL AA,"youth: age group, bantam, midget or minor"
+GWHC,GWHC,,,junior,true,GWHC,junior
+H-East,H-East,,,college,true,NCAA Division I,college or university
+H-OHL,H-OHL,,,senior,false,H-OHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+HCAA U15,HCAA U15,,,youth,false,HCAA U15,"youth: age group, bantam, midget or minor"
+HCBAA,HCBAA,,,youth,false,HCBAA,"youth: age group, bantam, midget or minor"
+HCHL,HCHL,,,senior,false,HCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+HCMAA,HCMAA,,,youth,false,HCMAA,"youth: age group, bantam, midget or minor"
+HCSHL,HCSHL,,,senior,false,HCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+HEO U14,HEO U14,,,youth,false,HEO U14,"youth: age group, bantam, midget or minor"
+HEO U14 AA,HEO U14 AA,,,youth,false,HEO U14 AA,"youth: age group, bantam, midget or minor"
+HEO U15,HEO U15,,,youth,false,HEO U15,"youth: age group, bantam, midget or minor"
+HEO U15 AA,HEO U15 AA,,,youth,false,HEO U15 AA,"youth: age group, bantam, midget or minor"
+HEO U18,HEO U18,,,youth,false,HEO U18,"youth: age group, bantam, midget or minor"
+High-AB,High-AB,,,school,false,High-AB,school or prep hockey
+High-AK,High-AK,,,school,false,High-AK,school or prep hockey
+High-BC,High-BC,,,school,false,High-BC,school or prep hockey
+High-CA,High-CA,,,school,false,High-CA,school or prep hockey
+High-CO,High-CO,,,school,false,High-CO,school or prep hockey
+High-CT,High-CT,,,school,false,High-CT,school or prep hockey
+High-IL,High-IL,,,school,false,High-IL,school or prep hockey
+High-IN,High-IN,,,school,false,High-IN,school or prep hockey
+High-MA,High-MA,,,school,false,High-MA,school or prep hockey
+High-MB,High-MB,,,school,false,High-MB,school or prep hockey
+High-ME,High-ME,,,school,false,High-ME,school or prep hockey
+High-MI,High-MI,,,school,false,High-MI,school or prep hockey
+High-MN,High-MN,,,school,false,High-MN,school or prep hockey
+High-NB,High-NB,,,school,false,High-NB,school or prep hockey
+High-ND,High-ND,,,school,false,High-ND,school or prep hockey
+High-NF,High-NF,,,school,false,High-NF,school or prep hockey
+High-NH,High-NH,,,school,false,High-NH,school or prep hockey
+High-NJ,High-NJ,,,school,false,High-NJ,school or prep hockey
+High-NS,High-NS,,,school,false,High-NS,school or prep hockey
+High-NY,High-NY,,,school,false,High-NY,school or prep hockey
+High-OH,High-OH,,,school,false,High-OH,school or prep hockey
+High-ON,High-ON,,,school,false,High-ON,school or prep hockey
+High-PA,High-PA,,,school,false,High-PA,school or prep hockey
+High-PE,High-PE,,,school,false,High-PE,school or prep hockey
+High-QC,High-QC,,,school,false,High-QC,school or prep hockey
+High-QU,High-QU,,,school,false,High-QU,school or prep hockey
+High-RI,High-RI,,,school,false,High-RI,school or prep hockey
+High-SK,High-SK,,,school,false,High-SK,school or prep hockey
+High-VT,High-VT,,,school,false,High-VT,school or prep hockey
+High-WI,High-WI,,,school,false,High-WI,school or prep hockey
+HJHL,HJHL,,,junior,true,HJHL,junior
+Hlinka Gretzky Cup,Hlinka Gretzky Cup,,,tournament,false,Hlinka Gretzky Cup,"tournament, national team, select team or exhibition"
+HockeyAllsvenskan,HockeyAllsvenskan,,,minor_pro,true,Swedish second tier,minor pro or second tier
+HockeyEttan,HockeyEttan,,,senior,false,HockeyEttan,third tier or lower in Europe (judgement call: not counted)
+HOHL,HOHL,,,senior,false,HOHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Holland,Holland,,,major_pro,true,Holland,top league of its country or era
+HPBHL,HPBHL,,,youth,false,HPBHL,"youth: age group, bantam, midget or minor"
+HPHL,HPHL,,,youth,false,HPHL,"youth: age group, bantam, midget or minor"
+HPHL 13U,HPHL 13U,,,youth,false,HPHL 13U,"youth: age group, bantam, midget or minor"
+HPHL 14U,HPHL 14U,,,youth,false,HPHL 14U,"youth: age group, bantam, midget or minor"
+HPHL 15U,HPHL 15U,,,youth,false,HPHL 15U,"youth: age group, bantam, midget or minor"
+HPHL 16U,HPHL 16U,,,youth,false,HPHL 16U,"youth: age group, bantam, midget or minor"
+HPHL 18U,HPHL 18U,,,youth,false,HPHL 18U,"youth: age group, bantam, midget or minor"
+HPHL U16,HPHL U16,,,youth,false,HPHL U16,"youth: age group, bantam, midget or minor"
+HPHL U18,HPHL U18,,,youth,false,HPHL U18,"youth: age group, bantam, midget or minor"
+HPMBHL,HPMBHL,,,youth,false,HPMBHL,"youth: age group, bantam, midget or minor"
+HSrHL,HSrHL,,,senior,false,HSrHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Hungary,Hungary,,,major_pro,true,Hungary,top league of its country or era
+IAHL,IAHL,,,minor_pro,true,IAHL,minor pro or second tier
+IASHL,IASHL,,,senior,false,IASHL,Intercollegiate and senior (unclear)
+ICEHL,ICEHL,,,major_pro,true,ICEHL,top league of its country or era
+ICEYSL,ICEYSL,,,youth,false,ICEYSL,"youth: age group, bantam, midget or minor"
+IEHL,IEHL,,,senior,false,IEHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+IHL,IHL,,,minor_pro,true,IHL,"International (Pro) Hockey League, every era"
+II-divisioona,II-divisioona,,,senior,false,II-divisioona,third tier or lower in Europe (judgement call: not counted)
+IIHL,IIHL,,,senior,false,IIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Ind.,Ind.,,,unknown,false,Ind.,"independent team, no league"
+Independent,Independent,,,unknown,false,Independent,"independent team, no league"
+International,International,,,tournament,false,International,"tournament, national team, select team or exhibition"
+International-Jr,International-Jr,,,tournament,false,International-Jr,"tournament, national team, select team or exhibition"
+IPAHU,IPAHU,,,senior,false,IPAHU,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+IPSHL,IPSHL,,,minor_pro,true,IPSHL,minor pro or second tier
+Italy,Italy,,,major_pro,true,Italy,top league of its country or era
+Ivan Hlinka Memorial,Ivan Hlinka Memorial,,,tournament,false,Ivan Hlinka Memorial,"tournament, national team, select team or exhibition"
+Ivy,Ivy,,,college,true,NCAA Division I,college or university
+J18 Allsvenskan,J18 Allsvenskan,,,youth,false,J18 Allsvenskan,"youth: age group, bantam, midget or minor"
+J18 Div.1,J18 Div.1,,,youth,false,J18 Div.1,"youth: age group, bantam, midget or minor"
+J18 Div.2,J18 Div.2,,,youth,false,J18 Div.2,"youth: age group, bantam, midget or minor"
+J18 Elit,J18 Elit,,,youth,false,J18 Elit,"youth: age group, bantam, midget or minor"
+J18 Nationell,J18 Nationell,,,youth,false,J18 Nationell,"youth: age group, bantam, midget or minor"
+J18 Region,J18 Region,,,youth,false,J18 Region,"youth: age group, bantam, midget or minor"
+J20 Div.1,J20 Div.1,,,junior,true,J20 Div.1,junior
+J20 Div.2,J20 Div.2,,,junior,true,J20 Div.2,junior
+J20 Elit,J20 Elit,,,junior,true,J20 Elit,junior
+J20 Nationell,J20 Nationell,,,junior,true,Swedish junior,junior
+J20 Region,J20 Region,,,junior,true,J20 Region,junior
+J20 SuperElit,J20 SuperElit,,,junior,true,Swedish junior,junior
+Japan,Japan,,,major_pro,true,Japan,top league of its country or era
+JCWC,JCWC,,,tournament,false,JCWC,"tournament, national team, select team or exhibition"
+JIHL,JIHL,,,major_pro,true,JIHL,Japan Ice Hockey League
+John Reid Memorial,John Reid Memorial,,,tournament,false,John Reid Memorial,"tournament, national team, select team or exhibition"
+JPL-Pro,JPL-Pro,,,minor_pro,true,JPL-Pro,minor pro or second tier
+Jr. A Mestis,Jr. A Mestis,,,junior,true,Jr. A Mestis,junior
+Jr. A SM-liiga,Jr. A SM-liiga,,,junior,true,Finnish junior,junior
+Jr. A SM-sarja,Jr. A SM-sarja,,,junior,true,Finnish junior,junior
+Jr. B I-divisioona,Jr. B I-divisioona,,,youth,false,Jr. B I-divisioona,"youth: age group, bantam, midget or minor"
+Jr. B I-divisioona Q,Jr. B I-divisioona Q,,,youth,false,Jr. B I-divisioona Q,"youth: age group, bantam, midget or minor"
+Jr. B III-divisioona,Jr. B III-divisioona,,,youth,false,Jr. B III-divisioona,"youth: age group, bantam, midget or minor"
+Jr. B Mestis,Jr. B Mestis,,,youth,false,Jr. B Mestis,"youth: age group, bantam, midget or minor"
+Jr. B SM-sarja,Jr. B SM-sarja,,,youth,false,Jr. B SM-sarja,"youth: age group, bantam, midget or minor"
+Jr. B SM-sarja Q,Jr. B SM-sarja Q,,,youth,false,Jr. B SM-sarja Q,"youth: age group, bantam, midget or minor"
+Jr. B Suomi-sarja,Jr. B Suomi-sarja,,,youth,false,Jr. B Suomi-sarja,"youth: age group, bantam, midget or minor"
+Jr. B2 I-divisioona,Jr. B2 I-divisioona,,,youth,false,Jr. B2 I-divisioona,"youth: age group, bantam, midget or minor"
+Jr. B2 SM-sarja,Jr. B2 SM-sarja,,,youth,false,Jr. B2 SM-sarja,"youth: age group, bantam, midget or minor"
+Jr. C I-divisioona,Jr. C I-divisioona,,,youth,false,Jr. C I-divisioona,"youth: age group, bantam, midget or minor"
+Jr. C I-divisioona Q,Jr. C I-divisioona Q,,,youth,false,Jr. C I-divisioona Q,"youth: age group, bantam, midget or minor"
+Jr. C II-divisioona,Jr. C II-divisioona,,,youth,false,Jr. C II-divisioona,"youth: age group, bantam, midget or minor"
+Jr. C Mestis,Jr. C Mestis,,,youth,false,Jr. C Mestis,"youth: age group, bantam, midget or minor"
+Jr. C Mestis Q,Jr. C Mestis Q,,,youth,false,Jr. C Mestis Q,"youth: age group, bantam, midget or minor"
+Jr. C SM-sarja,Jr. C SM-sarja,,,youth,false,Jr. C SM-sarja,"youth: age group, bantam, midget or minor"
+Jr. C SM-sarja Q,Jr. C SM-sarja Q,,,youth,false,Jr. C SM-sarja Q,"youth: age group, bantam, midget or minor"
+Jr. C Suomi-sarja,Jr. C Suomi-sarja,,,youth,false,Jr. C Suomi-sarja,"youth: age group, bantam, midget or minor"
+Jugend-BL,Jugend-BL,,,youth,false,Jugend-BL,"youth: age group, bantam, midget or minor"
+Juniorallsvenskan,Juniorallsvenskan,,,junior,true,Swedish junior,junior
+Junioren A,Junioren A,,,junior,true,Junioren A,junior
+Junioren-BL,Junioren-BL,,,junior,true,German junior,junior
+Kazakhstan,Kazakhstan,,,major_pro,true,Kazakhstan,top league of its country
+Kazakhstan U20,Kazakhstan U20,,,junior,true,Kazakhstan U20,junior
+KCHL,KCHL,,,senior,false,KCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Key-Cup,Key-Cup,,,tournament,false,Key-Cup,"tournament, national team, select team or exhibition"
+KHL,KHL,,,major_pro,true,KHL,top league of its country or era
+KIJHL,KIJHL,,,junior,true,KIJHL,junior
+KJHL,KJHL,,,junior,true,KJHL,junior
+KLJHL,KLJHL,,,junior,true,KLJHL,junior
+Latvia,Latvia,,,major_pro,true,Latvia,top league of its country or era
+Latvia U16,Latvia U16,,,youth,false,Latvia U16,"youth: age group, bantam, midget or minor"
+Latvia U17,Latvia U17,,,youth,false,Latvia U17,"youth: age group, bantam, midget or minor"
+Latvia U18,Latvia U18,,,youth,false,Latvia U18,"youth: age group, bantam, midget or minor"
+Latvia-Jr.,Latvia-Jr.,,,junior,true,Latvia-Jr.,junior
+Latvia2,Latvia2,,,minor_pro,true,Latvia2,minor pro or second tier
+LHDAAQ,LHDAAQ,,,youth,false,LHDAAQ,youth
+LHPS M15 Elite,LHPS M15 Elite,,,youth,false,LHPS M15 Elite,"youth: age group, bantam, midget or minor"
+LHPS M15 Majeur,LHPS M15 Majeur,,,youth,false,LHPS M15 Majeur,"youth: age group, bantam, midget or minor"
+LHPS M15 Mineur,LHPS M15 Mineur,,,youth,false,LHPS M15 Mineur,"youth: age group, bantam, midget or minor"
+LHPS M16,LHPS M16,,,youth,false,LHPS M16,"youth: age group, bantam, midget or minor"
+LHPS M17 Majeur,LHPS M17 Majeur,,,youth,false,LHPS M17 Majeur,"youth: age group, bantam, midget or minor"
+LHPS M17 Mineur,LHPS M17 Mineur,,,youth,false,LHPS M17 Mineur,"youth: age group, bantam, midget or minor"
+LHPS M18 Majeur,LHPS M18 Majeur,,,youth,false,LHPS M18 Majeur,"youth: age group, bantam, midget or minor"
+Ligue Magnus,Ligue Magnus,,,major_pro,true,Ligue Magnus,top league of its country or era
+Liiga,Liiga,,,major_pro,true,Liiga,top league of its country or era
+Ln-Cup,Ln-Cup,,,tournament,false,Ln-Cup,"tournament, national team, select team or exhibition"
+LNAH,LNAH,,,senior,false,LNAH,Quebec semi-pro senior league (judgement call)
+LOHA,LOHA,,,senior,false,LOHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+LOVHL,LOVHL,,,senior,false,LOVHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+LSLBAA,LSLBAA,,,youth,false,LSLBAA,"youth: age group, bantam, midget or minor"
+LSLHL,LSLHL,,,senior,false,LSLHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+M-Cup,M-Cup,,,tournament,false,M-Cup,"tournament, national team, select team or exhibition"
+MAAA U18,MAAA U18,,,youth,false,MAAA U18,"youth: age group, bantam, midget or minor"
+MAAC,MAAC,,,college,true,NCAA Division I,college or university
+Maakuntasarja,Maakuntasarja,,,senior,false,Maakuntasarja,third tier or lower in Europe (judgement call: not counted)
+Macs Tournament,Macs Tournament,,,tournament,false,Macs Tournament,"tournament, national team, select team or exhibition"
+MAHA,MAHA,,,youth,false,MAHA,"youth: age group, bantam, midget or minor"
+MAHL,MAHL,,,junior,true,MAHL,Mid-Atlantic junior (judgement call)
+MBAHL,MBAHL,,,youth,false,MBAHL,"youth: age group, bantam, midget or minor"
+MBHL,MBHL,,,youth,false,MBHL,"youth: age group, bantam, midget or minor"
+MBSHL,MBSHL,,,senior,false,MBSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MCBHL,MCBHL,,,senior,false,MCBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MCHL,MCHL,,,senior,false,MCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MCIHL,MCIHL,,,senior,false,MCIHL,city intermediate
+MCJHL,MCJHL,,,junior,true,MCJHL,junior
+MCMHL,MCMHL,,,senior,false,MCMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MCSHL,MCSHL,,,senior,false,MCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MDHL,MDHL,,,youth,false,MDHL,"youth: age group, bantam, midget or minor"
+MEHL,MEHL,,,youth,false,MEHL,"youth: age group, bantam, midget or minor"
+Memorial Cup,Memorial Cup,,,tournament,false,Memorial Cup,"tournament, national team, select team or exhibition"
+MEPDL,MEPDL,,,youth,false,MEPDL,"youth: age group, bantam, midget or minor"
+Mestis,Mestis,,,minor_pro,true,Finnish second tier,minor pro or second tier
+MetJAHL,MetJAHL,,,junior,true,MetJAHL,junior
+MetJBHL,MetJBHL,,,junior,true,MetJBHL,junior
+MetJHL,MetJHL,,,junior,true,MetJHL,junior
+MHAO,MHAO,,,youth,false,MHAO,"youth: age group, bantam, midget or minor"
+MHL,MHL,,19501951,senior,false,MHL,"Manitoba Hockey League, senior"
+MHL@19511952,MHL,19511952,,junior,true,MHL (Russian junior),Russian junior league (MHL)
+MHL B,MHL B,,,junior,true,MHL B,junior
+MHL-Jr.,MHL-Jr.,,,junior,true,MHL-Jr.,junior
+MHL-Pro,MHL-Pro,,,minor_pro,true,MHL-Pro,minor pro or second tier
+MHL-Sr.,MHL-Sr.,,,senior,false,MHL-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MHSL U16,MHSL U16,,,youth,false,MHSL U16,"youth: age group, bantam, midget or minor"
+MHSL U18,MHSL U18,,,youth,false,MHSL U18,"youth: age group, bantam, midget or minor"
+MI-Jr.,MI-Jr.,,,junior,true,MI-Jr.,junior
+MIAA,MIAA,,,college,true,MIAA,college or university
+MIAC,MIAC,,,college,true,NCAA lower divisions,college or university
+MIAHL,MIAHL,,,senior,false,MIAHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MIAU,MIAU,,,college,true,Canadian university,college or university
+Midget,Midget,,,youth,false,Midget,"youth: age group, bantam, midget or minor"
+MidJHL,MidJHL,,,junior,true,MidJHL,junior
+MIHA,MIHA,,,youth,false,MIHA,"youth: age group, bantam, midget or minor"
+MIHC,MIHC,,,senior,false,MIHC,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MIHL,MIHL,,,senior,false,MIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MIL,MIL,,,senior,false,MIL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Mini A,Mini A,,,youth,false,Mini A,"youth: age group, bantam, midget or minor"
+Mini B,Mini B,,,youth,false,Mini B,"youth: age group, bantam, midget or minor"
+Mini Top,Mini Top,,,youth,false,Mini Top,"youth: age group, bantam, midget or minor"
+Minor-AB,Minor-AB,,,youth,false,Minor-AB,"youth: age group, bantam, midget or minor"
+Minor-AZ,Minor-AZ,,,youth,false,Minor-AZ,"youth: age group, bantam, midget or minor"
+Minor-BC,Minor-BC,,,youth,false,Minor-BC,"youth: age group, bantam, midget or minor"
+Minor-CA,Minor-CA,,,youth,false,Minor-CA,"youth: age group, bantam, midget or minor"
+Minor-CO,Minor-CO,,,youth,false,Minor-CO,"youth: age group, bantam, midget or minor"
+Minor-IN,Minor-IN,,,youth,false,Minor-IN,"youth: age group, bantam, midget or minor"
+Minor-MA,Minor-MA,,,youth,false,Minor-MA,"youth: age group, bantam, midget or minor"
+Minor-MB,Minor-MB,,,youth,false,Minor-MB,"youth: age group, bantam, midget or minor"
+Minor-MI,Minor-MI,,,youth,false,Minor-MI,"youth: age group, bantam, midget or minor"
+Minor-MO,Minor-MO,,,youth,false,Minor-MO,"youth: age group, bantam, midget or minor"
+Minor-NE,Minor-NE,,,youth,false,Minor-NE,"youth: age group, bantam, midget or minor"
+Minor-NF,Minor-NF,,,youth,false,Minor-NF,"youth: age group, bantam, midget or minor"
+Minor-NY,Minor-NY,,,youth,false,Minor-NY,"youth: age group, bantam, midget or minor"
+Minor-ON,Minor-ON,,,youth,false,Minor-ON,"youth: age group, bantam, midget or minor"
+Minor-PA,Minor-PA,,,youth,false,Minor-PA,"youth: age group, bantam, midget or minor"
+Minor-QC,Minor-QC,,,youth,false,Minor-QC,"youth: age group, bantam, midget or minor"
+Minor-QU,Minor-QU,,,youth,false,Minor-QU,"youth: age group, bantam, midget or minor"
+Minor-SK,Minor-SK,,,youth,false,Minor-SK,"youth: age group, bantam, midget or minor"
+Minor-TX,Minor-TX,,,youth,false,Minor-TX,"youth: age group, bantam, midget or minor"
+MIPHL,MIPHL,,,minor_pro,true,MIPHL,minor pro or second tier
+MISSL,MISSL,,,senior,false,MISSL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MJAHL,MJAHL,,,junior,true,MJAHL,junior
+MJBHL,MJBHL,,,junior,true,MJBHL,junior
+MJHL,MJHL,,,junior,true,MJHL,junior
+MJJHL,MJJHL,,,junior,true,MJJHL,junior
+MJrHL,MJrHL,,,junior,true,MJrHL,junior
+MMBAA,MMBAA,,,youth,false,MMBAA,"youth: age group, bantam, midget or minor"
+MMBHL,MMBHL,,,youth,false,MMBHL,"youth: age group, bantam, midget or minor"
+MMCR,MMCR,,,youth,false,MMCR,Czech regional U15
+MMHL,MMHL,,19501951,senior,false,MMHL,Manitoba senior or junior (unclear)
+MMHL@19511952,MMHL,19511952,,youth,false,MMHL@19511952,Manitoba midget
+MMJHL,MMJHL,,,junior,true,MMJHL,junior
+MMMHL,MMMHL,,,youth,false,MMMHL,"youth: age group, bantam, midget or minor"
+MMPAA,MMPAA,,,youth,false,MMPAA,"youth: age group, bantam, midget or minor"
+MMRHL,MMRHL,,,senior,false,MMRHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MNBEL 14U,MNBEL 14U,,,youth,false,MNBEL 14U,"youth: age group, bantam, midget or minor"
+MNDHL,MNDHL,,,senior,false,MNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MNHL,MNHL,,,youth,false,MNHL,"youth: age group, bantam, midget or minor"
+MNHP,MNHP,,,youth,false,MNHP,"youth: age group, bantam, midget or minor"
+MNHP 14U,MNHP 14U,,,youth,false,MNHP 14U,"youth: age group, bantam, midget or minor"
+MNHP-14,MNHP-14,,,youth,false,MNHP-14,"youth: age group, bantam, midget or minor"
+MNHP-15,MNHP-15,,,youth,false,MNHP-15,"youth: age group, bantam, midget or minor"
+MNHP-16,MNHP-16,,,youth,false,MNHP-16,"youth: age group, bantam, midget or minor"
+MNHP-17,MNHP-17,,,youth,false,MNHP-17,"youth: age group, bantam, midget or minor"
+MNJHL,MNJHL,,,junior,true,MNJHL,junior
+MNWHA,MNWHA,,,senior,false,MNWHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MNWHA-Int,MNWHA-Int,,,senior,false,MNWHA-Int,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MoCSHL,MoCSHL,,,senior,false,MoCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MOHL,MOHL,,,senior,false,MOHL,"Michigan-Ontario HL, amateur and semi-pro"
+MPHL,MPHL,,19501951,minor_pro,true,MPHL,Maritime Professional HL (1911-14)
+MPHL@19511952,MPHL,19511952,,school,false,MPHL@19511952,prep school league
+MRTAHL,MRTAHL,,,senior,false,MRTAHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MRTHL,MRTHL,,,senior,false,MRTHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MSBL,MSBL,,,senior,false,MSBL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MSHL,MSHL,,,senior,false,MSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MSHL 16U,MSHL 16U,,,youth,false,MSHL 16U,"youth: age group, bantam, midget or minor"
+MSPHL,MSPHL,,,minor_pro,true,MSPHL,minor pro or second tier
+MTBHL,MTBHL,,,senior,false,MTBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MTHL,MTHL,,,youth,false,MTHL,"youth: age group, bantam, midget or minor"
+MTJHL,MTJHL,,,junior,true,MTJHL,junior
+MtJHL,MtJHL,,,junior,true,MtJHL,junior
+MTMHL,MTMHL,,,senior,false,MTMHL,city senior
+MTRHL,MTRHL,,,senior,false,MTRHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+MU18HL,MU18HL,,,youth,false,MU18HL,"youth: age group, bantam, midget or minor"
+MWBEHL,MWBEHL,,,youth,false,MWBEHL,"youth: age group, bantam, midget or minor"
+MWEHL,MWEHL,,,youth,false,MWEHL,"youth: age group, bantam, midget or minor"
+MWJHL,MWJHL,,,junior,true,MWJHL,junior
+MyHL,MyHL,,,youth,false,MyHL,"youth: age group, bantam, midget or minor"
+N-SJHL,N-SJHL,,,junior,true,N-SJHL,junior
+N-SSHL,N-SSHL,,,senior,false,N-SSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NAHL,NAHL,,19761977,minor_pro,true,NAHL,"North American Hockey League (1973-77), pro"
+NAHL@19771978,NAHL,19771978,,junior,true,NAHL,NAHL junior
+NAHL U15,NAHL U15,,,youth,false,NAHL U15,"youth: age group, bantam, midget or minor"
+NAHL U18,NAHL U18,,,youth,false,NAHL U18,"youth: age group, bantam, midget or minor"
+NAIA,NAIA,,,college,true,NAIA,college or university
+NAMHL,NAMHL,,,youth,false,NAMHL,"youth: age group, bantam, midget or minor"
+NAPHL,NAPHL,,,youth,false,NAPHL,"youth: age group, bantam, midget or minor"
+NAPHL 14U,NAPHL 14U,,,youth,false,NAPHL 14U,"youth: age group, bantam, midget or minor"
+NAPHL 15U,NAPHL 15U,,,youth,false,NAPHL 15U,"youth: age group, bantam, midget or minor"
+NAPHL 16U,NAPHL 16U,,,youth,false,NAPHL 16U,"youth: age group, bantam, midget or minor"
+NAPHL 18U,NAPHL 18U,,,youth,false,NAPHL 18U,"youth: age group, bantam, midget or minor"
+NAPro,NAPro,,,minor_pro,true,NAPro,minor pro or second tier
+Nat-Tm,Nat-Tm,,,tournament,false,Nat-Tm,"tournament, national team, select team or exhibition"
+Nat-Tmt,Nat-Tmt,,,tournament,false,Nat-Tmt,"tournament, national team, select team or exhibition"
+NBAHA,NBAHA,,,youth,false,NBAHA,"youth: age group, bantam, midget or minor"
+NBBAAAHL,NBBAAAHL,,,youth,false,NBBAAAHL,"youth: age group, bantam, midget or minor"
+NBCHL,NBCHL,,,senior,false,NBCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NBDHL,NBDHL,,,senior,false,NBDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NBHL,NBHL,,,senior,false,NBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NBJHL,NBJHL,,,junior,true,NBJHL,junior
+NBMHL,NBMHL,,,youth,false,NBMHL,midget
+NBPEI,NBPEI,,,youth,false,NBPEI,"youth: age group, bantam, midget or minor"
+NBPEIMMHL,NBPEIMMHL,,,youth,false,NBPEIMMHL,"youth: age group, bantam, midget or minor"
+NBPEIMU18HL,NBPEIMU18HL,,,youth,false,NBPEIMU18HL,"youth: age group, bantam, midget or minor"
+NBSHL,NBSHL,,,senior,false,NBSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NBU15MHL,NBU15MHL,,,youth,false,NBU15MHL,"youth: age group, bantam, midget or minor"
+NCAA,NCAA,,,college,true,NCAA Division I,college or university
+NCAA II,NCAA II,,,college,true,NCAA lower divisions,college or university
+NCAA III,NCAA III,,,college,true,NCAA lower divisions,college or university
+NCAA-2,NCAA-2,,,college,true,NCAA lower divisions,college or university
+NCAA-3,NCAA-3,,,college,true,NCAA lower divisions,college or university
+NCDC,NCDC,,,junior,true,NCDC,junior
+NCHA,NCHA,,,college,true,NCAA lower divisions,college or university
+NCHC,NCHC,,,college,true,NCAA Division I,college or university
+NDHL,NDHL,,,senior,false,NDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NDJBHL,NDJBHL,,,junior,true,NDJBHL,junior
+NDJCHL,NDJCHL,,,junior,true,NDJCHL,junior
+NDMHL,NDMHL,,,youth,false,NDMHL,"youth: age group, bantam, midget or minor"
+NEHL,NEHL,,,minor_pro,true,NEHL,Northeastern HL (1978-79) and earlier namesakes (judgement call)
+NEJHL,NEJHL,,,junior,true,NEJHL,junior
+NEPACK 15U,NEPACK 15U,,,youth,false,NEPACK 15U,"youth: age group, bantam, midget or minor"
+NEPACK 16U,NEPACK 16U,,,youth,false,NEPACK 16U,"youth: age group, bantam, midget or minor"
+NESHL,NESHL,,,senior,false,NESHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Netherlands,Netherlands,,,major_pro,true,Netherlands,top league of its country or era
+NFAHA,NFAHA,,,youth,false,NFAHA,"youth: age group, bantam, midget or minor"
+Nfld-Jr.,Nfld-Jr.,,,junior,true,Nfld-Jr.,junior
+Nfld-Sr.,Nfld-Sr.,,,senior,false,Nfld-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NHA,NHA,,,major_pro,true,NHA,top league of its country or era
+NIHA,NIHA,,,youth,false,NIHA,"youth: age group, bantam, midget or minor"
+NJCAA,NJCAA,,,college,true,NJCAA,college or university
+NL,NL,,,major_pro,true,Swiss top league,top league of its country or era
+NLA,NLA,,,major_pro,true,Swiss top league,top league of its country or era
+NLB,NLB,,,minor_pro,true,Swiss second tier,minor pro or second tier
+NLBAAAHL,NLBAAAHL,,,youth,false,NLBAAAHL,"youth: age group, bantam, midget or minor"
+NMHL,NMHL,,19501951,senior,false,NMHL,"Northern Michigan HL, senior"
+NMHL@19511952,NMHL,19511952,,junior,true,NMHL,Russian junior league (NMHL)
+NNBHL,NNBHL,,,senior,false,NNBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NNDHL,NNDHL,,,senior,false,NNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NOBHL,NOBHL,,,youth,false,NOBHL,"youth: age group, bantam, midget or minor"
+NOHA,NOHA,,,unknown,false,NOHA,"Northern Ontario HA playdowns: senior, junior and minor mixed"
+NOHL,NOHL,,,senior,false,NOHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NOJHA,NOJHA,,,junior,true,NOJHA,junior
+NOJHL,NOJHL,,,junior,true,NOJHL,junior
+NOMBHL,NOMBHL,,,youth,false,NOMBHL,"youth: age group, bantam, midget or minor"
+NOPHL,NOPHL,,,minor_pro,true,NOPHL,minor pro or second tier
+Nor-Jr.,Nor-Jr.,,,junior,true,Nor-Jr.,junior
+Nor-U18,Nor-U18,,,youth,false,Nor-U18,"youth: age group, bantam, midget or minor"
+Norway,Norway,,,major_pro,true,Norway,top league of its country or era
+Norway U16,Norway U16,,,youth,false,Norway U16,"youth: age group, bantam, midget or minor"
+Norway U17,Norway U17,,,youth,false,Norway U17,"youth: age group, bantam, midget or minor"
+Norway U18,Norway U18,,,youth,false,Norway U18,"youth: age group, bantam, midget or minor"
+Norway U20,Norway U20,,,junior,true,Norway U20,junior
+Norway U21,Norway U21,,,junior,true,Norway U21,junior
+Norway-2,Norway-2,,,minor_pro,true,Norway-2,minor pro or second tier
+Norway-Jr.,Norway-Jr.,,,junior,true,Norway-Jr.,junior
+Norway2,Norway2,,,minor_pro,true,Norway2,minor pro or second tier
+Novizen A,Novizen A,,,youth,false,Novizen A,"youth: age group, bantam, midget or minor"
+Novizen Elite,Novizen Elite,,,youth,false,Novizen Elite,"youth: age group, bantam, midget or minor"
+NPHL,NPHL,,,senior,false,NPHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NSAHA,NSAHA,,,youth,false,NSAHA,"youth: age group, bantam, midget or minor"
+NSAPC,NSAPC,,,senior,false,NSAPC,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NSCHL,NSCHL,,,senior,false,NSCHL,senior
+NSDHL,NSDHL,,,senior,false,NSDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NSEHL,NSEHL,,,senior,false,NSEHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NSJHL,NSJHL,,,junior,true,NSJHL,junior
+NSMBHL,NSMBHL,,,youth,false,NSMBHL,"youth: age group, bantam, midget or minor"
+NSMHL,NSMHL,,,youth,false,NSMHL,"youth: age group, bantam, midget or minor"
+NSMMHL,NSMMHL,,,youth,false,NSMMHL,"youth: age group, bantam, midget or minor"
+NSPHL,NSPHL,,,minor_pro,true,NSPHL,minor pro or second tier
+NSSHL,NSSHL,,,senior,false,NSSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NSU15MHL,NSU15MHL,,,youth,false,NSU15MHL,"youth: age group, bantam, midget or minor"
+NSU18MHL,NSU18MHL,,,youth,false,NSU18MHL,"youth: age group, bantam, midget or minor"
+NSVHL,NSVHL,,,senior,false,NSVHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NTDP,NTDP,,,tournament,false,NTDP,US national development team (judgement call: its USHL games are under USHL)
+NWHL,NWHL,,,senior,false,NWHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NWIHL,NWIHL,,,senior,false,NWIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+NWJHL,NWJHL,,,junior,true,NWJHL,junior
+NYAHL,NYAHL,,,youth,false,NYAHL,youth (judgement call)
+NYJHL,NYJHL,,,junior,true,NYJHL,junior
+NYSHL,NYSHL,,,senior,false,NYSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OCAA,OCAA,,,college,true,OCAA,college or university
+OCHL,OCHL,,,senior,false,OCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OCJHL,OCJHL,,,junior,true,OCJHL,junior
+OCSHL,OCSHL,,,senior,false,OCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+ODM,ODM,,,youth,false,ODM,Czech regional U15
+ODMHA,ODMHA,,,youth,false,ODMHA,"youth: age group, bantam, midget or minor"
+OEBHL,OEBHL,,,youth,false,OEBHL,"youth: age group, bantam, midget or minor"
+OEBHL AA,OEBHL AA,,,youth,false,OEBHL AA,"youth: age group, bantam, midget or minor"
+OEMBHL,OEMBHL,,,youth,false,OEMBHL,"youth: age group, bantam, midget or minor"
+OEMBHL AA,OEMBHL AA,,,youth,false,OEMBHL AA,"youth: age group, bantam, midget or minor"
+OEMHL,OEMHL,,,youth,false,OEMHL,midget
+OEMMHL,OEMMHL,,,youth,false,OEMMHL,"youth: age group, bantam, midget or minor"
+OEMMHL AA,OEMMHL AA,,,youth,false,OEMMHL AA,"youth: age group, bantam, midget or minor"
+OG,OG,,,tournament,false,OG,"tournament, national team, select team or exhibition"
+OGC-16,OGC-16,,,tournament,false,OGC-16,"tournament, national team, select team or exhibition"
+OGQ,OGQ,,,tournament,false,OGQ,"tournament, national team, select team or exhibition"
+OHA,OHA,,,senior,false,OHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OHA-B,OHA-B,,,junior,true,Ontario junior B,junior
+OHA-C,OHA-C,,,junior,true,Ontario junior C,junior
+OHA-D,OHA-D,,,junior,true,OHA-D,junior
+OHA-Int.,OHA-Int.,,,senior,false,OHA-Int.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OHA-Jr.,OHA-Jr.,,,junior,true,OHL,junior
+OHA-Sr.,OHA-Sr.,,,senior,false,OHA-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OHDJHL,OHDJHL,,,junior,true,OHDJHL,junior
+OHL,OHL,,,junior,true,OHL,junior
+OHL Cup,OHL Cup,,,tournament,false,OHL Cup,"tournament, national team, select team or exhibition"
+OJAHL,OJAHL,,,junior,true,OJAHL,junior
+OJDL,OJDL,,,junior,true,OJDL,junior
+OJHL,OJHL,,,junior,true,Ontario junior A,junior
+OJHL-B,OJHL-B,,,junior,true,Ontario junior B,junior
+OJHL-C,OJHL-C,,,junior,true,Ontario junior C,junior
+Oly-Q,Oly-Q,,,tournament,false,Oly-Q,"tournament, national team, select team or exhibition"
+Olympics,Olympics,,,tournament,false,Olympics,"tournament, national team, select team or exhibition"
+OMAHA,OMAHA,,,youth,false,OMAHA,"youth: age group, bantam, midget or minor"
+OMBAHA,OMBAHA,,,youth,false,OMBAHA,"youth: age group, bantam, midget or minor"
+OMHA,OMHA,,,youth,false,OMHA,"youth: age group, bantam, midget or minor"
+OMHL,OMHL,,,senior,false,OMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OMJHL,OMJHL,,,junior,true,OHL,junior
+OMSHL,OMSHL,,,senior,false,OMSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+ON-Jr.A,ON-Jr.A,,,junior,true,Ontario junior A,junior
+ON-Jr.B,ON-Jr.B,,,junior,true,Ontario junior B,junior
+ON-Jr.C,ON-Jr.C,,,junior,true,Ontario junior C,junior
+OPHL,OPHL,,19501951,minor_pro,true,OPHL,Ontario Professional HL (1908-11)
+OPHL@19511952,OPHL,19511952,,unknown,false,OPHL@19511952,unclear
+OPJHL,OPJHL,,,junior,true,Ontario junior A,junior
+OQAA,OQAA,,,college,true,Canadian university,college or university
+OSHA-B,OSHA-B,,,senior,false,OSHA-B,senior B
+OSHL,OSHL,,,senior,false,OSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OSrB,OSrB,,,senior,false,OSrB,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Other,Other,,,unknown,false,Other,no league given
+OUAA,OUAA,,,college,true,Canadian university,college or university
+OVHL,OVHL,,,senior,false,OVHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+OVJHL,OVJHL,,,junior,true,OVJHL,junior
+PAHA,PAHA,,,youth,false,PAHA,"youth: age group, bantam, midget or minor"
+PCBHL,PCBHL,,,youth,false,PCBHL,"youth: age group, bantam, midget or minor"
+PCHA,PCHA,,,major_pro,true,PCHA,top league of its country or era
+PCHL,PCHL,,,minor_pro,true,PCHL,minor pro or second tier
+PCJHL,PCJHL,,,junior,true,PCJHL,junior
+Peewee,Peewee,,,youth,false,Peewee,"youth: age group, bantam, midget or minor"
+PEI U18,PEI U18,,,youth,false,PEI U18,"youth: age group, bantam, midget or minor"
+PEI-Jr.,PEI-Jr.,,,junior,true,PEI-Jr.,junior
+PEI-Sr.,PEI-Sr.,,,senior,false,PEI-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+PEIBAAA,PEIBAAA,,,youth,false,PEIBAAA,"youth: age group, bantam, midget or minor"
+PEIHA,PEIHA,,,youth,false,PEIHA,"youth: age group, bantam, midget or minor"
+PHC,PHC,,,school,false,PHC,prep school
+PHL,PHL,,,minor_pro,true,PHL,minor pro or second tier
+PIHL,PIHL,,,minor_pro,true,PIHL,minor pro or second tier
+PIJHL,PIJHL,,,junior,true,PIJHL,junior
+PJHL,PJHL,,,junior,true,PJHL,junior
+Poland,Poland,,,major_pro,true,Poland,top league of its country or era
+Poland-Jr.,Poland-Jr.,,,junior,true,Poland-Jr.,junior
+PrHL,PrHL,,,major_pro,true,PrHL,top league of its country or era
+Prospects Challenge,Prospects Challenge,,,tournament,false,Prospects Challenge,"tournament, national team, select team or exhibition"
+PSHF U16,PSHF U16,,,youth,false,PSHF U16,"youth: age group, bantam, midget or minor"
+PSHF U18,PSHF U18,,,youth,false,PSHF U18,"youth: age group, bantam, midget or minor"
+QAAA,QAAA,,,youth,false,QAAA,"youth: age group, bantam, midget or minor"
+QAHA,QAHA,,,youth,false,QAHA,"youth: age group, bantam, midget or minor"
+QBAA,QBAA,,,youth,false,QBAA,"youth: age group, bantam, midget or minor"
+QBAAA,QBAAA,,,youth,false,QBAAA,"youth: age group, bantam, midget or minor"
+QBAAA R,QBAAA R,,,youth,false,QBAAA R,"youth: age group, bantam, midget or minor"
+QC Int PW,QC Int PW,,,tournament,false,QC Int PW,"tournament, national team, select team or exhibition"
+QCAA,QCAA,,,college,true,QCAA,Quebec college athletics (judgement call)
+QCHL,QCHL,,,senior,false,QCHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QGC-16,QGC-16,,,tournament,false,QGC-16,"tournament, national team, select team or exhibition"
+QHL,QHL,,,minor_pro,true,QHL,"Quebec HL, professional from 1953"
+QICHL,QICHL,,,senior,false,QICHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QIHA,QIHA,,,senior,false,QIHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QIHL,QIHL,,,senior,false,QIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QJAAAHL,QJAAAHL,,,junior,true,QJAAAHL,junior
+QJAHL,QJAHL,,,junior,true,QJAHL,junior
+QJHL,QJHL,,,junior,true,QJHL,Quebec junior
+QJHL-B,QJHL-B,,,junior,true,QJHL-B,junior
+QM15AA,QM15AA,,,youth,false,QM15AA,"youth: age group, bantam, midget or minor"
+QM15AAA,QM15AAA,,,youth,false,QM15AAA,"youth: age group, bantam, midget or minor"
+QM15AAA E,QM15AAA E,,,youth,false,QM15AAA E,"youth: age group, bantam, midget or minor"
+QM15AAA R,QM15AAA R,,,youth,false,QM15AAA R,"youth: age group, bantam, midget or minor"
+QM17AAA,QM17AAA,,,youth,false,QM17AAA,"youth: age group, bantam, midget or minor"
+QM17E,QM17E,,,youth,false,QM17E,"youth: age group, bantam, midget or minor"
+QM18AAA,QM18AAA,,,youth,false,QM18AAA,"youth: age group, bantam, midget or minor"
+QMAA,QMAA,,,youth,false,QMAA,"youth: age group, bantam, midget or minor"
+QMAAA,QMAAA,,,youth,false,QMAAA,"youth: age group, bantam, midget or minor"
+QMEAA,QMEAA,,,youth,false,QMEAA,"youth: age group, bantam, midget or minor"
+QMHL,QMHL,,,senior,false,QMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QMJHL,QMJHL,,,junior,true,QMJHL,junior
+QNWJHL,QNWJHL,,,junior,true,QNWJHL,junior
+QPAAA,QPAAA,,,youth,false,QPAAA,"youth: age group, bantam, midget or minor"
+QPHL,QPHL,,,senior,false,QPHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QSHL,QSHL,,,senior,false,QSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+QSPHL,QSPHL,,,senior,false,QSPHL,Quebec semi-pro league (judgement call)
+QUAA,QUAA,,,college,true,Canadian university,college or university
+Que-Sr.,Que-Sr.,,,senior,false,Que-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+RAMHL,RAMHL,,,youth,false,RAMHL,"youth: age group, bantam, midget or minor"
+RB-Cup,RB-Cup,,,tournament,false,RB-Cup,"tournament, national team, select team or exhibition"
+RCJHL,RCJHL,,,junior,true,RCJHL,junior
+RCSHL,RCSHL,,,senior,false,RCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+REMHL,REMHL,,,youth,false,REMHL,"youth: age group, bantam, midget or minor"
+RHL,RHL,,,unknown,false,RHL,unclear
+RICBAA,RICBAA,,,youth,false,RICBAA,"youth: age group, bantam, midget or minor"
+RIJHL,RIJHL,,,junior,true,RIJHL,junior
+Rikspucken,Rikspucken,,,tournament,false,Rikspucken,"tournament, national team, select team or exhibition"
+RJrHL,RJrHL,,,junior,true,RJrHL,junior
+RMAHA,RMAHA,,,youth,false,RMAHA,"youth: age group, bantam, midget or minor"
+RMJHL,RMJHL,,,junior,true,RMJHL,junior
+RMSHL,RMSHL,,,senior,false,RMSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+RNDHL,RNDHL,,,senior,false,RNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Roy-Cup,Roy-Cup,,,tournament,false,Roy-Cup,"tournament, national team, select team or exhibition"
+RSEQ C1,RSEQ C1,,,youth,false,RSEQ C1,"youth: age group, bantam, midget or minor"
+Rus-KHL,Rus-KHL,,,major_pro,true,KHL,top league of its country or era
+Rus-U18,Rus-U18,,,youth,false,Rus-U18,"youth: age group, bantam, midget or minor"
+Rus.-Jr. B,Rus.-Jr. B,,,junior,true,MHL B,junior
+Russia,Russia,,,major_pro,true,Soviet/Russian top league,top league of its country or era
+Russia U16,Russia U16,,,youth,false,Russia U16,"youth: age group, bantam, midget or minor"
+Russia U17,Russia U17,,,youth,false,Russia U17,"youth: age group, bantam, midget or minor"
+Russia U18,Russia U18,,,youth,false,Russia U18,"youth: age group, bantam, midget or minor"
+Russia-2,Russia-2,,,minor_pro,true,Russian second tier,minor pro or second tier
+Russia-3,Russia-3,,,senior,false,Russia-3,third tier or lower in Europe (judgement call: not counted)
+Russia-4,Russia-4,,,senior,false,Russia-4,third tier or lower in Europe (judgement call: not counted)
+Russia-Jr.,Russia-Jr.,,,junior,true,MHL (Russian junior),junior
+Russia-Jr. B,Russia-Jr. B,,,junior,true,MHL B,junior
+Russia-Q,Russia-Q,,,major_pro,true,Soviet/Russian top league,Russian top-league qualification
+Russia2,Russia2,,,minor_pro,true,Russian second tier,minor pro or second tier
+Russia3,Russia3,,,senior,false,Russia3,third tier or lower in Europe (judgement call: not counted)
+Russia4,Russia4,,,senior,false,Russia4,third tier or lower in Europe (judgement call: not counted)
+RV-87,RV-87,,,tournament,false,RV-87,"tournament, national team, select team or exhibition"
+S-SJHL,S-SJHL,,,junior,true,S-SJHL,junior
+S-SSHL,S-SSHL,,,senior,false,S-SSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SAAHL U15,SAAHL U15,,,youth,false,SAAHL U15,"youth: age group, bantam, midget or minor"
+SAHA,SAHA,,,youth,false,SAHA,"youth: age group, bantam, midget or minor"
+SAMHL,SAMHL,,,youth,false,SAMHL,"youth: age group, bantam, midget or minor"
+Sask-Pro,Sask-Pro,,,minor_pro,true,Sask-Pro,minor pro or second tier
+SBAAHL,SBAAHL,,,youth,false,SBAAHL,"youth: age group, bantam, midget or minor"
+SBHL,SBHL,,,senior,false,SBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SCABL,SCABL,,,youth,false,SCABL,bantam
+SCAHA,SCAHA,,,youth,false,SCAHA,"youth: age group, bantam, midget or minor"
+SCAHL,SCAHL,,,youth,false,SCAHL,"youth: age group, bantam, midget or minor"
+SCAHL U15,SCAHL U15,,,youth,false,SCAHL U15,"youth: age group, bantam, midget or minor"
+SCBHL,SCBHL,,,youth,false,SCBHL,"youth: age group, bantam, midget or minor"
+Schüler-BL,Schüler-BL,,,youth,false,Schüler-BL,"youth: age group, bantam, midget or minor"
+SCJHL,SCJHL,,,junior,true,SCJHL,city junior
+Scotland,Scotland,,,senior,false,Scotland,military team in a Scottish league
+SCSHL,SCSHL,,,senior,false,SCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SCTA,SCTA,,,youth,false,SCTA,"youth: age group, bantam, midget or minor"
+SCTA U15,SCTA U15,,,youth,false,SCTA U15,"youth: age group, bantam, midget or minor"
+SCTA U16,SCTA U16,,,youth,false,SCTA U16,"youth: age group, bantam, midget or minor"
+SCTA U18,SCTA U18,,,youth,false,SCTA U18,"youth: age group, bantam, midget or minor"
+SCTAB,SCTAB,,,youth,false,SCTAB,"youth: age group, bantam, midget or minor"
+SCTAMB,SCTAMB,,,youth,false,SCTAMB,"youth: age group, bantam, midget or minor"
+SCTAMM,SCTAMM,,,youth,false,SCTAMM,"youth: age group, bantam, midget or minor"
+SHL,SHL,,,major_pro,true,SHL,top league of its country or era
+SIHA,SIHA,,,senior,false,SIHA,Saskatchewan intermediate
+SIHI,SIHI,,,college,true,SIHI,judgement call
+SIHL,SIHL,,,senior,false,SIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SIJHL,SIJHL,,,junior,true,SIJHL,junior
+SJCHL,SJCHL,,,junior,true,SJCHL,junior
+SJHL,SJHL,,,junior,true,SJHL,junior
+SJHL-B,SJHL-B,,,junior,true,SJHL-B,junior
+SJJHL,SJJHL,,,junior,true,SJJHL,junior
+SJrHL,SJrHL,,,junior,true,SJrHL,junior
+SJSHL,SJSHL,,,senior,false,SJSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SL,SL,,,minor_pro,true,Swiss second tier,"Swiss League, second tier"
+Slovak-2,Slovak-2,,,minor_pro,true,Slovak second tier,minor pro or second tier
+Slovak-Jr.,Slovak-Jr.,,,junior,true,Slovak junior,junior
+Slovakia,Slovakia,,,major_pro,true,Slovakia,top league of its country or era
+Slovakia other,Slovakia other,,,senior,false,Slovakia other,third tier or lower in Europe (judgement call: not counted)
+Slovakia U16,Slovakia U16,,,youth,false,Slovakia U16,"youth: age group, bantam, midget or minor"
+Slovakia U18,Slovakia U18,,,youth,false,Slovakia U18,"youth: age group, bantam, midget or minor"
+Slovakia U18 2,Slovakia U18 2,,,youth,false,Slovakia U18 2,"youth: age group, bantam, midget or minor"
+Slovakia U20,Slovakia U20,,,junior,true,Slovak junior,junior
+Slovakia U20 2,Slovakia U20 2,,,junior,true,Slovakia U20 2,junior
+Slovakia2,Slovakia2,,,minor_pro,true,Slovak second tier,minor pro or second tier
+Sloven-Jr.,Sloven-Jr.,,,junior,true,Sloven-Jr.,junior
+Sloven-U18,Sloven-U18,,,youth,false,Sloven-U18,"youth: age group, bantam, midget or minor"
+Slovenia,Slovenia,,,major_pro,true,Slovenia,top league of its country or era
+SLSHL,SLSHL,,,senior,false,SLSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SLVHL,SLVHL,,,senior,false,SLVHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SM-sarja,SM-sarja,,,major_pro,true,Liiga,top league of its country or era
+SMAAAHL,SMAAAHL,,,youth,false,SMAAAHL,"youth: age group, bantam, midget or minor"
+SMBHL,SMBHL,,,youth,false,SMBHL,"youth: age group, bantam, midget or minor"
+SMHA,SMHA,,,youth,false,SMHA,"youth: age group, bantam, midget or minor"
+SMHL,SMHL,,,youth,false,SMHL,"youth: age group, bantam, midget or minor"
+SMMHL,SMMHL,,,youth,false,SMMHL,"youth: age group, bantam, midget or minor"
+SNBHL,SNBHL,,,senior,false,SNBHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SNBJL,SNBJL,,,junior,true,SNBJL,junior
+SoCalSr.,SoCalSr.,,,senior,false,SoCalSr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SOJHL,SOJHL,,,junior,true,SOJHL,junior
+Soviet,Soviet,,,major_pro,true,Soviet/Russian top league,top league of its country or era
+Soviet2,Soviet2,,,minor_pro,true,Russian second tier,minor pro or second tier
+Soviet3,Soviet3,,,senior,false,Soviet3,third tier or lower in Europe (judgement call: not counted)
+Spengler Cup,Spengler Cup,,,tournament,false,Spengler Cup,"tournament, national team, select team or exhibition"
+SPHL,SPHL,,,minor_pro,true,SPHL,minor pro or second tier
+SSHL,SSHL,,,senior,false,SSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+SSMHL,SSMHL,,,youth,false,SSMHL,"youth: age group, bantam, midget or minor"
+Summit-74,Summit-74,,,tournament,false,Summit-74,"tournament, national team, select team or exhibition"
+SunHL,SunHL,,,minor_pro,true,SunHL,"Sunshine HL, minor pro"
+Suomen Cup,Suomen Cup,,,tournament,false,Suomen Cup,"tournament, national team, select team or exhibition"
+Suomen sarja,Suomen sarja,,,senior,false,Suomen sarja,third tier or lower in Europe (judgement call: not counted)
+Suomi-sarja,Suomi-sarja,,,senior,false,Suomi-sarja,third tier or lower in Europe (judgement call: not counted)
+Super-S,Super-S,,,tournament,false,Super-S,"tournament, national team, select team or exhibition"
+SuperElit,SuperElit,,,junior,true,Swedish junior,junior
+Svk-U18,Svk-U18,,,youth,false,Svk-U18,"youth: age group, bantam, midget or minor"
+Swe-Jr.,Swe-Jr.,,,junior,true,Swedish junior,junior
+Swe-U18,Swe-U18,,,youth,false,Swe-U18,"youth: age group, bantam, midget or minor"
+Sweden,Sweden,,,major_pro,true,SHL,top league of its country or era
+Sweden-2,Sweden-2,,,minor_pro,true,Swedish second tier,minor pro or second tier
+Sweden-3,Sweden-3,,,senior,false,Sweden-3,third tier or lower in Europe (judgement call: not counted)
+Sweden-4,Sweden-4,,,senior,false,Sweden-4,third tier or lower in Europe (judgement call: not counted)
+Sweden-Q,Sweden-Q,,,major_pro,true,SHL,Swedish top-league qualification
+Swiss,Swiss,,,major_pro,true,Swiss top league,top league of its country or era
+Swiss-2,Swiss-2,,,minor_pro,true,Swiss second tier,minor pro or second tier
+Swiss-3,Swiss-3,,,senior,false,Swiss-3,third tier or lower in Europe (judgement call: not counted)
+Swiss-6,Swiss-6,,,senior,false,Swiss-6,third tier or lower in Europe (judgement call: not counted)
+Swiss-Jr.,Swiss-Jr.,,,junior,true,Swiss junior,junior
+Swiss-Q,Swiss-Q,,,major_pro,true,Swiss top league,Swiss top-league qualification
+Swiss-U17,Swiss-U17,,,youth,false,Swiss-U17,"youth: age group, bantam, midget or minor"
+Swiss-U18,Swiss-U18,,,youth,false,Swiss-U18,"youth: age group, bantam, midget or minor"
+SwissDiv1,SwissDiv1,,,senior,false,SwissDiv1,third tier or lower in Europe (judgement call: not counted)
+SWRHL,SWRHL,,,youth,false,SWRHL,"youth: age group, bantam, midget or minor"
+T1EBHL,T1EBHL,,,youth,false,T1EBHL,"youth: age group, bantam, midget or minor"
+T1EHL,T1EHL,,,youth,false,T1EHL,"youth: age group, bantam, midget or minor"
+T1EHL 13U,T1EHL 13U,,,youth,false,T1EHL 13U,"youth: age group, bantam, midget or minor"
+T1EHL 14U,T1EHL 14U,,,youth,false,T1EHL 14U,"youth: age group, bantam, midget or minor"
+T1EHL 15U,T1EHL 15U,,,youth,false,T1EHL 15U,"youth: age group, bantam, midget or minor"
+T1EHL 16U,T1EHL 16U,,,youth,false,T1EHL 16U,"youth: age group, bantam, midget or minor"
+T1EHL 18U,T1EHL 18U,,,youth,false,T1EHL 18U,"youth: age group, bantam, midget or minor"
+T1EHL U16,T1EHL U16,,,youth,false,T1EHL U16,"youth: age group, bantam, midget or minor"
+T1EHL U18,T1EHL U18,,,youth,false,T1EHL U18,"youth: age group, bantam, midget or minor"
+T1EMBHL,T1EMBHL,,,youth,false,T1EMBHL,"youth: age group, bantam, midget or minor"
+TBAHA,TBAHA,,,youth,false,TBAHA,"youth: age group, bantam, midget or minor"
+TBIHA,TBIHA,,,senior,false,TBIHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TBJBHL,TBJBHL,,,junior,true,TBJBHL,junior
+TBJHL,TBJHL,,,junior,true,TBJHL,junior
+TBMHL,TBMHL,,,youth,false,TBMHL,"youth: age group, bantam, midget or minor"
+TBSHL,TBSHL,,,senior,false,TBSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TCQ-A,TCQ-A,,,tournament,false,TCQ-A,"tournament, national team, select team or exhibition"
+TCQ-O,TCQ-O,,,tournament,false,TCQ-O,"tournament, national team, select team or exhibition"
+TCQ-W,TCQ-W,,,tournament,false,TCQ-W,"tournament, national team, select team or exhibition"
+THL,THL,,,senior,false,THL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TIHL,TIHL,,,senior,false,TIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TJrHL,TJrHL,,,junior,true,TJrHL,junior
+TMHL,TMHL,,,senior,false,TMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TNDHL,TNDHL,,,senior,false,TNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Top Mini,Top Mini,,,youth,false,Top Mini,"youth: age group, bantam, midget or minor"
+Top Novizen,Top Novizen,,,youth,false,Top Novizen,"youth: age group, bantam, midget or minor"
+TPHL,TPHL,,,minor_pro,true,TPHL,minor pro or second tier
+TrHL,TrHL,,,senior,false,TrHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TriHL,TriHL,,,senior,false,TriHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+TV-Pucken,TV-Pucken,,,tournament,false,TV-Pucken,"tournament, national team, select team or exhibition"
+U-17,U-17,,,tournament,false,U-17,"tournament, national team, select team or exhibition"
+U-18,U-18,,,tournament,false,U-18,"tournament, national team, select team or exhibition"
+U14 AAA,U14 AAA,,,youth,false,U14 AAA,"youth: age group, bantam, midget or minor"
+U15 AAA,U15 AAA,,,youth,false,U15 AAA,"youth: age group, bantam, midget or minor"
+U15-Elit,U15-Elit,,,youth,false,U15-Elit,"youth: age group, bantam, midget or minor"
+U15-Top,U15-Top,,,youth,false,U15-Top,"youth: age group, bantam, midget or minor"
+U16 AAA,U16 AAA,,,youth,false,U16 AAA,"youth: age group, bantam, midget or minor"
+U16 Aluesarja,U16 Aluesarja,,,youth,false,U16 Aluesarja,"youth: age group, bantam, midget or minor"
+U16 Div.1,U16 Div.1,,,youth,false,U16 Div.1,"youth: age group, bantam, midget or minor"
+U16 Div.2,U16 Div.2,,,youth,false,U16 Div.2,"youth: age group, bantam, midget or minor"
+U16 Elit,U16 Elit,,,youth,false,U16 Elit,"youth: age group, bantam, midget or minor"
+U16 Mestis,U16 Mestis,,,youth,false,U16 Mestis,"youth: age group, bantam, midget or minor"
+U16 Region,U16 Region,,,youth,false,U16 Region,"youth: age group, bantam, midget or minor"
+U16 SM,U16 SM,,,youth,false,U16 SM,"youth: age group, bantam, midget or minor"
+U16 SM-sarja,U16 SM-sarja,,,youth,false,U16 SM-sarja,"youth: age group, bantam, midget or minor"
+U16 Suomi-sarja,U16 Suomi-sarja,,,youth,false,U16 Suomi-sarja,"youth: age group, bantam, midget or minor"
+U17 Mestis,U17 Mestis,,,youth,false,U17 Mestis,"youth: age group, bantam, midget or minor"
+U17 SM-sarja,U17 SM-sarja,,,youth,false,U17 SM-sarja,"youth: age group, bantam, midget or minor"
+U17-A,U17-A,,,tournament,false,U17-A,"tournament, national team, select team or exhibition"
+U17-Dev,U17-Dev,,,tournament,false,U17-Dev,"tournament, national team, select team or exhibition"
+U17-Elit,U17-Elit,,,youth,false,U17-Elit,"youth: age group, bantam, midget or minor"
+U17-Top,U17-Top,,,youth,false,U17-Top,"youth: age group, bantam, midget or minor"
+U18 I-divisioona,U18 I-divisioona,,,youth,false,U18 I-divisioona,"youth: age group, bantam, midget or minor"
+U18 Mestis,U18 Mestis,,,youth,false,U18 Mestis,"youth: age group, bantam, midget or minor"
+U18 SM-sarja,U18 SM-sarja,,,youth,false,U18 SM-sarja,"youth: age group, bantam, midget or minor"
+U18-Dev,U18-Dev,,,tournament,false,U18-Dev,"tournament, national team, select team or exhibition"
+U19 Suomi-sarja,U19 Suomi-sarja,,,junior,true,U19 Suomi-sarja,junior
+U20 Mestis,U20 Mestis,,,junior,true,U20 Mestis,junior
+U20 Nationell,U20 Nationell,,,junior,true,Swedish junior,junior
+U20 SM-liiga,U20 SM-liiga,,,junior,true,Finnish junior,junior
+U20 SM-sarja,U20 SM-sarja,,,junior,true,Finnish junior,junior
+U20 Suomi-sarja,U20 Suomi-sarja,,,junior,true,U20 Suomi-sarja,junior
+U20-Elit,U20-Elit,,,junior,true,Swiss junior,junior
+U20-Top,U20-Top,,,junior,true,U20-Top,junior
+UHL,UHL,,,minor_pro,true,UHL,minor pro or second tier
+UMEHL,UMEHL,,,youth,false,UMEHL,"youth: age group, bantam, midget or minor"
+UMHSEHL,UMHSEHL,,,youth,false,UMHSEHL,"youth: age group, bantam, midget or minor"
+UMHSEL,UMHSEL,,,youth,false,UMHSEL,"youth: age group, bantam, midget or minor"
+UMWEHL,UMWEHL,,,youth,false,UMWEHL,"youth: age group, bantam, midget or minor"
+UOVHL,UOVHL,,,senior,false,UOVHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+USA-S15,USA-S15,,,tournament,false,USA-S15,"tournament, national team, select team or exhibition"
+USA-S16,USA-S16,,,tournament,false,USA-S16,"tournament, national team, select team or exhibition"
+USA-S17,USA-S17,,,tournament,false,USA-S17,"tournament, national team, select team or exhibition"
+USAAA,USAAA,,,youth,false,USAAA,"youth: age group, bantam, midget or minor"
+USAHA,USAHA,,,senior,false,USAHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+USDP,USDP,,,tournament,false,USDP,US national development team (judgement call: its USHL games are under USHL)
+USHA,USHA,,,senior,false,USHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+USHL,USHL,,19511952,minor_pro,true,USHL,"US Hockey League, minor pro (1945-51) and its forerunners"
+USHL@19521953,USHL,19521953,19781979,senior,false,USHL@19521953,USHL as a senior amateur league (1961-79)
+USHL@19791980,USHL,19791980,,junior,true,USHL,USHL junior (from 1979-80)
+USHS-AK,USHS-AK,,,school,false,USHS-AK,school or prep hockey
+USHS-CA,USHS-CA,,,school,false,USHS-CA,school or prep hockey
+USHS-FL,USHS-FL,,,school,false,USHS-FL,school or prep hockey
+USHS-IA,USHS-IA,,,school,false,USHS-IA,school or prep hockey
+USHS-IL,USHS-IL,,,school,false,USHS-IL,school or prep hockey
+USHS-MA,USHS-MA,,,school,false,USHS-MA,school or prep hockey
+USHS-MD,USHS-MD,,,school,false,USHS-MD,school or prep hockey
+USHS-ME,USHS-ME,,,school,false,USHS-ME,school or prep hockey
+USHS-MI,USHS-MI,,,school,false,USHS-MI,school or prep hockey
+USHS-MN,USHS-MN,,,school,false,USHS-MN,school or prep hockey
+USHS-MO,USHS-MO,,,school,false,USHS-MO,school or prep hockey
+USHS-ND,USHS-ND,,,school,false,USHS-ND,school or prep hockey
+USHS-NE,USHS-NE,,,school,false,USHS-NE,school or prep hockey
+USHS-NJ,USHS-NJ,,,school,false,USHS-NJ,school or prep hockey
+USHS-NY,USHS-NY,,,school,false,USHS-NY,school or prep hockey
+USHS-PA,USHS-PA,,,school,false,USHS-PA,school or prep hockey
+USHS-Prep,USHS-Prep,,,school,false,USHS-Prep,school or prep hockey
+USHS-TX,USHS-TX,,,school,false,USHS-TX,school or prep hockey
+USHS-WI,USHS-WI,,,school,false,USHS-WI,school or prep hockey
+USNHL,USNHL,,,senior,false,USNHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+USPHL,USPHL,,,junior,true,USPHL,junior
+USPHL 16U,USPHL 16U,,,youth,false,USPHL 16U,"youth: age group, bantam, midget or minor"
+USPHL 18U,USPHL 18U,,,youth,false,USPHL 18U,"youth: age group, bantam, midget or minor"
+USPHL Elite,USPHL Elite,,,junior,true,USPHL Elite,junior
+USPHL Premier,USPHL Premier,,,junior,true,USPHL Premier,junior
+USports,USports,,,college,true,Canadian university,college or university
+USSR,USSR,,,major_pro,true,Soviet/Russian top league,top league of its country or era
+USSR-2,USSR-2,,,minor_pro,true,Russian second tier,minor pro or second tier
+USSR-3,USSR-3,,,senior,false,USSR-3,third tier or lower in Europe (judgement call: not counted)
+USSR-4,USSR-4,,,senior,false,USSR-4,third tier or lower in Europe (judgement call: not counted)
+USSR-Jr.,USSR-Jr.,,,junior,true,USSR-Jr.,junior
+USSR-Q,USSR-Q,,,major_pro,true,Soviet/Russian top league,Soviet top-league qualification
+VCAHL,VCAHL,,,senior,false,VCAHL,city amateur
+VHL,VHL,,,minor_pro,true,Russian second tier,minor pro or second tier
+VIBHL,VIBHL,,,youth,false,VIBHL,"youth: age group, bantam, midget or minor"
+VIJHL,VIJHL,,,junior,true,VIJHL,junior
+W-Cup,W-Cup,,,tournament,false,W-Cup,"tournament, national team, select team or exhibition"
+W.Ger-2,W.Ger-2,,,minor_pro,true,German second tier,minor pro or second tier
+W.Ger-3,W.Ger-3,,,senior,false,W.Ger-3,third tier or lower in Europe (judgement call: not counted)
+W.Ger-Jr.,W.Ger-Jr.,,,junior,true,German junior,junior
+W.German,W.German,,,major_pro,true,German top league,top league of its country or era
+WAAA U14,WAAA U14,,,youth,false,WAAA U14,"youth: age group, bantam, midget or minor"
+WAAA U15,WAAA U15,,,youth,false,WAAA U15,"youth: age group, bantam, midget or minor"
+WAAA U17,WAAA U17,,,youth,false,WAAA U17,"youth: age group, bantam, midget or minor"
+WBAAA,WBAAA,,,youth,false,WBAAA,"youth: age group, bantam, midget or minor"
+WBAAA2,WBAAA2,,,youth,false,WBAAA2,"youth: age group, bantam, midget or minor"
+WC,WC,,,tournament,false,WC,international tournament
+WC D1A,WC D1A,,,tournament,false,WC D1A,international tournament
+WC-A,WC-A,,,tournament,false,WC-A,international tournament
+WC-B,WC-B,,,tournament,false,WC-B,international tournament
+WC-C,WC-C,,,tournament,false,WC-C,international tournament
+WC-Q,WC-Q,,,tournament,false,WC-Q,international tournament
+WCAHA,WCAHA,,,senior,false,WCAHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WCCC-16,WCCC-16,,,tournament,false,WCCC-16,"tournament, national team, select team or exhibition"
+WCHA,WCHA,,,college,true,NCAA Division I,college or university
+WCHL,WCHL,,19401941,major_pro,true,WCHL,"Western Canada Hockey League (1921-26), major pro"
+WCHL@19411942,WCHL,19411942,19901991,junior,true,WCJHL/WHL junior,Western Canada (junior) Hockey League
+WCHL@19911992,WCHL,19911992,,minor_pro,true,WCHL,"West Coast Hockey League (1995-2003), minor pro"
+WCIAA,WCIAA,,,college,true,Canadian university,college or university
+WCJHL,WCJHL,,,junior,true,WCJHL/WHL junior,junior
+WCMHL,WCMHL,,,senior,false,WCMHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WCML,WCML,,,tournament,false,WCML,international tournament
+WCSHL,WCSHL,,,senior,false,WCSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WCup,WCup,,,tournament,false,WCup,"tournament, national team, select team or exhibition"
+WEC,WEC,,,tournament,false,WEC,international tournament
+WEC-A,WEC-A,,,tournament,false,WEC-A,international tournament
+WEC-B,WEC-B,,,tournament,false,WEC-B,international tournament
+West-P,West-P,,,major_pro,true,West-P,top league of its country or era
+WHA,WHA,,,major_pro,true,WHA,top league of its country or era
+WHA2,WHA2,,,minor_pro,true,WHA2,minor pro or second tier
+WHC-17,WHC-17,,,tournament,false,WHC-17,international tournament
+WHL,WHL,,19311932,major_pro,true,WHL,"Western Hockey League (1925-26), major pro"
+WHL@19321933,WHL,19321933,19771978,minor_pro,true,WHL,"pro WHL (1952-74); some junior WHL teams (from about 1967) are filed here too, also counted"
+WHL@19781979,WHL,19781979,,junior,true,WCJHL/WHL junior,WHL junior (the name from 1978-79)
+WHL Cup,WHL Cup,,,tournament,false,WHL Cup,"tournament, national team, select team or exhibition"
+WHL-Sr.,WHL-Sr.,,,senior,false,WHL-Sr.,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WHSHL,WHSHL,,,school,false,WHSHL,school or prep hockey
+WIAA,WIAA,,,youth,false,WIAA,"youth: age group, bantam, midget or minor"
+WIHA,WIHA,,,senior,false,WIHA,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WIHL,WIHL,,,senior,false,WIHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WJ18-A,WJ18-A,,,tournament,false,WJ18-A,international tournament
+WJ18-B,WJ18-B,,,tournament,false,WJ18-B,international tournament
+WJAC-19,WJAC-19,,,tournament,false,WJAC-19,international tournament
+WJC-18,WJC-18,,,tournament,false,WJC-18,international tournament
+WJC-18 B,WJC-18 B,,,tournament,false,WJC-18 B,international tournament
+WJC-18 D1,WJC-18 D1,,,tournament,false,WJC-18 D1,international tournament
+WJC-18 D1A,WJC-18 D1A,,,tournament,false,WJC-18 D1A,international tournament
+WJC-18 D1B,WJC-18 D1B,,,tournament,false,WJC-18 D1B,international tournament
+WJC-18 D2,WJC-18 D2,,,tournament,false,WJC-18 D2,international tournament
+WJC-20,WJC-20,,,tournament,false,WJC-20,international tournament
+WJC-20 B,WJC-20 B,,,tournament,false,WJC-20 B,international tournament
+WJC-20 D1,WJC-20 D1,,,tournament,false,WJC-20 D1,international tournament
+WJC-20 D1A,WJC-20 D1A,,,tournament,false,WJC-20 D1A,international tournament
+WJC-20 D1B,WJC-20 D1B,,,tournament,false,WJC-20 D1B,international tournament
+WJC-20 D2,WJC-20 D2,,,tournament,false,WJC-20 D2,international tournament
+WJC-A,WJC-A,,,tournament,false,WJC-A,international tournament
+WJC-B,WJC-B,,,tournament,false,WJC-B,international tournament
+WJC-C,WJC-C,,,tournament,false,WJC-C,international tournament
+WJDHL,WJDHL,,,junior,true,WJDHL,junior
+WJrHL,WJrHL,,,junior,true,WJrHL,junior
+WKHL,WKHL,,,senior,false,WKHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WKJHL,WKJHL,,,junior,true,WKJHL,junior
+WMHA,WMHA,,,youth,false,WMHA,"youth: age group, bantam, midget or minor"
+WNDHL,WNDHL,,,senior,false,WNDHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WNSHL,WNSHL,,,senior,false,WNSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WNYHA,WNYHA,,,youth,false,WNYHA,youth
+WOHL,WOHL,,,junior,true,WOHL,Western Ontario junior B
+WOJBHL,WOJBHL,,,junior,true,WOJBHL,junior
+WPHL,WPHL,,,minor_pro,true,WPHL,Western Pennsylvania (1900s) and Western Pro (1996-2001) leagues
+WPSHL,WPSHL,,,senior,false,WPSHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+Wrigley Cup,Wrigley Cup,,,tournament,false,Wrigley Cup,"tournament, national team, select team or exhibition"
+WSI U12,WSI U12,,,tournament,false,WSI U12,international tournament
+WSI U13,WSI U13,,,tournament,false,WSI U13,international tournament
+WSI U14,WSI U14,,,tournament,false,WSI U14,international tournament
+WSI U15,WSI U15,,,tournament,false,WSI U15,international tournament
+WSI U16,WSI U16,,,tournament,false,WSI U16,international tournament
+WSJHL,WSJHL,,,junior,true,WSJHL,junior
+WSrHL,WSrHL,,,senior,false,WSrHL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WsrNDL,WsrNDL,,,senior,false,WsrNDL,"senior amateur, semi-pro, military or commercial: not one of the four levels"
+WUAA,WUAA,,,college,true,Canadian university,college or university
+WYC U15,WYC U15,,,tournament,false,WYC U15,"tournament, national team, select team or exhibition"
+X-Games,X-Games,,,tournament,false,X-Games,"tournament, national team, select team or exhibition"
+YCHL,YCHL,,,senior,false,YCHL,senior
+YOG,YOG,,,tournament,false,YOG,"tournament, national team, select team or exhibition"

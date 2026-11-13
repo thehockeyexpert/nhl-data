@@ -187,6 +187,10 @@ entries). `marts.fct_player_league_seasons` holds 622,462 rows for 23,242 people
   `Olympics`, `Sweden`; recent ones `Czechia`, `OG`, age groups (`Czechia U16`, `BEAST 16U`), and a country name can
   be a league or a national team (`Latvia`). Counting "leagues" needs a hand-checked list of which codes are leagues
   and at what level.
+- **League levels** (`reference.league_levels`, approved 2026-11-13): 1,142 codes appear before NHL debuts; several
+  codes mean different leagues in different eras (`USHL`, `WHL`, `WCHL`, `MHL`, `MPHL`, `ECHL`...), so the seed
+  has season ranges. 8 codes could not be placed (`Other`, `(none)`, `Independent`, `Ind.`, `NOHA`, `RHL`, `ACH`,
+  `OPHL` after 1950).
 - **Coverage of other leagues** is whatever the NHL lists: a missing league or season is not proof a player never
   played there.
 

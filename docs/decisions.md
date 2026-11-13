@@ -3,6 +3,21 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-13: league levels for "leagues before the NHL"
+
+**Decision (owner, 2026-11-13).** The seed `dbt/seeds/league_levels.csv` (`reference.league_levels`) gives every
+league code on the player pages that appears before an NHL debut a level; only junior, college, minor pro and major
+pro count (definition 9). The owner approved the six judgement calls:
+1. Renamed leagues count once (OHA Junior, OMJHL and OHL; Sweden and SHL...), and NCAA Division I with all its
+   conferences is one league (`league_group`).
+2. Senior amateur and semi-pro leagues do not count, the strong pre-1960s ones included.
+3. European third tiers and below do not count; second tiers count as minor pro.
+4. Under-18 club leagues are youth (not counted); under-19 and under-20 leagues are junior.
+5. Canadian junior B and C count as junior.
+6. The US national development team is not a league; its USHL and NAHL games count under those leagues.
+Codes that meant different leagues in different eras have one row per era. Eight codes are unknown (not counted).
+No cost.
+
 ## 2026-11-11: logos, headshots and photos in posts
 
 **Decision (owner, 2026-11-11).** This changes the "Public content" point of the 2026-10-14 decision. Posts may use,

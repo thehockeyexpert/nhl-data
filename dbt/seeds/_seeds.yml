@@ -201,3 +201,38 @@ seeds:
         data_tests: [not_null]
       - name: note
         description: Any difference between the source and the NHL's records.
+  - name: league_levels
+    description: >
+      Approved by the owner 2026-11-13 (docs/decisions.md). Our level for every league code on the NHL's player pages
+      that appears before a player's NHL debut, for definition 9 ("leagues before the NHL debut", owner 2026-11-11):
+      only junior, college, minor_pro and major_pro count (counts_before_nhl). Not counted: senior (amateur,
+      semi-pro, military, and European third tiers and lower), youth (under 19, bantam, midget, minor), school,
+      tournament (international tournaments, national and select teams, exhibitions) and unknown. A code that meant
+      different leagues in different eras has one row per era (from_season, to_season). league_group merges renamed
+      leagues and college conferences, so each counts once. Judgement calls are in note.
+    columns:
+      - name: league_level_key
+        description: league_abbrev, plus '@' and from_season for a code split by era.
+        data_tests: [unique, not_null]
+      - name: league_abbrev
+        description: The league code exactly as in fct_player_league_seasons.
+        data_tests: [not_null]
+      - name: from_season
+        description: First season this row applies to (8-digit ID); empty means from the start.
+      - name: to_season
+        description: Last season this row applies to; empty means to today.
+      - name: level
+        description: junior, college, minor_pro, major_pro, senior, youth, school, tournament or unknown.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [junior, college, minor_pro, major_pro, senior, youth, school, tournament, unknown]
+      - name: counts_before_nhl
+        description: True for the four levels that count under definition 9.
+        data_tests: [not_null]
+      - name: league_group
+        description: The league it counts as; renamed leagues and college conferences share one group.
+        data_tests: [not_null]
+      - name: note
+        description: What the code is, in our words, and any judgement call.

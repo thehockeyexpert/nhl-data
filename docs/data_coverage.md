@@ -147,6 +147,31 @@ Loaded 2026-11-11 from the same laptop files as the shots (no new downloads), an
     1947-48 as zero; say the data does not record them. 49,469 fighting penalties from 1947-48 to 2006-07.
   - Penalties naming no player: under 30 a season before 1967-68, about 40 to 400 a season after.
 
+## Play events (faceoffs, giveaways, takeaways, stoppages)
+
+Loaded 2026-11-13 from the laptop's play-by-play files, and nightly from then on: `raw.nhl_web__pbp_play`,
+`stg_nhl_web__pbp_plays`, `marts.fct_faceoffs`, `fct_giveaways`, `fct_takeaways`, `fct_stoppages`.
+
+- **From 2009-10 only.** Sampled games before 2009-10 hold goals, penalties and (from 1997-98) shots only.
+- **Rows (2026-11-13):** 1,298,104 faceoffs, 427,843 giveaways, 294,988 takeaways, 1,010,513 stoppages and 147,275
+  period start and end markers, in every game with play-by-play since 2009-10 except one: game 2009020714, whose
+  play-by-play holds only goals and penalties.
+- **Teams:** every faceoff winner and loser is on the team the event gives them, and every giveaway and takeaway
+  player on theirs (skaters in `fct_skater_games`; 21,609 giveaways and 570 takeaways are by goalies, checked in
+  `fct_goalie_games`). Checked 2026-11-13, no exception.
+- **Faceoff win % against the official totals** (`fct_skater_seasons.faceoff_win_pct`, regular season 2009-10 to
+  2025-26): 9,346 of 9,508 player-seasons agree within 0.05 points; 31 differ by more than 1 point. Unexplained.
+- **Giveaways and takeaways** are counted by arena scorers, so counts differ between arenas, as with hits.
+- **Stoppage reasons** as the NHL names them: goalie-stopped-after-sog, icing, offside, puck-in-netting...
+
+## Overtime rules
+
+`reference.overtime_rules` (2026-11-13). The play-by-play shows the early regular-season eras: before 1921-22 no
+game ended tied and overtime goals came as late as the 17th minute; 1921-22 to 1926-27 goals to the 20th minute and
+ties; 1927-28 goals only to the 10th minute; from 1928-29 up to four overtime goals in one game (the 10-minute period
+was played in full). Playoff overtime has always been sudden death, never with two overtime goals in a game, up to
+6 overtime periods.
+
 ## Shootout totals (skaters)
 
 Loaded 2026-11-11: the stats API's skater shootout report, one response per regular season from 2005-06 (the first

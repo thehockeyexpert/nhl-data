@@ -3,6 +3,23 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-13: play events (faceoffs, giveaways, takeaways, stoppages) and overtime rules
+
+**Decision (owner, 2026-11-13).** Load the play-by-play's faceoffs, giveaways, takeaways, stoppages and period start
+and end markers into a raw table of their own, `raw.nhl_web__pbp_play`, one row per event exactly as received, from
+the files already on the laptop (no downloads), and nightly from then on with the existing play-by-play job. The NHL
+records these from 2009-10. A table of its own because staging keeps each game's newest load per table: adding them
+to `nhl_web__pbp_event` for games already loaded would hide those games' hits and penalties.
+- **Estimate, before the load:** about 3.1 million rows, about 1 GB of JSON text before compression, roughly 0.2 to
+  0.4 GB in MotherDuck on 1.3 GB; about 2,000 rows a night. Expected $0; the owner checks the Billing page.
+- **Loaded:** 3.18 million rows in about a minute from 22,195 files; 13 recent games fetched to complete the laptop's
+  2026-27 files (the usual laptop sync).
+
+**Decision (owner, 2026-11-13).** Seed `overtime_rules`: overtime by era for the regular season and the playoffs. The
+eras before 1928-29 and the start of the 10-minute full-period overtime rest on what the play-by-play shows
+(marked observed); later rules on NHL.com first. 4-on-4 overtime started in 1999-2000 (NHL.com; the owner).
+Sources: NHL.com before Wikipedia (owner, 2026-11-13).
+
 ## 2026-11-13: league levels for "leagues before the NHL"
 
 **Decision (owner, 2026-11-13).** The seed `dbt/seeds/league_levels.csv` (`reference.league_levels`) gives every

@@ -639,6 +639,70 @@ models:
       - name: population
         description: The GeoNames population of the matched place (today's figure, not at the player's birth).
 
+  - name: fct_faceoffs
+    description: >
+      One row per faceoff from the play-by-play, regular season and playoffs, from 2009-10; none earlier (docs/data_coverage.md, "Play events"). winning_player_id and winning_team_id won it; zone_code is from the winner's point of view. Faceoff wins and losses per player come from here. Incremental.
+    columns:
+      - name: faceoff_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
+  - name: fct_giveaways
+    description: >
+      One row per giveaway from the play-by-play, regular season and playoffs, from 2009-10; none earlier. player_id gave the puck away for team_id. Counted by arena scorers, so counts differ between arenas. Incremental.
+    columns:
+      - name: giveaway_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
+  - name: fct_takeaways
+    description: >
+      One row per takeaway from the play-by-play, regular season and playoffs, from 2009-10; none earlier. player_id took the puck away for team_id. Counted by arena scorers, so counts differ between arenas. Incremental.
+    columns:
+      - name: takeaway_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
+  - name: fct_stoppages
+    description: >
+      One row per stoppage of play from the play-by-play, regular season and playoffs, from 2009-10; none earlier, with stoppage_reason (icing, offside...) and stoppage_secondary_reason (a TV timeout...). Incremental.
+    columns:
+      - name: stoppage_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+
   - name: fct_hits
     description: >
       One row per hit from the play-by-play, regular season and playoffs, from 2009-10; none earlier (docs/data_coverage.md,

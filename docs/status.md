@@ -173,6 +173,11 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Play events and overtime rules (2026-11-13).** Faceoffs, giveaways, takeaways, stoppages and period markers
+  from 2009-10 (3.18 million rows, back-loaded from the laptop files in about a minute, nightly from then on):
+  `fct_faceoffs`, `fct_giveaways`, `fct_takeaways`, `fct_stoppages`; 51 of 51 play-by-play models and tests pass;
+  every event's team checks out, faceoff win % agrees with the official totals for 98% of player-seasons. Seed
+  `overtime_rules` (owner approved; NHL.com first, early eras observed) and the Dusseldorf arena's coordinates.
 - **Blind test and fixes (2026-11-13).** A fresh agent with only the MotherDuck tools answered 20 golden questions
   from the guide alone, all correct or correctly caveated (fights before 1947-48 "not recorded"), in 36 calls. It
   found a model error: `fct_team_games` marked 526 playoff overtime losses (1999-00 on) as OTL with a point; now a
@@ -314,5 +319,4 @@ Last updated: 2026-11-13
 ## Not started
 
 - Team game statistics (power play, penalties per team game), shifts, game duration.
-- Play-by-play events other than shots, hits and penalties: giveaways, takeaways, faceoffs, stoppages.
 - Travel and road-trip tables (venue coordinates and `dim_team_home_cities` are in place).

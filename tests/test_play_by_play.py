@@ -11,12 +11,15 @@ from ingest.schedule import GAME_TABLE
 
 SHOT_TABLE = f"raw.{play_by_play.SHOT_TABLE}"
 EVENT_TABLE = f"raw.{play_by_play.EVENT_TABLE}"
-S, E = play_by_play.SHOT_TABLE, play_by_play.EVENT_TABLE
+PLAY_TABLE = f"raw.{play_by_play.PLAY_TABLE}"
+S, E, P = play_by_play.SHOT_TABLE, play_by_play.EVENT_TABLE, play_by_play.PLAY_TABLE
 
 
 def made_up_game(game_id):
-    """A made-up play-by-play response: one of each shot event, a hit, a penalty and two events we don't load."""
-    kinds = ["faceoff", "shot-on-goal", "missed-shot", "blocked-shot", "goal", "hit", "penalty", "takeaway"]
+    """A made-up play-by-play response: one of each shot event, a hit, a penalty, the six play events and two events
+    we don't load."""
+    kinds = ["faceoff", "shot-on-goal", "missed-shot", "blocked-shot", "goal", "hit", "penalty", "takeaway",
+             "giveaway", "stoppage", "period-start", "period-end", "delayed-penalty", "game-end"]
     return json.dumps({"id": game_id, "plays": [{"eventId": n, "typeDescKey": kind} for n, kind in enumerate(kinds)]})
 
 
@@ -55,7 +58,9 @@ def test_only_finished_regular_season_and_playoff_games(con):
 def test_files_are_saved_compressed_and_only_shots_hits_and_penalties_are_loaded(con, tmp_path):
     client = FakeWeb()
     counts = play_by_play.run(20252026, client, con, verbose=False, folder=tmp_path)
-    assert counts == {S: [3, 12], E: [0, 6]}
+    assert counts == {S: [3, 12], E: [0, 6], P: [0, 18]}
+    plays = con.execute(f"select distinct event ->> 'typeDescKey' from {PLAY_TABLE} order by 1").fetchall()
+    assert [kind for (kind,) in plays] == ["faceoff", "giveaway", "period-end", "period-start", "stoppage", "takeaway"]
     others = con.execute(f"select distinct event ->> 'typeDescKey' from {EVENT_TABLE} order by 1").fetchall()
     assert [kind for (kind,) in others] == ["hit", "penalty"]
     with gzip.open(tmp_path / "20252026" / "2025020001.json.gz", "rt", encoding="utf-8") as file:
@@ -69,7 +74,7 @@ def test_files_are_saved_compressed_and_only_shots_hits_and_penalties_are_loaded
 def test_a_rerun_makes_no_requests_and_adds_nothing(con, tmp_path):
     play_by_play.run(20252026, FakeWeb(), con, verbose=False, folder=tmp_path)
     client = FakeWeb()
-    assert play_by_play.run(20252026, client, con, verbose=False, folder=tmp_path) == {S: [0, 0], E: [0, 0]}
+    assert play_by_play.run(20252026, client, con, verbose=False, folder=tmp_path) == {S: [0, 0], E: [0, 0], P: [0, 0]}
     assert client.urls == []
     assert con.execute(f"select count(*) from {SHOT_TABLE}").fetchone()[0] == 12
 
@@ -79,7 +84,7 @@ def test_a_changed_file_is_loaded_again(con, tmp_path):
     changed = json.dumps({"id": 2025020001, "plays": [{"eventId": 9, "typeDescKey": "goal"}]})
     with gzip.open(tmp_path / "20252026" / "2025020001.json.gz", "wt", encoding="utf-8") as file:
         file.write(changed)
-    assert play_by_play.run(20252026, FakeWeb(), con, verbose=False, folder=tmp_path) == {S: [0, 1], E: [0, 0]}
+    assert play_by_play.run(20252026, FakeWeb(), con, verbose=False, folder=tmp_path) == {S: [0, 1], E: [0, 0], P: [0, 0]}
 
 
 def test_nightly_fetches_new_games_and_refetches_recent_ones(con, tmp_path):
@@ -90,7 +95,7 @@ def test_nightly_fetches_new_games_and_refetches_recent_ones(con, tmp_path):
         20252026, client, con, days=3, today=date(2025, 10, 10), verbose=False, folder=tmp_path / "runner")
     # New: the playoff game. Recent (Oct 7 to 9): both October games, fetched again but unchanged, so nothing added.
     assert sorted(url.split("/")[-2] for url in client.urls) == ["2025020001", "2025020002", "2025030411"]
-    assert counts == {S: [3, 4], E: [0, 2]}
+    assert counts == {S: [3, 4], E: [0, 2], P: [0, 6]}
 
 
 def test_nightly_fetches_again_only_the_days_before_today(con, tmp_path):
@@ -106,3 +111,17 @@ def test_the_folder_must_be_outside_the_repo(monkeypatch):
     monkeypatch.setenv("NHL_PBP_DIR", str(play_by_play.REPO_ROOT / "data" / "play_by_play"))
     with pytest.raises(RuntimeError, match="outside the repo"):
         play_by_play.files_folder()
+
+
+def test_play_events_load_from_the_files_with_no_downloads(con, tmp_path):
+    # Files on disk from an earlier run; the play table starts empty, as before the 2026-11-13 back-load.
+    play_by_play.run(20252026, FakeWeb(), con, verbose=False, folder=tmp_path)
+    con.execute(f"delete from {PLAY_TABLE}")
+    assert play_by_play.load_plays_from_files(con, 20252026, folder=tmp_path) == 18
+    assert play_by_play.load_plays_from_files(con, 20252026, folder=tmp_path) == 0
+    # Hits and penalties are untouched.
+    assert con.execute(f"select count(*) from {EVENT_TABLE}").fetchone()[0] == 6
+
+
+def test_play_events_from_files_skip_games_not_on_disk(con, tmp_path):
+    assert play_by_play.load_plays_from_files(con, 20252026, folder=tmp_path) == 0

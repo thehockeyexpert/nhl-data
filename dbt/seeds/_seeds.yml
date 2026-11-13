@@ -283,3 +283,40 @@ seeds:
         description: Last season of the era; empty for the current era.
       - name: note
         description: What else changes in the era, in our words.
+  - name: overtime_rules
+    description: >
+      NHL overtime rules by era (owner approved 2026-11-13), for team minutes (D19) and overtime questions: one row per
+      game type (2 regular season, 3 playoffs) and era. basis says whether a row rests on a written source (NHL.com
+      first) or on what the play-by-play shows (observed: overtime goal times, ties, several overtime goals in a game).
+      Join on game_type and season between from_season and coalesce(to_season, 99999999).
+    columns:
+      - name: game_type
+        description: 2 regular season, 3 playoffs.
+        data_tests: [not_null]
+      - name: from_season
+        description: First season of the era.
+        data_tests: [not_null]
+      - name: to_season
+        description: Last season of the era; empty for the current one.
+      - name: ot_period_minutes
+        description: Length of one overtime period; 0 when there was no overtime; empty when not known.
+      - name: is_sudden_death
+        description: True when the first goal ends the game; false when the period was played in full.
+      - name: max_ot_periods
+        description: Overtime periods allowed; empty means until a goal.
+      - name: skaters
+        description: Skaters a side in overtime, at even strength.
+      - name: has_shootout
+        description: True when a shootout followed a scoreless overtime.
+        data_tests: [not_null]
+      - name: basis
+        description: source, observed, or source and observed.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [source, observed, source and observed]
+      - name: source
+        description: Pages read, NHL.com first, or the play-by-play check.
+      - name: note
+        description: What the evidence shows, in our words.

@@ -247,6 +247,25 @@ models:
               arguments:
                 values: [hit, penalty]
 
+  - name: stg_nhl_web__pbp_plays
+    description: >
+      One row per faceoff, giveaway, takeaway, stoppage, or period start or end from the play-by-play, regular season
+      and playoffs, newest version of each game; recorded from 2009-10. Incremental: a game loaded again replaces all
+      its earlier rows.
+    columns:
+      - name: event_key
+        description: game_id and event_id joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: event_type
+        description: The event as the NHL names it.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [faceoff, giveaway, takeaway, stoppage, period-start, period-end]
+
   - name: stg_nhl_web__player_season_totals
     description: >
       One row per season-total entry of a player page (season, league, team, game type), from the newest version of

@@ -10,8 +10,12 @@ Two steps, decided by the owner on 2026-11-10 (docs/decisions.md):
    The folder is the environment variable NHL_PBP_DIR, or nhl-data-files/play_by_play in your home folder.
 2. Load: the shot events (shots on goal, missed shots, blocked shots, goals) of the season's files are gathered on
    this computer into one Parquet file next to them, then bulk-loaded into raw.nhl_web__pbp_shot in a single
-   statement; hits and penalties go the same way into raw.nhl_web__pbp_event (decided 2026-11-11). Everything else
-   stays in the files. A response already loaded is not added again.
+   statement; hits and penalties go the same way into raw.nhl_web__pbp_event (decided 2026-11-11), and faceoffs,
+   giveaways, takeaways, stoppages and period start and end markers into raw.nhl_web__pbp_play (decided 2026-11-13;
+   recorded from 2009-10). Everything else stays in the files. A response already loaded is not added again.
+
+From the files only (--plays-from-files, the laptop): load the play events of a season's games already on disk,
+with no downloads. Used once to back-load them; reruns add nothing.
 
 Whole season (the laptop): every finished game whose file is not on disk yet is downloaded, so a stopped run can be
 restarted, and a rerun fills the local archive with games the nightly run loaded.
@@ -44,6 +48,10 @@ SHOT_TABLE = "nhl_web__pbp_shot"
 SHOT_EVENTS = ("shot-on-goal", "missed-shot", "blocked-shot", "goal")
 EVENT_TABLE = "nhl_web__pbp_event"
 OTHER_EVENTS = ("hit", "penalty")  # loaded into EVENT_TABLE
+PLAY_TABLE = "nhl_web__pbp_play"
+# Loaded into PLAY_TABLE, a table of its own: staging keeps each game's newest load per table, so adding these to
+# EVENT_TABLE for games already loaded would hide those games' hits and penalties.
+PLAY_EVENTS = ("faceoff", "giveaway", "takeaway", "stoppage", "period-start", "period-end")
 
 # Regular season and playoffs.
 GAME_TYPES = (2, 3)
@@ -156,14 +164,27 @@ def gather_events(season, game_ids, folder, table, kinds):
 
 
 def load(client, con, season, game_ids, folder, verbose, refetch=()):
-    """Download what is needed of game_ids, then load their shots, hits and penalties.
+    """Download what is needed of game_ids, then load their shots, hits and penalties, and play events.
     Returns {table: [requests, rows added]}; the requests are counted once, under the shot table."""
     requests = download(client, season, game_ids, folder, verbose, refetch)
-    added = events = 0
+    added = events = plays = 0
     if game_ids:
         added = append_events_file(con, SHOT_TABLE, gather_shots(season, game_ids, folder))
         events = append_events_file(con, EVENT_TABLE, gather_events(season, game_ids, folder, EVENT_TABLE, OTHER_EVENTS))
-    return {SHOT_TABLE: [requests, added], EVENT_TABLE: [0, events]}
+        plays = append_events_file(con, PLAY_TABLE, gather_events(season, game_ids, folder, PLAY_TABLE, PLAY_EVENTS))
+    return {SHOT_TABLE: [requests, added], EVENT_TABLE: [0, events], PLAY_TABLE: [0, plays]}
+
+
+def load_plays_from_files(con, season, folder=None):
+    """Load the play events of the season's finished games whose files are already on disk. No downloads.
+    Returns the number of rows added."""
+    folder = folder or files_folder()
+    season_folder = folder / str(season)
+    on_disk = [game_id for game_id in sorted(final_games(con, season))
+               if (season_folder / f"{game_id}.json.gz").exists()]
+    if not on_disk:
+        return 0
+    return append_events_file(con, PLAY_TABLE, gather_events(season, on_disk, folder, PLAY_TABLE, PLAY_EVENTS))
 
 
 def run(season, client, con, verbose=True, folder=None):
@@ -190,10 +211,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--season", type=season_id, required=True, help="for example 20252026")
     parser.add_argument("--recent-days", type=int, help="nightly: new games, plus the last N days' games fetched again")
+    parser.add_argument("--plays-from-files", action="store_true",
+                        help="load the play events of games already on disk, with no downloads")
     args = parser.parse_args()
 
     started = time.monotonic()
     con = connect()
+    if args.plays_from_files:
+        try:
+            plays = load_plays_from_files(con, args.season)
+            print(f"  {args.season}: new play rows {plays}, {time.monotonic() - started:.0f} s")
+        finally:
+            con.close()
+        return
     client = NhlApiClient()
     try:
         if args.recent_days:
@@ -203,9 +233,10 @@ def main():
             counts = run(args.season, client, con)
         requests, added = counts[SHOT_TABLE]
         events = counts[EVENT_TABLE][1]
+        plays = counts[PLAY_TABLE][1]
         if not args.recent_days:
-            log_season_done(con, JOB, args.season, requests, added + events)
-        print(f"  requests {requests}, new shot rows {added}, new hit and penalty rows {events}, "
+            log_season_done(con, JOB, args.season, requests, added + events + plays)
+        print(f"  requests {requests}, new shot rows {added}, new hit and penalty rows {events}, new play rows {plays}, "
               f"{time.monotonic() - started:.0f} s")
     finally:
         client.close()

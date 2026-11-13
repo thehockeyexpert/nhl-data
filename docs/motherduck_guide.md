@@ -35,6 +35,9 @@ estimate it from other tables.
   MAJ, MIS, GAM, MAT, BEN, PS), `penalty_minutes`. `is_fight`: one per player per fight, labelled only from 1947-48.
 - `fct_hits`: one row per hit, from 2009-10. `hitting_player_id` threw it, `hittee_player_id` took it. Counted by
   arena scorers, so counts differ between arenas.
+- From 2009-10: `fct_faceoffs` (`winning_player_id`, `losing_player_id`, teams, zone: faceoff wins and losses),
+  `fct_giveaways` and `fct_takeaways` (`player_id`, `team_id`; arena-counted, goalies included), `fct_stoppages`
+  (`stoppage_reason`: icing, offside...).
 - `fct_skater_shootouts`: shootout attempts, goals, game-deciding goals per skater per regular season, from 2005-06.
   Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `fct_player_league_seasons`: one row per player, season, league, team and game type in every league on the
@@ -60,13 +63,14 @@ estimate it from other tables.
 - `dim_team_season`: conference and division per team per regular season. Join on `team_id` and `season`.
 - `dim_team_home_cities`: each team's home building and city per era (most home games each season), with the
   building's coordinates for travel. `home_city` is the building's municipality (Inglewood, Uniondale).
-- `dim_seasons` (season facts and rules), `dim_games` (date, type, teams, venue).
+- `dim_seasons` (season facts and rules), `dim_games` (date, type, teams, venue). `reference.overtime_rules`:
+  overtime length, sudden death or not, skaters and shootout by era (game_type 2 or 3).
 - `fct_draft_picks` (1963 on), `fct_award_results` (`is_winner`; finalists also listed; Stanley Cup rows name every
   player engraved), `dim_trophies`, `fct_playoff_series` (`winner_team_id`, `loser_team_id`, `is_final_round`;
   `has_winner` false for the unfinished 1919 Final), `bridge_playoff_series_games`.
 - `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
-**Not loaded, never estimate:** giveaways, takeaways, faceoff events, stoppages, shifts, zone starts, team game
+**Not loaded, never estimate:** shifts, zone starts, team game
 statistics, game duration, expected goals, Game Score. Travel distances are not stored. Compute them (D20) as the
 great-circle distance between the arenas of a team's consecutive regular-season games (`fct_games.venue_name` joins
 `reference.venues.venue_name` for coordinates), from the home arena (`dim_team_home_cities`) to a season-opening road
@@ -76,7 +80,8 @@ game and back home after a season-ending one.
 - Strength split of skater scoring (even, power play, short-handed) 1933-34; goalie shots and saves 1955-56; skater
   shots and plus-minus 1959-60; ice time and faceoffs 1997-98.
 - Play-by-play: primary and secondary assists all history (`fct_shots`, not in the totals tables); fights 1947-48;
-  shots on goal 1997-98; hits, shot attempts and goal strength 2009-10 (earlier power-play goals: skater totals).
+  shots on goal 1997-98; hits, faceoff events, giveaways, takeaways, stoppages, shot attempts and goal strength
+  2009-10 (earlier power-play goals: skater totals).
 - Preseason is complete only from 2005-06. Ties up to 2003-04 (`is_tie`); shootouts from 2005-06.
 - 1917-18 and 2019-20 are unbalanced (a withdrawn team; the pandemic).
 

@@ -43,6 +43,16 @@ seeds:
         first_day: date
         last_day: date
         is_official: boolean
+    overtime_rules:
+      +column_types:
+        game_type: integer
+        from_season: integer
+        to_season: integer
+        ot_period_minutes: integer
+        is_sudden_death: boolean
+        max_ot_periods: integer
+        skaters: integer
+        has_shootout: boolean
     nhl_eras:
       +column_types:
         era_id: integer

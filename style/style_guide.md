@@ -1,4 +1,4 @@
-# Instagram post style: Fresh Ice Studio Edition, six-part story carousels
+# Instagram post style: Fresh Ice Studio Edition, story carousels
 
 Hand this folder to Claude Code. `style.json` has every value below in machine-readable form.
 Visual reference: https://claude.ai/artifact/VZMyeGCYTzSYfj4SVykEQU (team mockups) and https://claude.ai/artifact/3gyPGiDVF6aXFy2LvYtFNN (chart types).
@@ -29,7 +29,11 @@ Reference: https://claude.ai/artifact/9EWfk3pyxgcp4YMmzZXwLR, and `story_referen
 
 **Frame (overrides the Studio Edition frame):** margins are 80 px left and right. There is NO header label, NO slide counter, NO hairlines at the top or bottom, and NO source line. The only fixed element is the handle, at the bottom right (x = 1000, right-aligned, y = 1290, Barlow Condensed SemiBold 24 px, uppercase, muted). The NHL credit (data, logos and headshots) goes in the post caption or comments, not on the image. Panels and full-bleed backgrounds run to the edges of the canvas.
 
-**Six slides, always in this order.** Every post tells one story. Skip a slide only if there's no honest data for it.
+**3 to 20 slides, in the order the story needs.** Every post tells one story; how to write it (the arc, hooks,
+which chart answers which question, the ending) is in `story_playbook.md`. Any slide type can come anywhere and
+repeat. Cut any slide that has no honest data or doesn't move the story.
+
+The original six types:
 | # | Role | Treatment | Purpose |
 |---|---|---|---|
 | A | Hook | Full-bleed navy, a large faint half-rink drawing, a small accent kicker, and a three-line headline (150 px) whose last line is in the accent | Create intrigue |
@@ -39,14 +43,27 @@ Reference: https://claude.ai/artifact/9EWfk3pyxgcp4YMmzZXwLR, and `story_referen
 | E | Turning point | The "how" slide. A stat column on the left (big numbers with two-line labels and hairlines, one number in the accent) and a half-rink diagram on the right, with no closing paragraph. Arrows or markers on the rink are labelled "ILLUSTRATION, NOT TRACKED PASSES" unless they come from real shot data | Explain why |
 | F | Conclusion | A small kicker, a decisive headline (190 px, second line in the accent), one line of context, a hairline, then a question (96 px) and "Tell us in the comments." | Encourage discussion |
 
-**Light and dark:** "mixed" is the default. A, B and F are dark, and C, D and E are light. Also support all-light and all-dark.
+Further types (added 2026-11-13), in the same frame, fonts and palette:
+| Type | Treatment | Purpose |
+|---|---|---|
+| Statement | One sentence, 1 to 3 lines at the hook's 150 px, the last line in the accent; an optional small muted kicker; centred a little above the middle | The take or the verdict |
+| Question | The conclusion's question (96 px, 1 to 3 lines) and call (34 px, muted), alone | The closing question when the verdict is its own slide |
+| Guess | A kicker in the accent, the question (96 px), then 3 or 4 options as large rows lettered A to D with hairlines; no answer shown | Re-hook: a guess makes people swipe |
+| Leaderboard | The Studio Edition leaderboard under the story frame's title block; the subject's rank, value and bar in the accent; optionally the top three, a gap marker and the subject at its real rank | Where they rank |
+| Distribution | Every qualifying player or team as a grey dot on one axis (a beeswarm), the subject's dot larger, in the accent and labelled; an optional dashed average line | How unusual it is |
+| Shot map | A half rink drawn in plain ink with real shot locations (unblocked attempts) from the play-by-play, all attacking the same net; shots in ink at low opacity, goals in the accent; a small count line at the bottom left. No illustration label: it is real data | Where on the ice |
+
+
+**Light and dark:** "mixed" is the default. Hook, reveal, conclusion, statement, question and guess are dark;
+comparison, trend, turning point, leaderboard, distribution and shot map are light (`style.json`, `story.mixed`).
+Also support all-light and all-dark.
 
 **Rink drawing:** a half rink drawn to real proportions (85 x 100 ft): boards, red centre and goal lines, blue line, centre circle, two end-zone faceoff circles and the crease. On the hook it is faint (14 to 16% opacity) and sits behind the headline, clear of the handle.
 
 **Writing rules**
 - Every number comes from a query, saved under `facts:` in the carousel YAML and re-checked on render.
 - No claims that aren't in the data, such as tactics or who plays on which unit.
-- Headlines are short and declarative, and the question on slide F has to be something people can answer in the comments.
+- Headlines are short and declarative, and the closing question (conclusion or question slide) has to be something people can answer in the comments.
 - Logos and headshots are optional extras (see **NHL logos and headshots** below). The typography and the data stay the main visual.
 - **As clean as possible.** Every piece of text has to add something new. Never repeat a fact already on the slide: a label and a sentence must not say the same thing, a question isn't repeated as a graphic, and a closing paragraph doesn't restate the stat column. When in doubt, cut it.
 

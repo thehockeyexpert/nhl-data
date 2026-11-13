@@ -60,15 +60,16 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `reels/`: one YAML file per Reel (a game-by-game race, rendered as an MP4 by `instagram/race.py`). See `reels/README.md`.
 
 ## Instagram posts
-- **Every post is a six-slide story carousel** ("Story carousels" in `style/style_guide.md`): hook, reveal,
-  comparison, trend, turning_point, conclusion, in that order. A slide is skipped only when there's no honest data for it.
+- **Every post is a story carousel of 3 to 20 slides** ("Story carousels" in `style/style_guide.md`; slide types in
+  `carousels/README.md`), written by `style/story_playbook.md`: the arc, hooks and chart choice. Types may come in any
+  order and repeat; cut any slide without honest data.
 - The only fixed element on a slide is the handle, bottom right: no header label, slide counter, hairline frame or
   source line. The NHL credit goes in the caption: "Data: NHL.", or "Data, logos and headshots: NHL." when an NHL logo
   or headshot is used, plus every photo's credit.
-- Mixed mode by default (hook, reveal, conclusion dark; the rest light); `--mode light|dark` overrides. The accent is
-  the subject's team or country, with the contrast rule.
+- Mixed mode by default (hook, reveal, conclusion, statement, question and guess dark; the rest light);
+  `--mode light|dark` overrides. The accent is the subject's team or country, with the contrast rule.
 - **Drafting a story** (`style/new_post_prompt.md`): first test the story against MotherDuck and say so if it doesn't
-  hold. Then draft `carousels/<name>.yml` with all six slides and a caption crediting "Data: NHL", and show the owner
+  hold. Then draft `carousels/<name>.yml` with the slides the story needs and a caption crediting "Data: NHL", and show the owner
   the text before rendering. Every number comes from a query you ran, saved under `facts:` with dates pinned, and is
   re-checked on render. No claims that aren't in the data.
 - Every piece of text must add something new; never repeat a fact already on the slide. When in doubt, cut it.

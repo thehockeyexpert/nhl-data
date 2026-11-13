@@ -233,7 +233,8 @@
    "turning_point",
    "conclusion",
    "statement",
-   "question"
+   "question",
+   "guess"
   ],
   "default_mode": "mixed",
   "mixed": {
@@ -244,7 +245,8 @@
    "turning_point": "light",
    "conclusion": "dark",
    "statement": "dark",
-   "question": "dark"
+   "question": "dark",
+   "guess": "dark"
   },
   "comparison_panel": {
    "light": "#E4EAF0",

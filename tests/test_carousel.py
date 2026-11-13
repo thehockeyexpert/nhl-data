@@ -82,6 +82,19 @@ def test_a_question_slide_has_1_to_3_lines_and_an_optional_call():
     assert carousel.slide_mode(story(), "question") == "dark"
 
 
+def test_a_guess_has_a_1_or_2_line_question_and_3_or_4_options():
+    good = {"type": "guess", "kicker": "GUESS FIRST", "question": ["How many?"], "options": [41, 48, 55]}
+    assert carousel.validate(story(slides=SIX[:2] + [good])) == []
+    assert carousel.validate(story(slides=SIX[:2] + [{**good, "options": ["A", "B", "C", "D"]}])) == []
+    for bad in ([1, 2], [1, 2, 3, 4, 5], "48", [1, "", 3]):
+        problems = carousel.validate(story(slides=SIX[:2] + [{**good, "options": bad}]))
+        assert "guess: options must be a list of 3 or 4 answers" in problems
+    problems = carousel.validate(story(slides=SIX[:2] + [{**good, "question": ["1", "2", "3"]}]))
+    assert "guess: question must be a list of 1 to 2 lines of text" in problems
+    assert "guess: unknown key 'answer'" in carousel.validate(story(slides=SIX[:2] + [{**good, "answer": 48}]))
+    assert carousel.slide_mode(story(), "guess") == "dark"
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

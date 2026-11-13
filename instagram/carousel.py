@@ -37,7 +37,7 @@ matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as 
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
 SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement",
-               "question"]
+               "question", "guess"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -53,10 +53,11 @@ FIELDS = {
     "conclusion": ({"kicker", "headline"}, {"context", "question", "call"}),
     "statement": ({"headline"}, {"kicker"}),
     "question": ({"question"}, {"call"}),
+    "guess": ({"question", "options"}, {"kicker"}),
 }
 
 # Fields written as a list of 1 to N lines of text: {(slide type, field): N}.
-LINE_FIELDS = {("statement", "headline"): 3, ("question", "question"): 3}
+LINE_FIELDS = {("statement", "headline"): 3, ("question", "question"): 3, ("guess", "question"): 2}
 
 
 # ---- Reading and checking a carousel file ----
@@ -113,6 +114,11 @@ def validate(data):
             lines = slide[field]
             if not (isinstance(lines, list) and 1 <= len(lines) <= most and all(isinstance(x, str) and x for x in lines)):
                 problems.append(f"{kind}: {field} must be a list of 1 to {most} lines of text")
+        if slide["type"] == "guess" and "options" in slide:
+            options = slide["options"]
+            if not (isinstance(options, list) and 3 <= len(options) <= 4
+                    and all(isinstance(o, (str, int, float)) and str(o) for o in options)):
+                problems.append("guess: options must be a list of 3 or 4 answers")
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
         if "image" in slide:
@@ -607,8 +613,33 @@ def question(cv, slide, ctx):
     cv.text(M, first_y + (len(lines) - 1) * gap + 80, 34, "S600", c.mut, call)
 
 
+def guess(cv, slide, ctx):
+    """A quiz: an optional kicker (the slide's one accent, e.g. "GUESS FIRST"), the question in 1 or 2 lines at
+    96 px, then 3 or 4 options as large rows lettered A to D (letters muted, answers in ink, hairlines between
+    rows). The answer is never shown: the next slide reveals it."""
+    c = cv.c
+    if slide.get("kicker"):
+        cv.text(M, 230, 40, "C700", c.accent, slide["kicker"], spacing=4)
+    lines = slide["question"]
+    size = min(96, 96 * (W - 2 * M) / max(cv.width(line, 96, "C700") for line in lines))
+    for i, line in enumerate(lines):
+        cv.text(M, 360 + i * 104, size, "C700", c.ink, line)
+    options = [str(option) for option in slide["options"]]
+    text_x = M + 110
+    room = W - M - text_x
+    option_size = min(56, min(56 * room / cv.width(option, 56, "S600") for option in options))
+    top = 360 + (len(lines) - 1) * 104 + 110  # the hairline above the first row
+    step = 150
+    cv.hairline(M, W - M, top)
+    for i, (letter, option) in enumerate(zip("ABCD", options)):
+        baseline = top + 95 + i * step
+        cv.text(M, baseline + 4, 72, "C700", c.mut, letter)
+        cv.text(text_x, baseline, option_size, "S600", c.ink, option)
+        cv.hairline(M, W - M, top + (i + 1) * step)
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
-        "conclusion": conclusion, "statement": statement, "question": question}
+        "conclusion": conclusion, "statement": statement, "question": question, "guess": guess}
 
 
 # ---- Rendering ----

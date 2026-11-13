@@ -54,9 +54,9 @@ def test_image_field_problems():
     good = {"type": "photo", "commons": "File:X.jpg", "layout": "panel", "side": "left", "focus": [0.4, 0.5]}
     assert carousel.image_problems(good) == []
     assert carousel.image_problems({"type": "photo", "file": "x.jpg", "credit": "Photo: me"}) == []
-    problems = carousel.image_problems({"type": "headshot", "commons": "X.jpg", "file": "y.jpg", "layout": "tile",
+    problems = carousel.image_problems({"type": "logo", "commons": "X.jpg", "file": "y.jpg", "layout": "tile",
                                         "side": "top", "focus": [2, 0], "size": 3})
-    for expected in ("unknown key 'size'", "type must be photo (headshots and logos are not supported yet)",
+    for expected in ("unknown key 'size'", "type must be photo or headshot",
                      "give either commons (a Wikimedia Commons file) or file (a photo in assets/nhl/photos/)",
                      "commons must be a Commons file title starting with File:", "layout must be panel or cutout",
                      "side must be left or right", "focus must be two numbers from 0 to 1: [across, down]"):
@@ -66,14 +66,16 @@ def test_image_field_problems():
         {"type": "photo", "commons": "File:X.jpg", "credit": "c"})
 
 
-def test_only_the_hook_takes_an_image(monkeypatch):
+def test_photos_go_on_the_hook_only_and_the_reveal_takes_a_headshot(monkeypatch):
     from tests.test_carousel import SIX, story
 
     slides = [dict(s) for s in SIX]
     slides[0]["image"] = {"type": "photo", "commons": "File:X.jpg"}
     assert carousel.validate(story(slides=slides)) == []
     slides[1]["image"] = {"type": "photo", "commons": "File:X.jpg"}
-    assert "reveal: unknown key 'image'" in carousel.validate(story(slides=slides))
+    assert "reveal: image: only a headshot can go on the reveal" in carousel.validate(story(slides=slides))
+    slides[2]["image"] = {"type": "photo", "commons": "File:X.jpg"}
+    assert "comparison: unknown key 'image'" in carousel.validate(story(slides=slides))
 
 
 def test_photo_credits_are_added_to_the_caption_once():

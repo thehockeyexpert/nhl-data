@@ -104,8 +104,12 @@ on the owner's laptop.
 - **Strength (`situation_code`)** is on non-shootout goals only from 2009-10: none of the 2005-06 to 2008-09 goals
   have it (checked 2026-11-13). For power-play goals before then use `fct_skater_seasons` or `fct_skater_games`.
 - **Before 2007-08 (loaded 2026-11-11 to 2026-11-12, from 1917-18; checked 2026-11-13):** 876,659 shot events in
-  45,648 of the 45,810 finished regular-season and playoff games. The 162 games without any are all 0-0, so the
-  play-by-play simply has no goal in them.
+  45,648 of the 45,810 finished regular-season and playoff games. Of the 162 games without any, 160 ended 0-0, so
+  there is no goal to record. The other two are 1-0 wins over the Montreal Wanderers (1918-01-02 at Montreal,
+  1918-01-05 at Toronto) whose play-by-play response holds no events at all (checked 2026-11-13). They are the two
+  games the Wanderers' withdrawal turned into wins (see the 1917-18 exception for `regular_season_game_count`); the
+  empty play-by-play fits games that were not played, but no source says so. Check `shot_goals_present` (every game
+  with a goal outside a shootout has goal rows) lists them as its only exceptions.
   - **Goals match the scores in every game of every season** (check `shot_goals_match_score`). Every goal has a
     scorer, and every scorer's team matches their team in that game in `fct_skater_games` (285,198 goals, no
     exception).

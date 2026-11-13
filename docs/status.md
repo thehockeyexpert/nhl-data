@@ -173,6 +173,11 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Check `shot_goals_present` (2026-11-13):** every finished regular-season or playoff game with a goal outside a
+  shootout has goal rows in the play-by-play (`shot_goals_match_score` only sees games with shot rows). Proven on a
+  throwaway in-memory copy: fails for a game with goals and no rows, a game three days old in a season in progress
+  and a playoff shootout tied in play; passes for a 1-0 shootout, a game played today, preseason, 0-0, a game with
+  goal rows and an unfinished game. Two approved exceptions: the 1918 Wanderers games.
 - **`dim_team_home_cities` (2026-11-13):** each team's home building and city per era, built from the games (98 eras,
   60 team identities, 55 cities, all with coordinates); 9 of 9 tests pass. A model, not a seed, so no NHL extract
   sits in the repo and moves appear by themselves.

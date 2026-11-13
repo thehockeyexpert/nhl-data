@@ -1038,6 +1038,30 @@ shot_goals_match_score as (
 
 ),
 
+shot_goals_present as (
+
+    -- Every finished regular-season or playoff game with a goal outside a shootout has goal rows in the play-by-play.
+    -- shot_goals_match_score only sees games with at least one shot row, so a game whose play-by-play is empty or
+    -- missing would otherwise pass unseen. Same two-day lag for a season in progress.
+    select
+        'shot_goals_present' as check_name,
+        games.season,
+        games.game_id,
+        'final score ' || games.home_score || '-' || games.away_score
+            || case when games.last_period_type = 'SO' then ' (shootout)' else '' end
+            || ', no goal rows in the play-by-play' as detail,
+        null::integer as team_id
+    from games
+    left join shot_goals on shot_goals.game_id = games.game_id
+    where games.game_type in (2, 3)
+      and games.is_final
+      and (games.season in (select season from finished_seasons) or games.game_date <= current_date - 2)
+      and coalesce(shot_goals.home_goals, 0) + coalesce(shot_goals.away_goals, 0) = 0
+      and games.home_score + games.away_score
+          - case when games.last_period_type = 'SO' and games.home_score <> games.away_score then 1 else 0 end > 0
+
+),
+
 team_season_unique as (
 
     -- Each team appears once per season in dim_team_season.
@@ -1220,6 +1244,8 @@ union all
 select * from skater_game_in_games
 union all
 select * from shot_goals_match_score
+union all
+select * from shot_goals_present
 union all
 select * from team_season_unique
 union all

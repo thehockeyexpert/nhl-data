@@ -137,6 +137,55 @@ def test_a_leaderboard_gap_shows_the_top_three_then_the_subject_at_its_rank():
     assert any("takes four rows" in p for p in board(gap=True))
 
 
+def spread(**overrides):
+    slide = {"type": "distribution", "title": "T", "sql": "select 1, 'A', 2.0", "subject": 1}
+    slide.update(overrides)
+    return carousel.validate(story(slides=SIX[:2] + [slide]))
+
+
+def test_a_distribution_needs_a_query_and_a_subject():
+    assert spread() == []
+    assert spread(average_line=True, decimals=3, drop_leading_zero=True) == []
+    assert spread(average_line={"value": 0.905, "label": "LEAGUE .905"}) == []
+    assert "distribution: needs 'subject'" in carousel.validate(
+        story(slides=SIX[:2] + [{"type": "distribution", "title": "T", "sql": "select 1"}]))
+    assert any(p.startswith("distribution: average_line must be") for p in spread(average_line="yes"))
+    assert any(p.startswith("distribution: decimals") for p in spread(decimals=9))
+    assert carousel.slide_mode(story(), "distribution") == "light"
+
+
+def test_distribution_rows_are_sorted_and_must_include_the_subject():
+    con = duckdb.connect()
+    sql = "select * from (values (1, 'A', 3.0), (2, 'B', 1.0), (3, 'C', null), (4, 'D', 2.0)) t(id, name, v)"
+    assert carousel.distribution_rows(con, sql, 4) == [("2", "B", 1.0), ("4", "D", 2.0), ("1", "A", 3.0)]
+    with pytest.raises(carousel.CarouselError, match="not among the 3 rows"):
+        carousel.distribution_rows(con, sql, 3)  # its value is empty, so it is not drawn
+    with pytest.raises(carousel.CarouselError, match="three columns"):
+        carousel.distribution_rows(con, "select 1, 2", 1)
+
+
+def test_beeswarm_dots_never_overlap():
+    xs = [100 + (i % 7) * 3 for i in range(60)]  # many dots crowded on a few x positions
+    offsets = carousel.beeswarm(xs, 10)
+    points = list(zip(xs, offsets))
+    for i, (ax, ay) in enumerate(points):
+        for bx, by in points[i + 1:]:
+            assert (ax - bx) ** 2 + (ay - by) ** 2 >= 21 ** 2
+    assert offsets[0] == 0  # the first dot sits on the centre line
+    # the subject (index 30) is placed first, on the centre line, with room for its larger dot
+    offsets = carousel.beeswarm(xs, 10, first=30, subject_radius=17)
+    assert offsets[30] == 0
+    for i, (x, y) in enumerate(zip(xs, offsets)):
+        if i != 30:
+            assert (x - xs[30]) ** 2 + y ** 2 >= 28 ** 2
+
+
+def test_number_text():
+    assert carousel.number_text(0.9123, 3, True) == ".912"
+    assert carousel.number_text(1268, 0) == "1,268"
+    assert carousel.number_text(-0.05, 2, True) == "-.05"
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

@@ -37,7 +37,7 @@ matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as 
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
 SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement",
-               "question", "guess", "leaderboard"]
+               "question", "guess", "leaderboard", "distribution"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -55,6 +55,8 @@ FIELDS = {
     "question": ({"question"}, {"call"}),
     "guess": ({"question", "options"}, {"kicker"}),
     "leaderboard": ({"title", "rows"}, {"subtitle", "gap", "bars"}),
+    "distribution": ({"title", "sql", "subject"}, {"subtitle", "axis_title", "average_line", "decimals",
+                                                   "drop_leading_zero"}),
 }
 LEADERBOARD_ROW_KEYS = ({"name", "value"}, {"rank", "team", "subject"})
 
@@ -121,6 +123,8 @@ def validate(data):
             if not (isinstance(options, list) and 3 <= len(options) <= 4
                     and all(isinstance(o, (str, int, float)) and str(o) for o in options)):
                 problems.append("guess: options must be a list of 3 or 4 answers")
+        if slide["type"] == "distribution":
+            problems += [f"distribution: {p}" for p in distribution_problems(slide)]
         if slide["type"] == "leaderboard" and "rows" in slide:
             problems += [f"leaderboard: {p}" for p in leaderboard_problems(slide)]
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
@@ -170,6 +174,19 @@ def leaderboard_problems(slide):
             problems.append("gap: true needs the fourth row to be the subject, with its rank")
     elif len(rows) > 5:
         problems.append("at most five rows")
+    return problems
+
+
+def distribution_problems(slide):
+    problems = []
+    if "sql" in slide and not (isinstance(slide["sql"], str) and slide["sql"].strip()):
+        problems.append("sql must be a query returning one row per player or team: id, name, value")
+    average = slide.get("average_line", False)
+    if not (isinstance(average, bool) or (isinstance(average, dict) and set(average) == {"value", "label"}
+                                          and isinstance(average["value"], (int, float)))):
+        problems.append("average_line must be true, false, or {value: <number>, label: <text>}")
+    if not isinstance(slide.get("decimals", 0), int) or not 0 <= slide.get("decimals", 0) <= 4:
+        problems.append("decimals must be a whole number from 0 to 4")
     return problems
 
 
@@ -292,6 +309,45 @@ def goal_locations(con, player_id, season):
         raise CarouselError(f"turning_point: no goals with locations for player {player_id} in {season}")
     points = [(42.5 + d * y, d * x) for x, y, d in rows if d * x > 0]
     return points, len(rows) - len(points)
+
+
+def distribution_rows(con, sql, subject):
+    """[(id, name, value)] from a distribution slide's query, sorted by value; the subject must be among them."""
+    rows = con.execute(sql).fetchall()
+    if not rows or len(rows[0]) != 3:
+        raise CarouselError("distribution: the sql must return three columns: id, name, value")
+    rows = sorted(((str(i), str(n), float(v)) for i, n, v in rows if v is not None), key=lambda r: r[2])
+    if str(subject) not in {i for i, _, _ in rows}:
+        raise CarouselError(f"distribution: the subject {subject} is not among the {len(rows)} rows the sql returns")
+    return rows
+
+
+def beeswarm(xs, radius, first=None, subject_radius=None):
+    """A vertical offset for each dot so dots on a horizontal value axis never overlap: each dot, in order of x, takes
+    the free offset closest to the centre line (0, +d, -d, +2d ...). The dot at index `first` (the subject) is
+    placed before all others, so it sits on the centre line, with room for its larger radius. The caller shrinks
+    the radius until the swarm fits its height."""
+    order = ([first] if first is not None else []) + [i for i in range(len(xs)) if i != first]
+    placed, offsets = [], [0] * len(xs)
+    for i in order:
+        x = xs[i]
+        r = subject_radius if i == first and subject_radius else radius
+        step, k = radius, 0
+        while True:
+            offset = 0 if k == 0 else (k + 1) // 2 * step * (1 if k % 2 else -1)
+            if all((px - x) ** 2 + (py - offset) ** 2 >= (r + pr + 1) ** 2 for px, py, pr in placed):
+                break
+            k += 1
+        placed.append((x, offset, r))
+        offsets[i] = offset
+    return offsets
+
+
+def number_text(value, decimals=0, drop_leading_zero=False):
+    text = f"{value:,.{decimals}f}"
+    if drop_leading_zero and text.startswith(("0.", "-0.")):
+        text = text.replace("0.", ".", 1)
+    return text
 
 
 # ---- Drawing primitives ----
@@ -712,9 +768,68 @@ def leaderboard(cv, slide, ctx):
         y += 128
 
 
+def distribution(cv, slide, ctx):
+    """How unusual is it: every row of the slide's query as a grey dot on one value axis (a beeswarm, so dots never
+    overlap), the subject's dot in the accent, larger, and labelled with its name and value. An optional dashed
+    average line: true for the mean of the dots shown, or {value, label} for a figure from a fact (a league rate)."""
+    c = cv.c
+    title_block(cv, slide)
+    rows = distribution_rows(ctx.con, slide["sql"], slide["subject"])
+    decimals, drop = slide.get("decimals", 0), slide.get("drop_leading_zero", False)
+    values = [v for _, _, v in rows]
+    low, high = min(values), max(values)
+    span = (high - low) or 1
+    x0, x1, centre = M + 20, W - M - 20, 760
+
+    def xs(value):
+        return x0 + (value - low) / span * (x1 - x0)
+
+    subject = str(slide["subject"])
+    first = next(i for i, (row_id, _, _) in enumerate(rows) if row_id == subject)
+    radius = 11
+    while True:  # the swarm may use 230 px above and below the centre line
+        offsets = beeswarm([xs(v) for v in values], radius, first, radius + 7)
+        if max(map(abs, offsets)) <= 230 or radius <= 3:
+            break
+        radius -= 1
+    me = None
+    for (row_id, name, value), offset in zip(rows, offsets):
+        if row_id == subject:
+            me = (name, value, xs(value), centre + offset)
+            continue
+        cv.circle(xs(value), centre + offset, radius, c.mut, alpha=0.45)
+    # the axis: a baseline with about five round ticks
+    axis_y = centre + 280
+    cv.hairline(x0, x1, axis_y, alpha_scale=2)
+    raw = span / 5
+    magnitude = 10 ** math.floor(math.log10(raw))
+    step = next(m * magnitude for m in (1, 2, 2.5, 5, 10) if m * magnitude >= raw)
+    tick = math.ceil(low / step) * step
+    while tick <= high + 1e-9:
+        cv.line([xs(tick), xs(tick)], [axis_y, axis_y + 12], c.ink, 2, alpha=c.hair_alpha * 2)
+        cv.text(xs(tick), axis_y + 48, 26, "C600", c.mut, number_text(tick, decimals, drop), anchor="middle")
+        tick += step
+    if slide.get("axis_title"):
+        cv.text((x0 + x1) / 2, axis_y + 92, 22, "C600", c.mut, slide["axis_title"], anchor="middle", spacing=2.5)
+    average = slide.get("average_line")
+    if average:
+        value = sum(values) / len(values) if average is True else average["value"]
+        label = "AVERAGE" if average is True else average["label"]
+        cv.line([xs(value), xs(value)], [centre - 250, axis_y], c.ink, 2, alpha=0.5, dashes=(8, 8))
+        cv.text(xs(value), centre - 266, 22, "C600", c.mut, label, anchor="middle", spacing=2)
+    # the subject on top: a larger dot with a ring, and its label above the swarm with a thin leader line
+    name, value, sx, sy = me
+    cv.circle(sx, sy, radius + 7, c.accent, stroke=c.bg, stroke_px=4)
+    label_y = centre - 330
+    cv.line([sx, sx], [label_y + 18, sy - radius - 10], c.ink, 2, alpha=0.6)
+    anchor = "end" if sx > W - 300 else "start" if sx < 300 else "middle"
+    cv.text(sx, label_y - 36, 34, "S600", c.ink, name, anchor=anchor)
+    cv.text(sx, label_y + 4, 34, "C700", c.accent, number_text(value, decimals, drop), anchor=anchor)
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
         "conclusion": conclusion, "statement": statement, "question": question, "guess": guess,
-        "leaderboard": leaderboard}
+        "leaderboard": leaderboard, "distribution": distribution}
 
 
 # ---- Rendering ----

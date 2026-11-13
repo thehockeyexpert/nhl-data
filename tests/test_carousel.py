@@ -27,13 +27,20 @@ def test_a_six_slide_story_is_valid():
     assert carousel.validate(story()) == []
 
 
-def test_a_slide_can_be_skipped_but_not_reordered():
+def test_slides_come_in_any_order_and_may_repeat():
     assert carousel.validate(story(slides=[dict(s) for s in SIX if s["type"] != "trend"])) == []
     swapped = [dict(s) for s in SIX]
     swapped[0], swapped[1] = swapped[1], swapped[0]
-    assert any("must follow the order" in p for p in carousel.validate(story(slides=swapped)))
-    doubled = [dict(s) for s in SIX] + [dict(SIX[-1])]
-    assert any("must follow the order" in p for p in carousel.validate(story(slides=doubled)))
+    assert carousel.validate(story(slides=swapped)) == []
+    doubled = [dict(s) for s in SIX] + [dict(SIX[2]), dict(SIX[3])]
+    assert carousel.validate(story(slides=doubled)) == []
+
+
+def test_a_carousel_has_3_to_20_slides():
+    assert carousel.validate(story(slides=[dict(s) for s in SIX[:3]])) == []
+    assert carousel.validate(story(slides=[dict(SIX[2]) for _ in range(20)])) == []
+    assert "a carousel has 3 to 20 slides, not 2" in carousel.validate(story(slides=[dict(s) for s in SIX[:2]]))
+    assert "a carousel has 3 to 20 slides, not 21" in carousel.validate(story(slides=[dict(SIX[2]) for _ in range(21)]))
 
 
 def test_validate_names_every_problem():

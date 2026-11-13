@@ -1,14 +1,15 @@
-"""Render a story carousel: a YAML file in carousels/ becomes six 1080 x 1350 PNGs.
+"""Render a story carousel: a YAML file in carousels/ becomes 3 to 20 slides, each a 1080 x 1350 PNG.
 
 Check the facts only:  uv run python -m instagram.carousel check carousels/mcdavid-hot-start.yml
 Render every slide:    uv run python -m instagram.carousel render carousels/mcdavid-hot-start.yml [--mode light|dark]
 
 The layout is the "Story carousels" section of style/style_guide.md, drawn to the coordinates of
-style/story_reference.html (kept on the laptop, not in the repo). Six slides, always in this order, any of them
-skipped only when there is no honest data for it: hook, reveal, comparison, trend, turning_point, conclusion.
+style/story_reference.html (kept on the laptop, not in the repo). A carousel has 3 to 20 slides of the types in
+SLIDE_TYPES, in any order, any type as often as the story needs (style/story_playbook.md says how to write them).
 The only fixed element on every slide is the handle at the bottom right; the NHL data credit goes in the caption.
 
-- Mixed mode is the default (hook, reveal and conclusion dark; comparison, trend and turning point light).
+- Mixed mode is the default: each slide type is light or dark as style.json's story.mixed says (hook, reveal and
+  conclusion dark; comparison, trend and turning point light).
   --mode light or --mode dark (or `mode:` in the file) makes every slide the same.
 - Before drawing anything, every query under `facts:` is run again; if any answer differs from the value written in
   the file, nothing is drawn and the command shows what changed.
@@ -35,7 +36,8 @@ from instagram.make_post import STYLE, _sized, text_width
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
-ORDER = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion"]
+SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion"]
+SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
 RINK_LINES = {"light": ("#D7263D", "#2F6FEB"), "dark": ("#E0475A", "#5B8DEF")}  # red, blue (story_reference.html)
@@ -84,13 +86,13 @@ def validate(data):
         problems.append('caption must credit the data with "Data: NHL"')
     slides = data.get("slides")
     if not isinstance(slides, list) or not slides:
-        return problems + ["slides must be a list of the six story slides"]
+        return problems + ["slides must be a list of story slides"]
+    if not SLIDE_COUNT[0] <= len(slides) <= SLIDE_COUNT[1]:
+        problems.append(f"a carousel has {SLIDE_COUNT[0]} to {SLIDE_COUNT[1]} slides, not {len(slides)}")
     types = [slide.get("type") if isinstance(slide, dict) else None for slide in slides]
-    unknown = [t for t in types if t not in ORDER]
+    unknown = [t for t in types if t not in SLIDE_TYPES]
     if unknown:
-        problems.append(f"slide types must be {', '.join(ORDER)}, not {', '.join(map(str, unknown))}")
-    elif types != sorted(types, key=ORDER.index) or len(set(types)) != len(types):
-        problems.append(f"slides must follow the order {', '.join(ORDER)}, each at most once")
+        problems.append(f"slide types must be {', '.join(SLIDE_TYPES)}, not {', '.join(map(str, unknown))}")
     for slide in slides:
         if not isinstance(slide, dict) or slide.get("type") not in FIELDS:
             continue

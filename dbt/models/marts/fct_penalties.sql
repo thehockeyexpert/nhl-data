@@ -1,4 +1,4 @@
--- One row per penalty from the play-by-play, regular season and playoffs, from 2007-08, linked to fct_games.
+-- One row per penalty from the play-by-play, regular season and playoffs, 1917-18 to today, linked to fct_games.
 -- A fight is a fighting major (definition 1, owner 2026-11-11): one fighting penalty is one fight for that player.
 
 {{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', tags=['play_by_play']) }}

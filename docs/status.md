@@ -125,9 +125,12 @@ Last updated: 2026-11-11
   23,242 people, 1,895 leagues; tag `player_pages`, rebuilt Sundays, not nightly): 15 of 15 tests pass. NHL rows
   match our stats for 99.5% of skater and goalie seasons (`docs/data_coverage.md`, "Player pages"). The guide is
   updated in `docs/motherduck_guide.md`; publishing it is left to the owner.
-- **Next loads (approved 2026-11-11, in this order):** player pages for everyone in the player list (about 23,600
-  requests, about 6.5 hours), then the play-by-play before 2007-08 (45,810 games, about 12-13 hours; goals with
-  assists and periods, penalties). Hits and penalties from the 2007-08 onward files follow the same plan.
+- **Play-by-play before 2007-08 (finished 2026-11-12, checked 2026-11-13).** 45,810 games, 2006-07 back to 1917-18
+  (stopped twice for low memory and finished in a separate PowerShell window; nothing lost). 876,659 shot events
+  (goals only before 1997-98) and 568,173 penalties. Goals match every game's score in every season; every scorer's
+  and penalised player's team matches `fct_skater_games`; 26 of 26 play-by-play models and tests and 44 of 44 checks
+  pass. Two malformed clock times in 1985-86 made the staging models use `try_cast`. Fights are labelled only from
+  1947-48; strength only from 2009-10 (`docs/data_coverage.md`).
 - **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
   models, 34 data checks). No failure is left without an approved exception.
 

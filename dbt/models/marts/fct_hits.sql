@@ -1,4 +1,4 @@
--- One row per hit from the play-by-play, regular season and playoffs, from 2007-08, linked to fct_games.
+-- One row per hit from the play-by-play, regular season and playoffs, from 2009-10 (none earlier), linked to fct_games.
 -- The hitting team is the event's owner team (checked against the rosters: docs/data_coverage.md, "Hits and penalties").
 
 {{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', tags=['play_by_play']) }}

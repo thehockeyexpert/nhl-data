@@ -1,4 +1,5 @@
--- One row per hit or penalty from the play-by-play, regular season and playoffs, from 2007-08 (decided 2026-11-11).
+-- One row per hit or penalty from the play-by-play, regular season and playoffs, 1917-18 to today (hits
+-- from 2009-10) (decided 2026-11-11).
 -- raw.nhl_web__pbp_event holds only these events; the full responses stay as compressed files on the owner's laptop.
 -- Incremental, like stg_nhl_web__pbp_shots: a game loaded again replaces all of that game's earlier rows.
 
@@ -26,8 +27,9 @@ renamed as (
         event ->> 'typeDescKey' as event_type,
         (event -> 'periodDescriptor' ->> 'number')::integer as period_number,
         event -> 'periodDescriptor' ->> 'periodType' as period_type,
-        split_part(event ->> 'timeInPeriod', ':', 1)::integer * 60
-            + split_part(event ->> 'timeInPeriod', ':', 2)::integer as time_in_period_seconds,
+        -- try_cast: a malformed clock (two in 1985-86, e.g. '0M:48') becomes null rather than failing the build
+        try_cast(split_part(event ->> 'timeInPeriod', ':', 1) as integer) * 60
+            + try_cast(split_part(event ->> 'timeInPeriod', ':', 2) as integer) as time_in_period_seconds,
         event ->> 'situationCode' as situation_code,
         (event -> 'details' ->> 'eventOwnerTeamId')::integer as event_owner_team_id,
         -- hits

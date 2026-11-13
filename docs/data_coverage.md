@@ -101,8 +101,25 @@ on the owner's laptop.
   | 2024-25 | 167,558 | 1,398 | 8,604 | 70,828 | 41,030 | 47,096 |
   | 2025-26 | 163,818 | 1,394 | 8,836 | 69,507 | 41,811 | 43,664 |
 
-- **Before 2007-08:** not loaded. Sampled 2026-11-11 (one game each from 1930 to 2005): goals with period, scorer and
-  both assists, and penalties with their type, are present; shots appear from about 1997-98; no hits in any sample.
+- **Strength (`situation_code`)** is on non-shootout goals only from 2009-10: none of the 2005-06 to 2008-09 goals
+  have it (checked 2026-11-13). For power-play goals before then use `fct_skater_seasons` or `fct_skater_games`.
+- **Before 2007-08 (loaded 2026-11-11 to 2026-11-12, from 1917-18; checked 2026-11-13):** 876,659 shot events in
+  45,648 of the 45,810 finished regular-season and playoff games. The 162 games without any are all 0-0, so the
+  play-by-play simply has no goal in them.
+  - **Goals match the scores in every game of every season** (check `shot_goals_match_score`). Every goal has a
+    scorer, and every scorer's team matches their team in that game in `fct_skater_games` (285,198 goals, no
+    exception).
+  - **Goals only before 1997-98:** no shots on goal, missed or blocked shots in the play-by-play.
+  - **Shots on goal from 1997-98**; missed shots almost absent (46 in 2005-06 and 2006-07) and no blocked shots, as in
+    2007-08 and 2008-09. Shot type is on goals from 1997-98 (80% that season, over 99% from 1998-99).
+  - **Coordinates:** none before 2005-06; 160 events in 2005-06 and 289 in 2006-07.
+  - **Assists:** the share of goals with a first assist is 40-65% in 1917-18 to 1928-29, about 75% from 1929-30 and 85-90%
+    from the mid-1930s on; second assists are rare before the 1930s. Whether that reflects the scoring rules of the time
+    or gaps in the record is unexplained.
+  - **Malformed clock times:** two penalties in 1985-86 have a period time the NHL wrote as `0M:48` and `10:0J`; their
+    `time_in_period_seconds` is empty (nothing is guessed).
+  - **Shootouts 2005-06 and 2006-07:** the play-by-play and the shootout report agree for 562 of 575 player-seasons;
+    2005-06 has 332 goals in the play-by-play and 330 in the report, 2006-07 has 1,222 attempts and 1,215. Unexplained.
 
 ## Hits and penalties (play-by-play)
 
@@ -110,17 +127,21 @@ Loaded 2026-11-11 from the same laptop files as the shots (no new downloads), an
 `raw.nhl_web__pbp_event`, `marts.fct_hits` and `marts.fct_penalties`.
 
 - **Hits: 1,033,173 in 22,194 games, 2009-10 to today.** 2007-08 and 2008-09 have no hit events at all (like their
-  missed and blocked shots). The play-by-play before 2007-08 has no hits in any game sampled.
-- **Penalties: 207,017, 2007-08 to today**, of which 15,884 are fighting penalties (`is_fight`; every one a 5-minute
+  missed and blocked shots). The play-by-play before 2007-08 has no hits in any season (checked 2026-11-13).
+- **Penalties: 207,017, 2007-08 to today** (older seasons below), of which 15,884 are fighting penalties (`is_fight`; every one a 5-minute
   major). A fight is one fighting penalty per player (definition 1, owner 2026-11-11), so one fight between two
   players is two rows. About 250 to 350 penalties a season name no player (bench minors and the like).
 - **Team check:** every hit's team is the hitter's team, and every penalty's team the penalised player's team, on the
   game's roster in the downloaded files: 2.1 million events, no exception (checked 2026-11-11).
 - **Fights per regular-season game** (fighting penalties / 2): 0.53 in 2007-08, 0.59 in 2008-09, then down to 0.18 in
   2018-19 and 2019-20, about 0.23 to 0.25 since.
-- **Before 2007-08:** penalties (fights included) are in the play-by-play back to at least 1930 in the samples; to be
-  loaded with the older play-by-play (approved 2026-11-11). Which season fighting data becomes reliable is to be
-  stated after that load.
+- **Before 2007-08 (loaded 2026-11-12, checked 2026-11-13):** 568,173 penalties in 45,721 games, 1917-18 to 2006-07,
+  every penalised player's team matching their team in that game in `fct_skater_games` (554,083 with a player, no
+  exception). Penalty drawn by (`drawn_by_player_id`) starts in 1997-98.
+  - **Fights are identifiable only from 1947-48.** Before that, majors are recorded as a generic "major" (1,852
+    of them) with no "fighting" label, so `is_fight` is false for every earlier penalty. Never count fights before
+    1947-48 as zero; say the data does not record them. 49,469 fighting penalties from 1947-48 to 2006-07.
+  - Penalties naming no player: under 30 a season before 1967-68, about 40 to 400 a season after.
 
 ## Shootout totals (skaters)
 
@@ -132,7 +153,7 @@ skaters with at least one attempt (the report also lists every other skater, wit
   both. Goals differ for 16 player-seasons (mostly 2009-10: 449 goals in the report, 432 in the play-by-play) and the
   report has 90 more attempts in total (10 player-seasons appear only in the report). Unexplained; for shootouts use
   `fct_skater_shootouts` and say which source a number comes from.
-- 2005-06 and 2006-07 come from the report only: our play-by-play starts in 2007-08.
+- 2005-06 and 2006-07 are now in the play-by-play too; see "Shots" for how they compare.
 
 ## Player pages (seasons in every league)
 

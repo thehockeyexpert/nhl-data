@@ -606,7 +606,7 @@ models:
 
   - name: fct_hits
     description: >
-      One row per hit from the play-by-play, regular season and playoffs, from 2007-08 (docs/data_coverage.md,
+      One row per hit from the play-by-play, regular season and playoffs, from 2009-10; none earlier (docs/data_coverage.md,
       "Hits and penalties"). hitting_player_id threw the hit, hittee_player_id took it. Incremental.
     columns:
       - name: hit_key
@@ -623,8 +623,8 @@ models:
 
   - name: fct_penalties
     description: >
-      One row per penalty from the play-by-play, regular season and playoffs, from 2007-08 (docs/data_coverage.md,
-      "Hits and penalties"). penalty_desc_key is the NHL's penalty kind (hooking, fighting...), penalty_type_code its
+      One row per penalty from the play-by-play, regular season and playoffs, 1917-18 to today (docs/data_coverage.md,
+      "Hits and penalties"). Fighting penalties are labelled only from 1947-48; earlier majors are generic "major". penalty_desc_key is the NHL's penalty kind (hooking, fighting...), penalty_type_code its
       class (MIN, MAJ, MIS, GAM, MAT, BEN, PS). is_fight marks a fighting penalty: one per player per fight
       (definition 1, owner 2026-11-11). A penalty served by a teammate has served_by_player_id. Incremental.
     columns:
@@ -644,7 +644,8 @@ models:
     description: >
       One row per shot attempt (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season
       and playoffs, linked to fct_games. Shootout attempts are included and flagged with is_shootout. Loaded season by
-      season from 2007-08 (docs/data_coverage.md, "Shots"). Each game's goals match its score (check
+      season, 1917-18 to today: goals only before 1997-98, shots on goal from 1997-98, missed and blocked shots,
+      coordinates and strength (situation_code) from 2009-10 (docs/data_coverage.md, "Shots"). Each game's goals match its score (check
       shot_goals_match_score). Incremental.
     columns:
       - name: shot_key

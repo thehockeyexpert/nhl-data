@@ -6,7 +6,7 @@ Run it with:  uv run python -m ingest.backfill --from 20242025 --to 19171918
               uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918
               uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918
               uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918
-              uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008
+              uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 19171918
 
 Safe to stop (Ctrl+C) and restart with the same command: seasons that already
 finished are skipped without any requests, and a half-finished season is redone

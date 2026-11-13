@@ -36,7 +36,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 
 ## Data tiers
 - Tier 1: all-history schedule, results, game-level stats. Small.
-- Tier 2: play-by-play and shifts, 2007-08 onward. Heavy; backfilled from the laptop. Do not start a load without being asked.
+- Tier 2: play-by-play (all history; goals and penalties only in early eras) and shifts. Heavy; backfilled from the laptop. Do not start a load without being asked.
 - Tier 2 storage (decided 2026-11-10): raw play-by-play is kept as compressed files on the laptop (`NHL_PBP_DIR`, default
   `~/nhl-data-files/play_by_play`), never in the repo; only the modelled events (shots) are bulk-loaded into `raw`.
 
@@ -112,7 +112,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest skater season totals, many seasons, resumable: `uv run python -m ingest.backfill --job skaters --from 20262027 --to 19171918`
 - Ingest per-game skater stats, many seasons, resumable: `uv run python -m ingest.backfill --job skater_games --from 20252026 --to 19171918`; nightly, the last game dates: `uv run python -m ingest.skater_games --season 20262027 --recent-days 3`
 - Ingest team and franchise lists: `uv run python -m ingest.teams`
-- Ingest play-by-play shots, hits and penalties (full files kept on the laptop, outside the repo), one season: `uv run python -m ingest.play_by_play --season 20252026`; many seasons, resumable: `uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008`; nightly on GitHub, new games plus the last 3 days': `uv run python -m ingest.play_by_play --season 20262027 --recent-days 3`; after a laptop load, `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`
+- Ingest play-by-play shots, hits and penalties (full files kept on the laptop, outside the repo), one season: `uv run python -m ingest.play_by_play --season 20252026`; many seasons, resumable: `uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 19171918`; nightly on GitHub, new games plus the last 3 days': `uv run python -m ingest.play_by_play --season 20262027 --recent-days 3`; after a laptop load, `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:play_by_play`
 - Ingest shootout totals per skater (2005-06 onward), many seasons, resumable: `uv run python -m ingest.backfill --job shootouts --from 20262027 --to 20052006`; nightly: `uv run python -m ingest.shootouts --season 20262027`
 - Ingest player pages (every player's seasons in every league; full pages kept on the laptop, outside the repo): `uv run python -m ingest.player_pages` (resumable; `--limit 50` for a trial), then `uv run dbt build --project-dir dbt --profiles-dir dbt --select stg_nhl_web__player_season_totals+ tag:player_pages`
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`

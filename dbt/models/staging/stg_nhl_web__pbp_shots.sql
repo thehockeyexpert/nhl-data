@@ -1,6 +1,6 @@
 -- One row per shot event (shot on goal, missed shot, blocked shot, goal) from the play-by-play, regular season and
--- playoffs, from 2007-08. raw.nhl_web__pbp_shot holds only these events; the full responses stay as compressed files
--- on the owner's laptop (docs/decisions.md, 2026-11-10).
+-- playoffs, 1917-18 to today (goals only before 1997-98). raw.nhl_web__pbp_shot holds only these events; the full
+-- responses stay as compressed files on the owner's laptop (docs/decisions.md, 2026-11-10).
 -- Incremental: each build reads only raw rows loaded since the last build. A game loaded again (a corrected response)
 -- replaces all of that game's earlier rows, so events dropped by the correction disappear too.
 
@@ -30,8 +30,9 @@ renamed as (
         event ->> 'typeDescKey' as event_type,
         (event -> 'periodDescriptor' ->> 'number')::integer as period_number,
         event -> 'periodDescriptor' ->> 'periodType' as period_type,
-        split_part(event ->> 'timeInPeriod', ':', 1)::integer * 60
-            + split_part(event ->> 'timeInPeriod', ':', 2)::integer as time_in_period_seconds,
+        -- try_cast: a malformed clock (two in 1985-86, e.g. '0M:48') becomes null rather than failing the build
+        try_cast(split_part(event ->> 'timeInPeriod', ':', 1) as integer) * 60
+            + try_cast(split_part(event ->> 'timeInPeriod', ':', 2) as integer) as time_in_period_seconds,
         event ->> 'situationCode' as situation_code,
         event ->> 'homeTeamDefendingSide' as home_team_defending_side,
         (event -> 'details' ->> 'eventOwnerTeamId')::integer as event_owner_team_id,

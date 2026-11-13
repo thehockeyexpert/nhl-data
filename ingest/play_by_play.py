@@ -1,7 +1,7 @@
-"""Load shot events from play-by-play into the raw layer (Tier 2, from 2007-08).
+"""Load shot events from play-by-play into the raw layer (Tier 2, 1917-18 onward).
 
 Run one season with:   uv run python -m ingest.play_by_play --season 20252026
-Many seasons with:     uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 20072008
+Many seasons with:     uv run python -m ingest.backfill --job play_by_play --from 20252026 --to 19171918
 Nightly (GitHub):      uv run python -m ingest.play_by_play --season 20262027 --recent-days 3
 
 Two steps, decided by the owner on 2026-11-10 (docs/decisions.md):

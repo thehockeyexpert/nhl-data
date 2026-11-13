@@ -43,6 +43,11 @@ seeds:
         first_day: date
         last_day: date
         is_official: boolean
+    nhl_eras:
+      +column_types:
+        era_id: integer
+        from_season: integer
+        to_season: integer
     league_levels:
       +column_types:
         from_season: integer

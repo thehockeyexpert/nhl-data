@@ -1,0 +1,8 @@
+era_id,era_name,from_season,to_season,note
+1,Early era,19171918,19411942,"Before the Original Six; regular-season overtime used until 1942-43"
+2,Original Six,19421943,19661967,"Six teams; plus-minus starts in 1959-60, so this era is partial for plus-minus"
+3,Expansion,19671968,19781979,"From the 1967 expansion to the WHA merger"
+4,WHA merger / high scoring,19791980,19921993,
+5,Dead puck,19931994,20032004,"Ends with the 2004-05 lockout (no season)"
+6,Salary cap,20052006,20122013,"Shootouts from 2005-06"
+7,Modern,20132014,,"To today; to_season empty means open"

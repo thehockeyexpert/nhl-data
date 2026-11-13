@@ -264,3 +264,22 @@ seeds:
         description: The article read.
       - name: note
         description: Cancellations, replays and disagreements between the infobox and the article text.
+  - name: nhl_eras
+    description: >
+      Our NHL eras (definition 14, the owner's answer of 2026-11-13 in the question inbox), for questions such as
+      "worst plus-minus in an era". Join on season between from_season and coalesce(to_season, 99999999). 2004-05 has
+      no season (lockout) and so no era.
+    columns:
+      - name: era_id
+        description: Era number, in order.
+        data_tests: [unique, not_null]
+      - name: era_name
+        description: The era's name.
+        data_tests: [unique, not_null]
+      - name: from_season
+        description: First season of the era (8-digit ID).
+        data_tests: [not_null]
+      - name: to_season
+        description: Last season of the era; empty for the current era.
+      - name: note
+        description: What else changes in the era, in our words.

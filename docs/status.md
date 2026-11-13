@@ -173,6 +173,10 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Question inbox definitions 12 to 20 settled (owner, 2026-11-13)** and their answers worked out (Mr Sunday,
+  overtime hero, plus-minus by era, 50-goal seasons by birth country and nationality, Czechoslovakia teams, emerging
+  powers, relegation, ironman streaks, most remote arena) in `analyst/question_inbox.md`. Seed `nhl_eras` (definition
+  14, 7 eras); 6 of 6 tests pass.
 - **Check `shot_goals_present` (2026-11-13):** every finished regular-season or playoff game with a goal outside a
   shootout has goal rows in the play-by-play (`shot_goals_match_score` only sees games with shot rows). Proven on a
   throwaway in-memory copy: fails for a game with goals and no rows, a game three days old in a season in progress
@@ -196,15 +200,12 @@ Last updated: 2026-11-13
 
 ## Next
 
-1. **Open definitions from the question inbox** (round 2, numbers 12 to 20 in `analyst/question_inbox.md`): season or
-   career rankings, overtime goals or points, NHL eras, nationality, the Czechoslovakia team, "emerging hockey power",
-   relegation, ironman streaks and the most remote arena. Each unblocks one or more questions.
-2. **Review the golden questions and settle the open definitions** in `docs/definitions.md` (see "Open decisions"),
+1. **Review the golden questions and settle the open definitions** in `docs/definitions.md` (see "Open decisions"),
    and approve or reject the proposed rewordings in `analyst/golden_questions.yml`.
-3. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
-4. **Watch the daily run:** compare the Billing page with the estimates below.
-5. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
-6. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
+2. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
+3. **Watch the daily run:** compare the Billing page with the estimates below.
+4. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
+5. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
    - Terms: free for non-commercial use, credit MoneyPuck.com wherever shown; ask before scraping anything not
      offered for download ([moneypuck.com/data.htm](https://moneypuck.com/data.htm)).
    - About 2.08 million shots, 2007-08 to 2024-25 plus the current season nightly; no blocked shots; CSV in zip.
@@ -297,7 +298,6 @@ Last updated: 2026-11-13
 
 - **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13 and D17 to D20.
   Proposed defaults await confirmation: D02, D08, D12, D16, D21 and D22.
-- **Question inbox, round 2:** definitions 12 to 20 (see "Next").
 - **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
 - **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
 

@@ -36,7 +36,7 @@ from instagram.make_post import STYLE, _sized, text_width
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
-SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion"]
+SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -50,7 +50,11 @@ FIELDS = {
     "trend": ({"title", "lines", "games"}, {"subtitle", "axis_title", "metric"}),
     "turning_point": ({"title", "stats"}, {"subtitle", "stats_title", "rink"}),
     "conclusion": ({"kicker", "headline"}, {"context", "question", "call"}),
+    "statement": ({"headline"}, {"kicker"}),
 }
+
+# Slides whose `headline` is a list of 1 to N lines of text.
+HEADLINE_LINES = {"statement": 3}
 
 
 # ---- Reading and checking a carousel file ----
@@ -101,6 +105,11 @@ def validate(data):
         extra = set(slide) - required - optional - {"type"}
         problems += [f"{slide['type']}: needs '{key}'" for key in sorted(missing)]
         problems += [f"{slide['type']}: unknown key '{key}'" for key in sorted(extra)]
+        if slide["type"] in HEADLINE_LINES and "headline" in slide:
+            most = HEADLINE_LINES[slide["type"]]
+            lines = slide["headline"]
+            if not (isinstance(lines, list) and 1 <= len(lines) <= most and all(isinstance(x, str) and x for x in lines)):
+                problems.append(f"{slide['type']}: headline must be a list of 1 to {most} lines of text")
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
         if "image" in slide:
@@ -559,8 +568,27 @@ def conclusion(cv, slide, ctx):
         cv.text(M, 1160, 34, "S600", c.mut, slide.get("call", "Tell us in the comments."))
 
 
+def statement(cv, slide, ctx):
+    """One big sentence: the take or the verdict. Up to three lines at the hook's 150 px (smaller only when a line
+    would not fit between the margins), the last line in the accent, an optional small kicker above in muted text
+    (the accent belongs to the last line only). The block is centred a little above the middle of the canvas."""
+    c = cv.c
+    lines = slide["headline"]
+    size = min(150, 150 * (W - 2 * M) / max(cv.width(line, 150, "C700") for line in lines))
+    gap = 140 * size / 150
+    kicker = slide.get("kicker")
+    # From the top of the kicker (or of the first line's capitals) to the last baseline.
+    block = (len(lines) - 1) * gap + size * 0.72 + (40 * 0.72 + 32 if kicker else 0)
+    last_y = 620 + block / 2
+    first_y = last_y - (len(lines) - 1) * gap
+    if kicker:
+        cv.text(M, first_y - size * 0.72 - 32, 40, "C700", c.mut, kicker, spacing=4)
+    for i, line in enumerate(lines):
+        cv.text(M, first_y + i * gap, size, "C700", c.accent if i == len(lines) - 1 else c.ink, line)
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
-        "conclusion": conclusion}
+        "conclusion": conclusion, "statement": statement}
 
 
 # ---- Rendering ----

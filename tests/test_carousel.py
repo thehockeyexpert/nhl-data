@@ -43,6 +43,33 @@ def test_a_carousel_has_3_to_20_slides():
     assert "a carousel has 3 to 20 slides, not 21" in carousel.validate(story(slides=[dict(SIX[2]) for _ in range(21)]))
 
 
+def test_repeated_slide_types_get_one_file_each(monkeypatch, tmp_path):
+    """Files are named by position (01.png, 02.png ...), so a repeated type never overwrites another slide."""
+    from matplotlib.font_manager import FontProperties
+
+    monkeypatch.setattr(carousel.make_post, "fonts", lambda: {role: FontProperties() for role in
+                                                              ("footer", "title", "hero", "medium", "semi")})
+    monkeypatch.setenv("NHL_POSTS_DIR", str(tmp_path))
+    slides = [{"type": "comparison", "top": {"kicker": "K", "number": n}, "bottom": {"kicker": "K", "number": 1}}
+              for n in (10, 20, 30)]
+    data = story(slides=slides)
+    assert carousel.validate(data) == []
+    paths = carousel.render(None, {**data, "name": "repeats"}, "@handle")
+    assert [p.name for p in paths] == ["01.png", "02.png", "03.png", "caption.txt"]
+    assert len({p.read_bytes() for p in paths[:3]}) == 3  # three different slides, none overwritten
+
+
+def test_a_statement_has_1_to_3_headline_lines_and_an_optional_kicker():
+    for lines in (["One."], ["One", "two."], ["One", "two", "three."]):
+        assert carousel.validate(story(slides=SIX[:2] + [{"type": "statement", "headline": lines}])) == []
+    assert carousel.validate(story(slides=SIX[:2] + [{"type": "statement", "kicker": "K", "headline": ["A"]}])) == []
+    for bad in ([], ["1", "2", "3", "4"], "not a list", [""]):
+        problems = carousel.validate(story(slides=SIX[:2] + [{"type": "statement", "headline": bad}]))
+        assert "statement: headline must be a list of 1 to 3 lines of text" in problems
+    assert "statement: needs 'headline'" in carousel.validate(story(slides=SIX[:2] + [{"type": "statement"}]))
+    assert carousel.slide_mode(story(), "statement") == "dark"
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

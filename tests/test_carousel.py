@@ -95,6 +95,48 @@ def test_a_guess_has_a_1_or_2_line_question_and_3_or_4_options():
     assert carousel.slide_mode(story(), "guess") == "dark"
 
 
+def board(**overrides):
+    slide = {"type": "leaderboard", "title": "T", "rows": [
+        {"name": "A", "team": "EDM", "value": 48, "subject": True}, {"name": "B", "value": "36"},
+        {"name": "C", "value": "31"}]}
+    slide.update(overrides)
+    return carousel.validate(story(slides=SIX[:2] + [slide]))
+
+
+def test_a_leaderboard_has_up_to_five_rows_and_one_subject():
+    assert board() == []
+    five = [{"name": n, "value": v} for n, v in zip("ABCDE", (5, 4, 3, 2, 1))]
+    five[4]["subject"] = True
+    assert board(rows=five) == []
+    six = [{"name": n, "value": 1} for n in "ABCDEF"]
+    six[0]["subject"] = True
+    assert "leaderboard: at most five rows" in board(rows=six)
+    assert "leaderboard: exactly one row must be the subject (subject: true)" in board(
+        rows=[{"name": "A", "value": 1}, {"name": "B", "value": 2}, {"name": "C", "value": 3}])
+    assert "leaderboard: row 2: needs 'value'" in board(rows=[{"name": "A", "value": 1, "subject": True}, {"name": "B"}])
+    assert "leaderboard: row 1: unknown key 'colour'" in board(
+        rows=[{"name": "A", "value": 1, "subject": True, "colour": "red"}])
+    assert carousel.slide_mode(story(), "leaderboard") == "light"
+
+
+def test_leaderboard_bars_need_numbers_and_start_at_zero():
+    assert carousel.bar_value(".934") == 0.934 and carousel.bar_value("1,268") == 1268
+    assert carousel.bar_value("52.3%") == 52.3 and carousel.bar_value("n/a") is None
+    rows = [{"name": "A", "value": "+12", "subject": True}, {"name": "B", "value": -3}, {"name": "C", "value": 1}]
+    assert "leaderboard: row 2: bars need a number of 0 or more as the value (or bars: false)" in board(rows=rows)
+    assert "leaderboard: row 1: bars need a number of 0 or more as the value (or bars: false)" in board(
+        rows=[{"name": "A", "value": "n/a", "subject": True}, {"name": "B", "value": 1}])
+    assert board(rows=rows, bars=False) == []
+
+
+def test_a_leaderboard_gap_shows_the_top_three_then_the_subject_at_its_rank():
+    top3 = [{"rank": r, "name": n, "value": v} for r, n, v in ((1, "A", 30), (2, "B", 28), (3, "C", 27))]
+    assert board(gap=True, rows=top3 + [{"rank": "T14", "name": "S", "value": 19, "subject": True}]) == []
+    assert any("needs the fourth row to be the subject" in p for p in board(
+        gap=True, rows=top3 + [{"name": "S", "value": 19, "subject": True}]))
+    assert any("takes four rows" in p for p in board(gap=True))
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

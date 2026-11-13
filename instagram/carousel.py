@@ -37,7 +37,7 @@ matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as 
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
 SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement",
-               "question", "guess"]
+               "question", "guess", "leaderboard"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -54,7 +54,9 @@ FIELDS = {
     "statement": ({"headline"}, {"kicker"}),
     "question": ({"question"}, {"call"}),
     "guess": ({"question", "options"}, {"kicker"}),
+    "leaderboard": ({"title", "rows"}, {"subtitle", "gap", "bars"}),
 }
+LEADERBOARD_ROW_KEYS = ({"name", "value"}, {"rank", "team", "subject"})
 
 # Fields written as a list of 1 to N lines of text: {(slide type, field): N}.
 LINE_FIELDS = {("statement", "headline"): 3, ("question", "question"): 3, ("guess", "question"): 2}
@@ -119,6 +121,8 @@ def validate(data):
             if not (isinstance(options, list) and 3 <= len(options) <= 4
                     and all(isinstance(o, (str, int, float)) and str(o) for o in options)):
                 problems.append("guess: options must be a list of 3 or 4 answers")
+        if slide["type"] == "leaderboard" and "rows" in slide:
+            problems += [f"leaderboard: {p}" for p in leaderboard_problems(slide)]
         if slide["type"] == "trend" and slide.get("metric", "points") not in METRICS:
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
         if "image" in slide:
@@ -132,6 +136,40 @@ def validate(data):
             problems.append(f"fact {number}: needs claim, sql and value")
     if not data.get("facts"):
         problems.append("facts: every number on the slides needs a fact")
+    return problems
+
+
+def bar_value(value):
+    """The number behind a written value, for the bar's length: 48, "48", ".934", "1,268" or "52.3%"."""
+    try:
+        return float(str(value).replace(",", "").rstrip("%"))
+    except ValueError:
+        return None
+
+
+def leaderboard_problems(slide):
+    """Problems with a leaderboard's rows (the Studio Edition leaderboard: up to five rows, one subject)."""
+    rows = slide["rows"]
+    if not (isinstance(rows, list) and rows and all(isinstance(row, dict) for row in rows)):
+        return ["rows must be a list of {name, value} rows"]
+    problems = []
+    required, optional = LEADERBOARD_ROW_KEYS
+    for number, row in enumerate(rows, start=1):
+        problems += [f"row {number}: needs '{key}'" for key in sorted(required - set(row))]
+        problems += [f"row {number}: unknown key '{key}'" for key in sorted(set(row) - required - optional)]
+        amount = bar_value(row["value"]) if "value" in row else 0
+        if slide.get("bars", True) and (amount is None or amount < 0):
+            problems.append(f"row {number}: bars need a number of 0 or more as the value (or bars: false)")
+    subjects = [number for number, row in enumerate(rows, start=1) if row.get("subject")]
+    if len(subjects) != 1:
+        problems.append("exactly one row must be the subject (subject: true)")
+    if slide.get("gap"):
+        if len(rows) != 4:
+            problems.append("gap: true takes four rows: the top three, then the subject with its real rank")
+        elif subjects != [4] or "rank" not in rows[3]:
+            problems.append("gap: true needs the fourth row to be the subject, with its rank")
+    elif len(rows) > 5:
+        problems.append("at most five rows")
     return problems
 
 
@@ -264,7 +302,7 @@ def colours(mode, accent_code):
     return SimpleNamespace(
         mode=mode, dark=mode == "dark", bg=pal["background"], ink=pal["ink"], mut=pal["muted_text"],
         hair_alpha=STYLE["layout"]["hairline"][f"opacity_{mode}"], panel=STYLE["story"]["comparison_panel"][mode],
-        accent=pal["accent"],
+        accent=pal["accent"], track=pal["bar_track"],
     )
 
 
@@ -638,8 +676,45 @@ def guess(cv, slide, ctx):
         cv.hairline(M, W - M, top + (i + 1) * step)
 
 
+def leaderboard(cv, slide, ctx):
+    """The Studio Edition leaderboard in the story frame: the title block, then up to five rows 128 px apart, each with
+    a rank (01 to 05, or as written, e.g. T6), the name and team code, the value right-aligned and a flat 8 px bar
+    under the name that starts at zero (scaled to the largest value shown). Only the subject's rank, value and bar
+    are in the accent. With gap: true the top three come first, then a gap marker, then the subject's row at its
+    real rank."""
+    c = cv.c
+    title_block(cv, slide)
+    rows = slide["rows"]
+    show_bars = slide.get("bars", True)
+    top_value = max(bar_value(row["value"]) for row in rows) if show_bars else 0
+    track_w = W - 2 * M - 64 - 120
+    y = 510
+    for i, row in enumerate(rows):
+        if slide.get("gap") and i == 3:
+            cv.text(M + 64, y - 34, 44, "S600", c.mut, "···")
+            y += 64
+        me = bool(row.get("subject"))
+        rank = row.get("rank", i + 1)
+        rank = f"{rank:02d}" if isinstance(rank, int) else str(rank)
+        cv.text(M, y, 30, "C600", c.accent if me else c.mut, rank)
+        cv.text(M + 64, y, 44, "S600", c.ink, row["name"])
+        if row.get("team"):
+            cv.text(M + 64 + cv.width(row["name"], 44, "S600") + 16, y, 24, "C700", c.mut, row["team"], spacing=2)
+        cv.text(W - M, y + 2, 64, "C700", c.accent if me else c.ink, row["value"], anchor="end")
+        if show_bars:
+            cv.rect(M + 64, y + 24, track_w, 8, c.track)
+            if top_value > 0:
+                cv.rect(M + 64, y + 24, track_w * bar_value(row["value"]) / top_value, 8, c.accent if me else c.ink)
+        last = i == len(rows) - 1
+        before_gap = slide.get("gap") and i == 2
+        if not last and not before_gap:
+            cv.line([M, W - M], [y + 78, y + 78], c.ink, 1.5, alpha=c.hair_alpha * 0.8)
+        y += 128
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
-        "conclusion": conclusion, "statement": statement, "question": question, "guess": guess}
+        "conclusion": conclusion, "statement": statement, "question": question, "guess": guess,
+        "leaderboard": leaderboard}
 
 
 # ---- Rendering ----

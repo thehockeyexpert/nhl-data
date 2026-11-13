@@ -234,7 +234,8 @@
    "conclusion",
    "statement",
    "question",
-   "guess"
+   "guess",
+   "leaderboard"
   ],
   "default_mode": "mixed",
   "mixed": {
@@ -246,7 +247,8 @@
    "conclusion": "dark",
    "statement": "dark",
    "question": "dark",
-   "guess": "dark"
+   "guess": "dark",
+   "leaderboard": "light"
   },
   "comparison_panel": {
    "light": "#E4EAF0",

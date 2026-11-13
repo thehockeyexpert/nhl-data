@@ -30,7 +30,7 @@ from types import SimpleNamespace
 import matplotlib
 import yaml
 
-from instagram import make_post, photos
+from instagram import make_post, nhl_images, photos
 from instagram.make_post import STYLE, _sized, text_width
 
 matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as written
@@ -46,7 +46,7 @@ RINK_LINES = {"light": ("#D7263D", "#2F6FEB"), "dark": ("#E0475A", "#5B8DEF")}  
 # The fields each slide takes: (required, optional).
 FIELDS = {
     "hook": ({"kicker", "headline"}, {"image"}),
-    "reveal": ({"number", "label", "name"}, {"subtitle", "stats"}),
+    "reveal": ({"number", "label", "name"}, {"subtitle", "stats", "image"}),
     "comparison": ({"top", "bottom"}, set()),
     "trend": ({"title", "lines", "games"}, {"subtitle", "axis_title", "metric"}),
     "turning_point": ({"title", "stats"}, {"subtitle", "stats_title", "rink"}),
@@ -54,7 +54,7 @@ FIELDS = {
     "statement": ({"headline"}, {"kicker"}),
     "question": ({"question"}, {"call"}),
     "guess": ({"question", "options"}, {"kicker"}),
-    "leaderboard": ({"title", "rows"}, {"subtitle", "gap", "bars"}),
+    "leaderboard": ({"title", "rows"}, {"subtitle", "gap", "bars", "logos"}),
     "distribution": ({"title", "sql", "subject"}, {"subtitle", "axis_title", "average_line", "decimals",
                                                    "drop_leading_zero"}),
     "shot_map": ({"title", "from", "to"}, {"subtitle", "player_id", "team_id", "game_types", "count_line"}),
@@ -95,7 +95,11 @@ def validate(data):
         problems.append(f"unknown accent {data['accent']}")
     if data.get("through") is not None and not isinstance(data["through"], datetime.date):
         problems.append("through must be a date, for example 2026-11-09")
-    if "Data: NHL" not in str(data.get("caption") or ""):
+    caption = str(data.get("caption") or "")
+    if uses_nhl_images(data):
+        if nhl_images.CREDIT.rstrip(".") not in caption:
+            problems.append(f'caption must credit "{nhl_images.CREDIT}" (the post uses an NHL logo or headshot)')
+    elif "Data: NHL" not in caption:
         problems.append('caption must credit the data with "Data: NHL"')
     slides = data.get("slides")
     if not isinstance(slides, list) or not slides:
@@ -135,6 +139,24 @@ def validate(data):
             problems.append(f"trend: metric must be one of {', '.join(METRICS)}")
         if "image" in slide:
             problems += [f"{slide['type']}: image: {p}" for p in image_problems(slide["image"])]
+            if slide["type"] == "reveal" and isinstance(slide["image"], dict):
+                if slide["image"].get("type") != "headshot":
+                    problems.append("reveal: image: only a headshot can go on the reveal")
+                elif len(slide.get("stats") or []) > 2:
+                    problems.append("reveal: with a headshot, at most two stats fit beside it")
+        if slide["type"] == "comparison":
+            for half in ("top", "bottom"):
+                part = slide.get(half)
+                if not isinstance(part, dict):
+                    continue
+                problems += [f"comparison: {half}: unknown key '{key}'"
+                             for key in sorted(set(part) - {"kicker", "number", "line", "logo"})]
+                if "logo" in part and str(part["logo"]).upper() not in STYLE["team_accents"]:
+                    problems.append(f"comparison: {half}: logo must be a team code, such as EDM")
+        if slide["type"] == "leaderboard" and slide.get("logos") and isinstance(slide.get("rows"), list):
+            for number, row in enumerate(slide["rows"], start=1):
+                if isinstance(row, dict) and str(row.get("team", "")).upper() not in STYLE["team_accents"]:
+                    problems.append(f"leaderboard: row {number}: logos: true needs a team code, such as EDM")
         rink = slide.get("rink", "illustration") if slide["type"] == "turning_point" else None
         if rink is not None and rink not in ("illustration", "none") and not (
                 isinstance(rink, dict) and set(rink) == {"goals_of", "season"}):
@@ -216,13 +238,33 @@ def distribution_problems(slide):
 IMAGE_KEYS = {"type", "commons", "file", "credit", "layout", "side", "focus"}
 
 
+def uses_nhl_images(data):
+    """True when any slide shows an NHL headshot or logo: the caption must then credit them."""
+    for slide in data.get("slides") or []:
+        if not isinstance(slide, dict):
+            continue
+        if isinstance(slide.get("image"), dict) and slide["image"].get("type") == "headshot":
+            return True
+        if slide.get("type") == "leaderboard" and slide.get("logos"):
+            return True
+        if slide.get("type") == "comparison" and any(
+                isinstance(slide.get(half), dict) and slide[half].get("logo") for half in ("top", "bottom")):
+            return True
+    return False
+
+
 def image_problems(image):
     """Problems with a slide's image: field (style/style_guide.md, "NHL logos and headshots")."""
     if not isinstance(image, dict):
         return ["must be a mapping, for example {type: photo, commons: 'File:...jpg'}"]
+    if image.get("type") == "headshot":
+        problems = [f"unknown key '{key}'" for key in sorted(set(image) - {"type", "player_id"})]
+        if not isinstance(image.get("player_id"), int):
+            problems.append("a headshot needs the player's player_id")
+        return problems
     problems = [f"unknown key '{key}'" for key in sorted(set(image) - IMAGE_KEYS)]
     if image.get("type") != "photo":
-        problems.append("type must be photo (headshots and logos are not supported yet)")
+        problems.append("type must be photo or headshot")
     if bool(image.get("commons")) == bool(image.get("file")):
         problems.append("give either commons (a Wikimedia Commons file) or file (a photo in assets/nhl/photos/)")
     if image.get("commons") and not str(image["commons"]).startswith("File:"):
@@ -475,12 +517,13 @@ class Canvas:
 
         self.ax.add_patch(Polygon(points, closed=True, facecolor=fill, alpha=alpha, linewidth=0))
 
-    def picture(self, pixels, x, y, w, h):
-        """A picture (PIL image, RGB or RGBA) drawn at x, y with exactly w x h pixels, behind any text."""
+    def picture(self, pixels, x, y, w, h, over_shapes=False):
+        """A picture (PIL image, RGB or RGBA) drawn at x, y with exactly w x h pixels, behind any text. Photos sit
+        behind shapes too; over_shapes=True (logos) draws it above panels and bars."""
         import numpy
 
         self.ax.imshow(numpy.asarray(pixels), extent=(x, x + w, y + h, y), origin="upper", aspect="auto",
-                       interpolation="antialiased", zorder=0.5)
+                       interpolation="antialiased", zorder=2 if over_shapes else 0.5)
         self.ax.set_xlim(0, W)
         self.ax.set_ylim(self.height, 0)
 
@@ -551,13 +594,37 @@ CUTOUT_MAX = (500, 810)  # a cut-out: at most 500 px wide and 60% of the canvas 
 CUTOUT_BOTTOM = 1236     # a cut-out stands just above the handle, which it must never cover
 
 
+def place_headshot(cv, ctx, player_id):
+    """An NHL headshot bottom-aligned to the canvas edge on the right, 480 px tall (the 336 px original enlarged at
+    most 1.4 times; the style guide's ceiling is 60% of the canvas). The handle sits on a small band over it.
+    Returns the headshot's left edge, so text can stay clear of it."""
+    person = nhl_images.headshot(player_id)
+    size = nhl_images.HEADSHOT_MAX_PX
+    w, h = round(person.width * size / person.height), size
+    x = W - w
+    cv.picture(person.resize((w, h)), x, H - h, w, h)
+    ctx.handle_on_photo = True
+    return x
+
+
+def place_logo(cv, team, x, y_top, height, anchor="start"):
+    """An NHL team logo, `height` px tall with its width in proportion, its top at y_top; anchor end puts its right
+    edge at x. Never recoloured, stretched or cropped. Returns its width."""
+    picture = nhl_images.logo(team, cv.c.mode, height)
+    w = picture.width * height / picture.height
+    cv.picture(picture, x - w if anchor == "end" else x, y_top, w, height, over_shapes=True)
+    return w
+
+
 def hook(cv, slide, ctx):
     c = cv.c
     image = slide.get("image")
     left, right = M, W - M  # where the kicker and headline may go
-    if image is None or image.get("layout", "panel") == "cutout":
+    if image is None or image.get("type") == "headshot" or image.get("layout", "panel") == "cutout":
         rink_half(cv, 200, 90, 800, 0.16 if c.dark else 0.14)
-    if image is not None:
+    if image is not None and image.get("type") == "headshot":
+        right = place_headshot(cv, ctx, image["player_id"]) - 40
+    elif image is not None:
         path, credit = photos.resolve(image)
         ctx.credits.append(credit)
         side = image.get("side", "left")
@@ -599,11 +666,16 @@ def reveal(cv, slide, ctx):
     for i, line in enumerate(slide["label"][:2]):
         cv.text(label_x, 676 + 40 * i, 34, "C700", c.mut, line, spacing=4)
     cv.text(M, 850, 104, "C700", c.ink, slide["name"])
+    right = W - M
+    if isinstance(slide.get("image"), dict) and slide["image"].get("type") == "headshot":
+        # the headshot starts below the name; the subtitle and up to two stats stay to its left
+        right = place_headshot(cv, ctx, slide["image"]["player_id"]) - 40
     if slide.get("subtitle"):
-        cv.text(M, 912, 36, "B500", c.mut, slide["subtitle"])
+        size = min(36, 36 * (right - M) / cv.width(slide["subtitle"], 36, "B500"))
+        cv.text(M, 912, size, "B500", c.mut, slide["subtitle"])
     stats = slide.get("stats") or []
     if stats:
-        cv.hairline(M, W - M, 1060)
+        cv.hairline(M, right, 1060)
         for x, stat in zip((M, M + 230, M + 460, M + 740), stats[:4]):
             cv.text(x, 1150, 64, "C700", c.ink, stat["value"])
             cv.text(x, 1190, 22, "C600", c.mut, stat["label"], spacing=2.5)
@@ -613,6 +685,9 @@ def comparison(cv, slide, ctx):
     c = cv.c
     cv.rect(0, 0, W, 690, c.panel)
     top, bottom = slide["top"], slide["bottom"]
+    for half, kicker_y in ((top, 230), (bottom, 800)):  # a logo per half, right-aligned on the kicker's line
+        if half.get("logo"):
+            place_logo(cv, half["logo"], W - M, kicker_y - 70, 100, anchor="end")
     cv.text(M, 230, 30, "C700", c.accent, top["kicker"], spacing=4)
     cv.text(M - 10, 610, 400, "C800", c.accent, top["number"], spacing=-12)
     if top.get("line"):
@@ -794,6 +869,8 @@ def leaderboard(cv, slide, ctx):
     c = cv.c
     title_block(cv, slide)
     rows = slide["rows"]
+    logos = bool(slide.get("logos"))
+    step = 150 if logos else 128  # an 80 px logo (the style guide's smallest) needs taller rows
     show_bars = slide.get("bars", True)
     top_value = max(bar_value(row["value"]) for row in rows) if show_bars else 0
     track_w = W - 2 * M - 64 - 120
@@ -807,7 +884,9 @@ def leaderboard(cv, slide, ctx):
         rank = f"{rank:02d}" if isinstance(rank, int) else str(rank)
         cv.text(M, y, 30, "C600", c.accent if me else c.mut, rank)
         cv.text(M + 64, y, 44, "S600", c.ink, row["name"])
-        if row.get("team"):
+        if logos:  # the team's logo after the name, 80 px tall, with clear space of a quarter of its height
+            place_logo(cv, row["team"], M + 64 + cv.width(row["name"], 44, "S600") + 20, y - 62, 80)
+        elif row.get("team"):
             cv.text(M + 64 + cv.width(row["name"], 44, "S600") + 16, y, 24, "C700", c.mut, row["team"], spacing=2)
         cv.text(W - M, y + 2, 64, "C700", c.accent if me else c.ink, row["value"], anchor="end")
         if show_bars:
@@ -818,7 +897,7 @@ def leaderboard(cv, slide, ctx):
         before_gap = slide.get("gap") and i == 2
         if not last and not before_gap:
             cv.line([M, W - M], [y + 78, y + 78], c.ink, 1.5, alpha=c.hair_alpha * 0.8)
-        y += 128
+        y += step
 
 
 def distribution(cv, slide, ctx):

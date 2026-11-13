@@ -347,3 +347,68 @@ def test_the_accent_is_one_shade_readable_on_every_background():
         assert dark["accent"] == dark["accent_text"] == light["accent"] == light["accent_shape"]
         assert min(contrast(light["accent"], bg) for bg in backgrounds()) >= 3.0, code
     assert palette("light", "CAN")["accent"] != STYLE["country_accents"]["CAN"]["accent"]  # 2.9:1, so it moves
+
+
+NHL_CREDIT = "Words. Data, logos and headshots: NHL."
+
+
+def test_a_headshot_can_go_on_the_hook_or_the_reveal_and_needs_the_nhl_credit():
+    hook = {"type": "hook", "kicker": "K", "headline": ["A"], "image": {"type": "headshot", "player_id": 8477492}}
+    reveal = dict(SIX[1], image={"type": "headshot", "player_id": 8477492}, stats=[{"value": 1, "label": "A"}] * 2)
+    assert carousel.validate(story(caption=NHL_CREDIT, slides=[hook, reveal, SIX[2]])) == []
+    problems = carousel.validate(story(slides=[hook, reveal, SIX[2]]))  # caption says only "Data: NHL."
+    assert 'caption must credit "Data, logos and headshots: NHL." (the post uses an NHL logo or headshot)' in problems
+    three = dict(reveal, stats=[{"value": 1, "label": "A"}] * 3)
+    assert "reveal: with a headshot, at most two stats fit beside it" in carousel.validate(
+        story(caption=NHL_CREDIT, slides=[hook, three, SIX[2]]))
+    photo = dict(SIX[1], image={"type": "photo", "commons": "File:X.jpg"})
+    assert "reveal: image: only a headshot can go on the reveal" in carousel.validate(
+        story(caption=NHL_CREDIT, slides=[hook, photo, SIX[2]]))
+    bad = dict(hook, image={"type": "headshot", "player_id": "McDavid", "side": "left"})
+    problems = carousel.validate(story(caption=NHL_CREDIT, slides=[bad, SIX[1], SIX[2]]))
+    assert "hook: image: a headshot needs the player's player_id" in problems
+    assert "hook: image: unknown key 'side'" in problems
+
+
+def test_logos_on_the_leaderboard_and_the_comparison_need_team_codes_and_the_credit():
+    rows = [{"name": "A", "team": "EDM", "value": 3, "subject": True}, {"name": "B", "team": "col", "value": 2},
+            {"name": "C", "team": "TOR", "value": 1}]
+    slide = {"type": "leaderboard", "title": "T", "rows": rows, "logos": True}
+    assert carousel.validate(story(caption=NHL_CREDIT, slides=SIX[:2] + [slide])) == []
+    assert any(p.startswith('caption must credit "Data, logos')
+               for p in carousel.validate(story(slides=SIX[:2] + [slide])))
+    no_team = dict(slide, rows=rows[:2] + [{"name": "C", "value": 1}])
+    assert "leaderboard: row 3: logos: true needs a team code, such as EDM" in carousel.validate(
+        story(caption=NHL_CREDIT, slides=SIX[:2] + [no_team]))
+    compare = {"type": "comparison", "top": {"kicker": "K", "number": 1, "logo": "EDM"},
+               "bottom": {"kicker": "K", "number": 2, "logo": "XYZ", "colour": "red"}}
+    problems = carousel.validate(story(caption=NHL_CREDIT, slides=SIX[:2] + [compare]))
+    assert "comparison: bottom: logo must be a team code, such as EDM" in problems
+    assert "comparison: bottom: unknown key 'colour'" in problems
+    assert not carousel.uses_nhl_images(story())
+
+
+def test_slides_with_headshots_and_logos_draw_without_covering_the_handle(monkeypatch, tmp_path):
+    """Draws a hook and reveal with a headshot, a leaderboard with logos and a comparison with logos, using made-up
+    pictures (no downloads), and checks every slide is saved."""
+    from matplotlib.font_manager import FontProperties
+    from PIL import Image
+
+    monkeypatch.setattr(carousel.make_post, "fonts", lambda: {role: FontProperties() for role in
+                                                              ("footer", "title", "hero", "medium", "semi")})
+    monkeypatch.setattr(carousel.nhl_images, "headshot", lambda player_id: Image.new("RGBA", (336, 336), (9, 9, 9, 255)))
+    monkeypatch.setattr(carousel.nhl_images, "logo", lambda team, mode, height: Image.new("RGBA", (height * 3 // 2, height)))
+    monkeypatch.setenv("NHL_POSTS_DIR", str(tmp_path))
+    rows = [{"name": "A", "team": "EDM", "value": 3, "subject": True}, {"name": "B", "team": "COL", "value": 2},
+            {"name": "C", "team": "TOR", "value": 1}]
+    slides = [
+        {"type": "hook", "kicker": "K", "headline": ["Aaaa", "Bbbb"], "image": {"type": "headshot", "player_id": 1}},
+        dict(SIX[1], image={"type": "headshot", "player_id": 1}, subtitle="S", stats=[{"value": 1, "label": "A"}]),
+        {"type": "leaderboard", "title": "T", "rows": rows, "logos": True},
+        {"type": "comparison", "top": {"kicker": "K", "number": 1, "logo": "EDM"},
+         "bottom": {"kicker": "K", "number": 2, "logo": "COL"}},
+    ]
+    data = story(caption=NHL_CREDIT, slides=slides)
+    assert carousel.validate(data) == []
+    paths = carousel.render(None, {**data, "name": "images"}, "@handle")
+    assert [p.name for p in paths] == ["01.png", "02.png", "03.png", "04.png", "caption.txt"]

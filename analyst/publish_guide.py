@@ -18,6 +18,21 @@ TITLE = "NHL database: definitions and pitfalls"
 TOPIC = "nhl"
 DESCRIPTION = "Scope, definitions, coverage and common mistakes for questions about the nhl database."
 ACCESS = "user"  # private to the owner (decided 2026-10-15); 'organization' needs admin rights
+# Claude.ai Project instructions take at most 16,000 characters. The Project now reads the guide from MotherDuck
+# (analyst/claude_project_instructions.md), but the guide stays small enough to paste as a fallback.
+SIZE_LIMIT = 16_000
+SIZE_WARNING = 14_000
+
+
+def size_check(content):
+    """Refuse a guide over SIZE_LIMIT characters; return a warning above SIZE_WARNING, else None."""
+    if len(content) > SIZE_LIMIT:
+        raise ValueError(f"The guide is {len(content):,} characters, over the {SIZE_LIMIT:,} limit. Shorten it: "
+                         "move column detail into the dbt descriptions and keep the guide for pitfalls.")
+    if len(content) > SIZE_WARNING:
+        return (f"Warning: the guide is {len(content):,} characters, {SIZE_LIMIT - len(content):,} under the "
+                f"{SIZE_LIMIT:,} limit. Shorten it soon.")
+    return None
 
 
 def guide_text(path=GUIDE_FILE):
@@ -47,6 +62,12 @@ def main():
     args = parser.parse_args()
 
     content = guide_text()
+    try:
+        warning = size_check(content)
+    except ValueError as error:
+        raise SystemExit(str(error))
+    if warning:
+        print(warning)
     con = connect()
     try:
         guide_id = existing_guide_id(con)

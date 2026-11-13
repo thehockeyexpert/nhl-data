@@ -118,7 +118,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - Ingest standings (each team's conference and division), many seasons, resumable: `uv run python -m ingest.backfill --job standings --from 20262027 --to 19171918`; nightly: `uv run python -m ingest.standings --season 20262027`
 - Ingest records lists (players, draft, awards, playoff series) and standings rules: `uv run python -m ingest.records`, then rebuild the records tables and their checks: `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:records+`
 - Refresh GeoNames (birthplace coordinates), then rebuild: `uv run python -m ingest.geonames`, then `uv run dbt build --project-dir dbt --profiles-dir dbt --select canada_province_codes birthplace_successor_countries birthplace_manual_fixes tag:geonames+`
-- Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first)
+- Publish the MotherDuck guide from `docs/motherduck_guide.md`: `uv run python -m analyst.publish_guide` (`--dry-run` first; refused over 16,000 characters). The Claude.ai Project reads it from MotherDuck (`analyst/claude_project_instructions.md`)
 - Render a story carousel (facts re-checked first; mixed mode unless `--mode light|dark`):
   `uv run python -m instagram.carousel render carousels/<name>.yml`; facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
 - Find a free-licence player photo on Wikimedia Commons: `uv run python -m instagram.photos search "<player>"`, then `download "File:..."` (saved in the git-ignored `assets/nhl/photos/`); a cut-out photo needs `uv run --group photos ...` to render

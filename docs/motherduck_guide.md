@@ -2,210 +2,136 @@
 
 This is the text of the MotherDuck guide for the conversational query layer, and the master copy. Change this file
 first, then publish it: `uv run python -m analyst.publish_guide` (add `--dry-run` to see what it would do). Guides
-cannot be created in the MotherDuck web UI, and the MCP tools that write guides are blocked. Also paste the text
-below the line into the Claude.ai Project instructions. Definitions come from `docs/definitions.md`.
+cannot be created in the MotherDuck web UI, and the MCP tools that write guides are blocked. The Claude.ai Project
+reads this guide from MotherDuck (`analyst/claude_project_instructions.md`), so there is nothing to paste. Keep the
+published text under 16,000 characters (the script warns above 14,000 and refuses above 16,000), so it can still be
+pasted as a fallback. Definitions come from `docs/definitions.md`.
 
 ---
 
-Read this before answering any question from the `nhl` database. Use the `marts` schema. Table and column
-comments in MotherDuck carry more detail.
+Read this before answering any question from the `nhl` database. Use the `marts` schema; table and column comments
+in MotherDuck carry more detail. If a question needs data that is not loaded, say so and name what is missing; never
+estimate it from other tables.
 
-## Coverage: what is and is not loaded (2026-11-11)
-If a question needs data that is not loaded, say so plainly and name what is missing. Never estimate it from
-other tables.
+## Tables (`marts`; regular season and playoffs, all history, unless stated)
+- `fct_games`: one row per game; `game_type` 1 preseason, 2 regular season, 3 playoffs. Final scores as the NHL
+  reports them: a shootout win counts as one goal. 2004-05 was not played.
+- `fct_team_games`: one row per team per finished game. `result` W, L, T or OTL under that era's rules; `points`.
+- `fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
+- `fct_team_seasons`: the NHL's official regular-season team totals. Refreshed Sundays, like draft, awards and
+  series, so the current season can lag a week.
+- `fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
+- `fct_skater_seasons`: one row per skater, season and game type; a traded player has one row
+  (`bridge_skater_season_teams` lists the teams). `fct_skater_games`: one row per skater per game, with `team_id`
+  and `opponent_team_id` for that game: for "most in one game", streaks and one team's share of a traded player.
+- `fct_shots`: one row per shot on goal, missed shot, blocked shot and goal, with period, time, strength
+  (`situation_code`), shooter, goalie, blocker, assists, shot type, coordinates. Goals only before 1997-98; shots on
+  goal from 1997-98; missed and blocked shots, coordinates and strength from 2009-10. `is_goal`, `is_on_goal`,
+  `is_shootout` (leave shootout attempts out of goal and shot totals). Join `dim_players` on `shooting_player_id`,
+  `goalie_in_net_id`, `assist1_player_id` (primary) or `assist2_player_id`. Which end a team attacks:
+  `home_team_defending_side`.
+- `fct_penalties`: one row per penalty. `committed_by_player_id`, `drawn_by_player_id` (from 1997-98),
+  `served_by_player_id`, `penalized_team_id`, `penalty_desc_key` (hooking, fighting...), `penalty_type_code` (MIN,
+  MAJ, MIS, GAM, MAT, BEN, PS), `penalty_minutes`. `is_fight`: one per player per fight, labelled only from 1947-48.
+- `fct_hits`: one row per hit, from 2009-10. `hitting_player_id` threw it, `hittee_player_id` took it. Counted by
+  arena scorers, so counts differ between arenas.
+- `fct_skater_shootouts`: shootout attempts, goals, game-deciding goals per skater per regular season, from 2005-06.
+  Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
+- `fct_player_league_seasons`: one row per player, season, league, team and game type in every league on the
+  player's NHL page (junior, college, minor and major pro, international, NHL). `league_abbrev` as the NHL writes it
+  (OHL, AHL, NCAA, WC-A...); `is_before_first_nhl_season`. Sum several rows in a season. For NHL totals use the NHL
+  tables. Only what the NHL lists: no row does not prove someone never played there.
+- `dim_players`: one row per person; use `is_nhl_player` (D15), as the list holds people who never played.
+- `dim_birthplaces`: `latitude`, `longitude` per birthplace (GeoNames, CC BY 4.0: credit GeoNames when shown); join
+  on `birthplace_key`. 'unmatched' has no coordinates: say how many players a map leaves out. Former towns share
+  their successor's point (Fort William at Thunder Bay).
+- `dim_teams`: one row per team identity, `franchise_id` (the NHL's) and `lineage_id` (ours). `is_nhl_team` false
+  for non-NHL preseason and early playoff opponents.
+- `dim_team_season`: conference and division per team per regular season. Join on `team_id` and `season`.
+- `dim_seasons` (season facts and rules), `dim_games` (date, type, teams, venue).
+- `fct_draft_picks` (1963 on), `fct_award_results` (`is_winner`; finalists also listed; Stanley Cup rows name every
+  player engraved), `dim_trophies`, `fct_playoff_series` (`winner_team_id`, `loser_team_id`, `is_final_round`;
+  `has_winner` false for the unfinished 1919 Final), `bridge_playoff_series_games`.
+- `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
-**Loaded and modelled (`marts`):**
-- Games and results, 1917-18 to today (2004-05 was not played): `fct_games`, `fct_team_games`.
-- Standings before every regular-season game, under each era's rules: `fct_team_standings_by_game`.
-- Goalie games, regular season and playoffs, all history: `fct_goalie_games` (decisions, shutouts, goals against;
-  shots and saves from 1955-56).
-- **Skater season totals**, regular season and playoffs, all history: `fct_skater_seasons` (games, goals, assists,
-  points, penalty minutes, power-play and short-handed scoring; shots, plus-minus, ice time and faceoffs only in
-  later eras). One row per player, season and game type; a player who changed teams has one row, not one per team
-  (`bridge_skater_season_teams` lists his teams).
-- **Skater games**, regular season and playoffs, all history: `fct_skater_games`, one row per skater per game, with
-  the skater's team in that game. Answers "most in one game", streaks, and totals for one team when a player changed teams.
-  Same early-era gaps as the season totals (shots and plus-minus from 1959-60, ice time and faceoffs from 1997-98).
-- Players, with birthplace and `is_nhl_player`: `dim_players`. Seasons: `dim_seasons`. Games: `dim_games`.
-  Teams, franchises and lineages: `dim_teams`. Each team's conference and division per season, 1917-18 to the
-  current season: `dim_team_season`. Birthplace coordinates: `dim_birthplaces` (97.4% of players with a birth city).
-- Records, refreshed weekly (Sundays), so the current season can lag by up to a week: draft picks
-  (`fct_draft_picks`, 1963 on), trophies and award results (`dim_trophies`, `fct_award_results`), playoff series
-  (`fct_playoff_series`, `bridge_playoff_series_games`), official team season totals (`fct_team_seasons`).
+**Not loaded, never estimate:** giveaways, takeaways, faceoff events, stoppages, shifts, zone starts, team game
+statistics, game duration, travel, expected goals, Game Score.
 
-- **Shots from the play-by-play, 1917-18 to today:** `fct_shots`, one row per shot on goal, missed shot, blocked
-  shot and goal, regular season and playoffs, with period, time, strength (`situation_code`), shooter, goalie,
-  blocker, both assists on goals, shot type and coordinates. Before 1997-98 it holds goals only (with period, time,
-  scorer and assists). Shots on goal from 1997-98; missed and blocked shots, coordinates and strength from 2009-10.
-
-- **Hits and penalties from the play-by-play:** `fct_hits` (2009-10 onward) and `fct_penalties` (1917-18 onward),
-  regular season and playoffs. A fight is a fighting penalty (`is_fight`), one per player per fight, recorded only
-  from 1947-48 (earlier majors have no fighting label).
-
-- **Players' seasons in every league** (player pages): `fct_player_league_seasons`, for everyone in the player list:
-  junior, college, minor and major pro, international tournaments and the NHL, as the NHL's player pages record them.
-
-**Not loaded:**
-- The other play-by-play events: giveaways, takeaways, faceoffs, stoppages.
-- Team game statistics (power play, penalties), shifts, game duration.
-- Players' seasons in other leagues (junior, college), arena locations and travel.
-
-## Tables
-- `marts.fct_games`: one row per game (types 1 preseason, 2 regular season, 3 playoffs). Final scores as the NHL
-  reports them: a shootout win counts as one goal.
-- `marts.fct_team_games`: one row per team per finished regular-season or playoff game. `result` is W, L, T or OTL
-  under that era's rules; `points` is the standings points.
-- `marts.fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
-- `marts.fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
-- `marts.dim_teams`: one row per team identity, with `franchise_id` (the NHL's) and `lineage_id` (ours).
-- `marts.dim_birthplaces`: one row per birthplace with `latitude` and `longitude` (GeoNames, CC BY 4.0: credit
-  GeoNames when showing them). Join from `dim_players` on `birthplace_key`. `match_method` 'unmatched' has no
-  coordinates; say how many players a map leaves out. Former towns share a successor's point (Fort William at Thunder Bay).
-- `marts.dim_team_season`: one row per team per regular season, with `conference_name` and `division_name`. Join on
-  `team_id` and `season`, never on `team_id` alone.
-- `marts.fct_shots`: one row per shot event, 1917-18 onward (goals only before 1997-98). `is_goal`, `is_on_goal`, `is_shootout` (shootout
-  attempts are kept: leave them out of goal and shot totals). `shooting_team_id` is the shooter's team. Join to
-  `dim_players` on `shooting_player_id`, `goalie_in_net_id`, `assist1_player_id` (primary assist) or
-  `assist2_player_id`. Coordinates: see `docs/data_coverage.md` for which end a team attacks
-  (`home_team_defending_side`).
-- `marts.fct_hits`: one row per hit, 2009-10 onward. `hitting_player_id` threw it, `hittee_player_id` took it;
-  `hitting_team_id`, `hit_team_id`. Hits are counted by arena scorers, so counts differ between arenas.
-- `marts.fct_penalties`: one row per penalty, 1917-18 onward. `committed_by_player_id`, `drawn_by_player_id`,
-  `served_by_player_id`, `penalized_team_id`; `penalty_desc_key` is the kind (hooking, fighting...),
-  `penalty_type_code` the class (MIN, MAJ, MIS, GAM, MAT, BEN, PS), `penalty_minutes`. `is_fight` for fights.
-- `marts.fct_skater_shootouts`: shootout attempts, goals, game-deciding goals and success rate per skater per
-  regular season, 2005-06 onward. Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
-- `marts.fct_player_league_seasons`: one row per player, season, league, team and game type (2 regular season,
-  3 playoffs), in every league on the player's NHL page. `league_abbrev` as the NHL writes it (OHL, AHL, NCAA, WC-A...).
-  `is_before_first_nhl_season` for paths to the NHL. A player can have several rows in a season (traded, several
-  leagues): sum them. For NHL totals use `fct_skater_seasons` and `fct_goalie_games`; use this table for other leagues.
-  Coverage of other leagues is only what the NHL lists, so "no row" does not prove someone never played there.
-- `marts.fct_skater_seasons`: one row per skater per season and game type. Join to `dim_players` on `player_id`.
-- `marts.fct_skater_games`: one row per skater per game. `team_id` and `opponent_team_id` are the teams in that
-  game; join to `fct_games` or `dim_games` on `game_id`. For season or career totals use `fct_skater_seasons`.
-- `marts.fct_draft_picks` (`overall_pick`, `round_number`, `team_id`, `player_id`), `marts.fct_award_results`
-  (`is_winner` true for winners; finalists and runners-up are also listed, and the Stanley Cup rows name every
-  player engraved on the Cup), `marts.dim_trophies`.
-- `marts.fct_playoff_series`: one row per NHL playoff series, `winner_team_id` and `loser_team_id`; `has_winner` is
-  false for the unfinished 1919 Final. `is_final_round` marks the Stanley Cup Final.
-- `marts.fct_team_seasons`: the NHL's official regular-season team totals (wins, points, goals for and against).
-- `marts.dim_players`: one row per person. Use `is_nhl_player` (D15): the list also holds people who never played.
-- `marts.dim_seasons`, `marts.dim_games`: season facts and rules; game date, type, teams and venue.
-- `marts.goalie_records_vs_above_500`: question G01, still a DRAFT.
+## When stats begin (never count earlier seasons as zero; leave them out of "best ever" rates)
+- Strength split of skater scoring (even, power play, short-handed) 1933-34; goalie shots and saves 1955-56; skater
+  shots and plus-minus 1959-60; ice time and faceoffs 1997-98.
+- Play-by-play: primary and secondary assists all history (`fct_shots`, not in the totals tables); fights 1947-48;
+  shots on goal 1997-98; hits, shot attempts and goal strength 2009-10 (earlier power-play goals: skater totals).
+- Preseason is complete only from 2005-06. Ties up to 2003-04 (`is_tie`); shootouts from 2005-06.
+- 1917-18 and 2019-20 are unbalanced (a withdrawn team; the pandemic).
 
 ## Players and scoring
-- **Identify a player by `player_id`, never by name alone.** Look the name up in `dim_players` first; if several
-  NHL players share it, say so and ask or show each one.
-- **"Most goals", "most assists" and "most points" include goalies** (D15): add `fct_goalie_games.goals` and
-  `assists` to the skater totals. Questions about skaters only leave goalies out.
-- **"Canadian", "Swedish" and the like (D24):** born in that country (`birth_country`), not nationality.
-- **Totals for one team when a player changed teams (D27):** sum `fct_skater_games` (or `fct_goalie_games`) by
-  `team_id`; `fct_skater_seasons` combines all of a season's teams in one row.
-- **Where a player is from (D14):** birthplace as the NHL records it. Group by **`birth_city_standard`**, which
-  merges spellings of the same place (Göteborg and Gothenburg, Saint Paul and St. Paul), together with
-  `birth_state_province` and `birth_country`, so towns that share a name stay separate. Countries are three-letter
-  codes (CAN, USA, SWE).
-- **Former names count as separate places:** Fort William and Port Arthur are not Thunder Bay, Berlin is not
-  Kitchener, South Porcupine is not Timmins, Leningrad is not St. Petersburg, and suburbs such as Scarborough or
-  Verdun are not Toronto or Montréal. Say so in city rankings: sites that group by today's municipality (for
-  example QuantHockey) give different totals.
-- **Playoffs before 1926-27:** games against non-NHL teams (Vancouver, Seattle, Victoria, Edmonton, Calgary) have
-  no credited skater or goalie statistics. Say so when early playoff totals matter.
-- **1987-88 playoffs:** the suspended Final game of 1988-05-24 counts in player statistics but is not in the games
-  tables, so Edmonton and Boston players have one more game than their team. In `fct_skater_games` its 36 rows
-  (game 1987030999) have an empty `team_id`.
-- A shootout goal is not a goal in player totals. Shootout stats are in `fct_skater_shootouts`.
+- **Identify a player by `player_id`**, looked up in `dim_players`; if several NHL players share a name, say so.
+- **"Most goals/assists/points" include goalies** (D15): add `fct_goalie_games` goals and assists. "Skaters"
+  excludes them.
+- **Nationality (D24):** "Canadian", "Swedish" mean born there (`birth_country`, three-letter codes).
+- **One team's totals for a traded player (D27):** sum `fct_skater_games` or `fct_goalie_games` by `team_id`.
+- **Where from (D14):** group by `birth_city_standard` (merges spellings: Göteborg/Gothenburg) with
+  `birth_state_province` and `birth_country`. Former names are separate places (Fort William is not Thunder Bay,
+  Berlin not Kitchener, Scarborough not Toronto); sites grouping by today's municipality give different totals.
+- **Playoffs before 1926-27:** games against non-NHL teams have no player statistics.
+- **1987-88:** the suspended Final game of 1988-05-24 counts in player stats but not in the games tables
+  (game 1987030999, empty `team_id` in `fct_skater_games`).
+- A shootout goal is not a goal in player totals.
 
-## Stat terms (full list in the repo's `docs/definitions.md`, "Stat terms")
-- **Strength:** "even strength" follows the NHL and includes 4-on-4 and 3-on-3; it is not 5-on-5. Say which one an
-  answer uses.
-- **Rates and percentages:** sum the totals first, then divide; never average percentages. State the minimum sample
-  used.
-- **When stats begin:** strength split (even-strength, power-play, short-handed) from 1933-34; skater shots and
-  plus-minus from 1959-60; goalie shots and saves from 1955-56; ice time and faceoffs from 1997-98. Leave earlier
-  seasons out of "best ever" rate questions; don't count them as zero.
-- **Formulas:** save % = saves / shots against; GAA = goals against x 3,600 / `time_on_ice_seconds`.
-- **Faceoff %** is empty for players who took no faceoffs, and there are no raw win and loss counts.
-- **Primary and secondary assists:** in `fct_shots` (goals, `assist1_player_id` and `assist2_player_id`, shootouts
-  left out), all history. Not in the season or game totals. The number of penalties: `fct_penalties`, all history;
-  penalties drawn only from 1997-98.
-- **Power-play goals:** `situation_code` in `fct_shots` only from 2009-10; for earlier seasons use the skater totals.
-- **Shot attempts** (Corsi/SAT: on goal + missed + blocked) and **unblocked attempts** (Fenwick/USAT: on goal +
-  missed) come from `fct_shots`, from 2009-10 only. Leave shootout attempts out.
-- **Hits** only from 2009-10 and **fights** only from 1947-48 (`fct_hits`, `fct_penalties`): never treat earlier
-  seasons as zero.
-- **Not loaded, never estimate:** expected goals and anything built on them, shifts, zone starts, takeaways,
-  giveaways and Game Score. Say they are not loaded.
-- **Other sites' seasons:** a single year such as "2018" means 2018-19. Convert with
-  `start_year * 10000 + start_year + 1`.
+## Stat terms (full list: `docs/definitions.md`)
+- "Even strength" follows the NHL and includes 4-on-4 and 3-on-3, not only 5-on-5. Say which one is used.
+- Rates: sum totals, then divide; never average percentages. State the minimum used.
+- Save % = saves / shots against; GAA = goals against x 3,600 / `time_on_ice_seconds`. Faceoff % is empty for
+  players with no faceoffs; there are no win and loss counts.
+- Corsi/SAT = on goal + missed + blocked; Fenwick/USAT = on goal + missed; from 2009-10, shootouts left out.
+- A single year such as "2018" means 2018-19: `start_year * 10000 + start_year + 1`.
 
-## Default scope (D11, decided)
-- **Regular season only** (`game_type = 2`) unless the question says playoffs or preseason. If a question
-  includes playoffs, report them separately as well as combined. Never include special events (all-star games and
-  the like; they are not in `fct_games`).
-- Count only finished games (`is_final`). The game list holds "if necessary" playoff games that were never played.
-- Seasons are 8-digit IDs: 20252026 is 2025-26. The current season (2026-27) is in progress: say so, or exclude
-  it, for "most ever" questions.
-- "Since 1990" means 1990-91 onward.
+## Default scope (D11)
+- Regular season only (`game_type = 2`) unless playoffs or preseason are asked; with playoffs, give them separately
+  and combined. Special events (all-star games) are not in `fct_games`.
+- Finished games only (`is_final`): the game list holds never-played "if necessary" playoff games.
+- Seasons are 8-digit IDs (20252026 = 2025-26). 2026-27 is in progress: say so, or exclude it, for "most ever".
+- "Since 1990" means 1990-91 onward. "The 1980s" is 1980-81 to 1989-90 (D28).
 
 ## Teams in history questions
-- Group by `lineage_id`, not by team name: a club that moved or was renamed has several team rows.
-- Our lineage differs from the NHL for the original Winnipeg Jets (1979-80 to 1995-96): we put them with the
-  Coyotes, the NHL puts them with today's Jets. Say so when either club is involved.
-- Utah is a separate lineage from the Coyotes.
-- For franchise-record questions, also give the `franchise_id` figure where it differs from `lineage_id` (D03).
-- **Conferences and divisions change by era** (`dim_team_season`). Divisions are empty in 38 seasons (1917-18 to
-  1925-26 and 1938-39 to 1966-67) and conferences in 58 (up to 1973-74, and 2020-21). A division name can mean
-  different groups in different eras (Central, Pacific); group by season as well as name. 2020-21 used four
-  one-off sponsor-named divisions (for example Scotia North).
+- Group by `lineage_id`, not team name. Our lineage puts the original Winnipeg Jets (1979-80 to 1995-96) with the
+  Coyotes; the NHL puts them with today's Jets: say so when either is involved. Utah is separate from the Coyotes.
+  For franchise records also give the `franchise_id` figure where it differs (D03).
+- Divisions are empty in 1917-18 to 1925-26 and 1938-39 to 1966-67, conferences up to 1973-74 and in 2020-21. A
+  division name can mean different groups in different eras: group by season and name. 2020-21 had four one-off
+  sponsor-named divisions.
 
-## Results, ties and overtime (common mistakes)
-- Ties exist only up to 2003-04 (`is_tie`). There was no 2004-05 season (lockout).
-- **`last_period_type = 'OT'` does not mean the game was decided in overtime.** Before 2005-06, 3,086
-  regular-season games went to overtime and still ended tied. For "decided in overtime or a shootout", add
-  `NOT is_tie`.
-- Shootouts start in 2005-06 (`last_period_type = 'SO'`).
-- An OTL result exists only in seasons that gave a point for an overtime loss; otherwise an overtime loss is L.
-- Goalie decisions: from 1999-00 to 2003-04 a goalie's overtime loss is recorded as L, while the team gets an OTL.
+## Results, ties and overtime
+- **`last_period_type = 'OT'` does not mean decided in overtime:** before 2005-06, 3,086 regular-season games went
+  to overtime and ended tied. For "decided in OT or a shootout" add `NOT is_tie`.
+- OTL exists only in seasons that gave a point for an overtime loss; otherwise it is L. From 1999-00 to 2003-04 a
+  goalie's overtime loss is L while the team gets OTL.
+- Standings points (D02): 2 for a win, 1 for a tie, 1 for an OT or shootout loss where that season's rules give it.
 
 ## Definitions
-- **Strong opponent (D01).** Headline: the opponent's points % before the game is strictly above the league median
-  that day, and the opponent has played at least 10 games (`is_top_half_before`). Second column: above .500 by
-  points % before the game (`is_above_500_before`).
+- **Strong opponent (D01):** headline, opponent's points % before the game strictly above the league median that
+  day, with at least 10 games played (`is_top_half_before`); second, above .500 (`is_above_500_before`).
 - **G01: always lead with the top-half headline (`top_half_*`), even when the question says ".500"; give the
-  literal above-.500 version (`above_500_*`) second.**
+  above-.500 version (`above_500_*`) second.**
 - **A goalie's record (D04):** the goalie's credited decisions, whoever started.
-- **Best record (D23):** win percentage W / (W + L + T + OTL) is the headline, with points percentage
-  (2W + T + OTL) / (2 x decisions) beside it.
-- **Minimums (D05):** G01 needs at least 50 qualifying decisions; report the 100-decision version too and say
-  which is shown. Other rates, regular season, where "team games" is the most games any team played that season:
-  skater career 400 games; skater season half the team games; shooting % also shots at least equal to team games
-  (season) or 1,000 shots (career); goalie season one third of the team games; goalie career 250 games, with
-  career save % only over seasons from 1955-56. Never prorate a shortened season (D29).
-- **Streaks (D06):** a player's streak counts consecutive games the player played (missed games skipped), within
-  one regular season; a streak carried across seasons may be given as extra. A team winning streak counts wins of
-  any kind; a loss, overtime or shootout loss, or tie ends it.
-- **Rookie (D09):** the NHL's Calder rule from NHL games: no earlier season over 25 games, not 6 or more games in
-  each of two earlier seasons, and from 1990-91 under 26 on September 15. We have no other pro leagues: say so,
-  and name WHA arrivals (Gretzky and Mike Rogers in 1979-80 were not rookies for the NHL).
-- **Age (D25):** youngest or oldest, exact age on the game date; "age in a season", age on February 1.
-- **Active player (D26):** played a game this season or last season.
-- **Decades (D28):** "the 1980s" is 1980-81 to 1989-90.
-- **One-goal games (D07):** overtime wins count, shootout games do not unless asked. **Winning record (D13):** more
-  wins than all losses (overtime and shootout losses included), ties ignored. **Hat trick (D16):** 3 or more goals
-  in a game. **Back-to-back (D08):** played the previous calendar day.
-- **Standings points (D02):** 2 for a win, 1 for a tie, 1 for an overtime or shootout loss where that season's
-  rules give it.
-
-## Era limits
-- Goalie shots against and saves start in 1955-56.
-- Preseason is complete only from 2005-06.
-- 1917-18 and 2019-20 are unbalanced seasons (a withdrawn team; a season stopped by the pandemic).
-- Some preseason and early playoff opponents are not NHL teams (`dim_teams.is_nhl_team` false).
+- **Best record (D23):** win % W / (W + L + T + OTL) headline, points % (2W + T + OTL) / (2 x decisions) beside it.
+- **Minimums (D05), regular season; "team games" = most games any team played that season:** G01 50 qualifying
+  decisions (also report 100). Skater career 400 games, season half the team games; shooting % also shots at least
+  the team games (season) or 1,000 (career); goalie season a third of the team games, career 250 games, career
+  save % from 1955-56 only. Never prorate a shortened season (D29).
+- **Streaks (D06):** consecutive games the player played, within one regular season (across seasons as an extra).
+  A team winning streak counts any win; a loss of any kind or a tie ends it.
+- **Rookie (D09):** the Calder rule on NHL games: no earlier season over 25 games, not 6+ games in each of two
+  earlier seasons, from 1990-91 under 26 on September 15. Other pro leagues are not applied: say so, and name WHA
+  arrivals (Gretzky and Mike Rogers in 1979-80 were not NHL rookies).
+- **Age (D25):** exact age on the game date; "age in a season" is age on February 1. **Active (D26):** played this
+  season or last.
+- **One-goal games (D07):** OT wins count, shootout games only if asked. **Winning record (D13):** more wins than
+  all losses, ties ignored. **Hat trick (D16):** 3+ goals in a game. **Back-to-back (D08):** played the previous day.
 
 ## How to answer
-- Say the reading you used when a question is ambiguous, and the minimum applied to any rate.
-- **Write records as W-L-T-OTL with the labels**, for example "74 W, 31 L, 0 T, 14 OTL". Never give three bare
-  numbers: it is unclear which category is missing.
-- When combining rankings with UNION ALL, add a final ORDER BY: the order is otherwise not guaranteed.
-- Give facts and figures only. The data comes from the NHL's unofficial endpoints, for personal use.
+- Say the reading used for an ambiguous question, and the minimum applied to any rate.
+- **Write records with labels**, e.g. "74 W, 31 L, 0 T, 14 OTL", never three bare numbers.
+- With UNION ALL rankings, add a final ORDER BY.
+- Facts and figures only. The data comes from the NHL's unofficial endpoints, for personal use.

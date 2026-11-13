@@ -179,7 +179,9 @@ Last updated: 2026-11-11
 ## Next
 
 1. **Keep the guide in step.** When it changes: edit `docs/motherduck_guide.md`, run
-   `uv run python -m analyst.publish_guide`, and paste the same text into the Claude.ai Project instructions.
+   `uv run python -m analyst.publish_guide`. The Claude.ai Project reads it from MotherDuck
+   (`analyst/claude_project_instructions.md`, 2026-11-13), so nothing is pasted; the script refuses a guide over
+   16,000 characters.
 2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
    the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
    ignored.

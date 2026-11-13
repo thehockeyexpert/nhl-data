@@ -20,3 +20,17 @@ def test_the_real_guide_has_a_body():
     text = publish_guide.guide_text()
     assert text.startswith("Read this before answering")
     assert "Repo note" not in text and "the owner creates and updates" not in text
+
+
+def test_a_guide_over_the_limit_is_refused():
+    with pytest.raises(ValueError):
+        publish_guide.size_check("x" * (publish_guide.SIZE_LIMIT + 1))
+
+
+def test_a_guide_near_the_limit_gets_a_warning():
+    assert publish_guide.size_check("x" * (publish_guide.SIZE_WARNING + 1)).startswith("Warning")
+    assert publish_guide.size_check("x" * publish_guide.SIZE_WARNING) is None
+
+
+def test_the_real_guide_fits_the_limit():
+    assert len(publish_guide.guide_text()) <= publish_guide.SIZE_LIMIT

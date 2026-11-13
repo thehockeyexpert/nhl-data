@@ -186,6 +186,49 @@ def test_number_text():
     assert carousel.number_text(-0.05, 2, True) == "-.05"
 
 
+def shot_map_slide(**overrides):
+    slide = {"type": "shot_map", "title": "T", "player_id": 8478402,
+             "from": datetime.date(2025, 10, 7), "to": datetime.date(2026, 4, 16)}
+    slide.update(overrides)
+    return carousel.validate(story(slides=SIX[:2] + [slide]))
+
+
+def test_a_shot_map_needs_one_shooter_and_a_date_range_from_2009_10():
+    assert shot_map_slide() == []
+    assert shot_map_slide(game_types=[2, 3], count_line=False) == []
+    both = shot_map_slide(team_id=22)
+    assert "shot_map: give either player_id or team_id" in both
+    early = shot_map_slide(**{"from": datetime.date(2008, 10, 1)})
+    assert any("shot locations start in 2009-10" in p for p in early)
+    backwards = shot_map_slide(**{"to": datetime.date(2025, 10, 1)})
+    assert "shot_map: from must be on or before to" in backwards
+    assert any(p.startswith("shot_map: game_types") for p in shot_map_slide(game_types=[1]))
+    assert carousel.slide_mode(story(), "shot_map") == "light"
+
+
+def test_shot_locations_read_normalised_shots_and_count_the_own_half():
+    con = duckdb.connect()
+    con.execute("create schema marts")
+    con.execute("""
+        create table marts.int_shot_geometry as select * from (values
+            (1, 20, 80, 5, true, true, 2, date '2025-10-08'),     -- a goal 9 ft out, 5 ft to one side
+            (1, 20, 40, -10, true, false, 2, date '2025-10-08'),  -- a shot from the blue line area
+            (1, 20, -30, 0, true, false, 2, date '2025-10-09'),   -- from the shooter's own half
+            (1, 20, 70, 0, false, false, 2, date '2025-10-09'),   -- blocked: left out
+            (2, 20, 60, 0, true, false, 2, date '2025-10-09'),    -- another player
+            (1, 20, 50, 0, true, false, 3, date '2025-10-09'),    -- playoffs: left out by default
+            (1, 20, 50, 0, true, false, 2, date '2025-12-01')     -- after the range
+        ) t(shooting_player_id, shooting_team_id, x_norm, y_norm, is_unblocked, is_goal, game_type, game_date)""")
+    shots, own_half = carousel.shot_locations(con, datetime.date(2025, 10, 7), datetime.date(2025, 10, 31), player_id=1)
+    assert sorted(shots) == [(32.5, 40, False), (47.5, 80, True)]
+    assert own_half == (1, 0)  # one attempt from his own half, not a goal
+    shots, _ = carousel.shot_locations(con, datetime.date(2025, 10, 7), datetime.date(2025, 10, 31), team_id=20,
+                                       game_types=(2, 3))
+    assert len(shots) == 4
+    with pytest.raises(carousel.CarouselError, match="no shots with locations"):
+        carousel.shot_locations(con, datetime.date(2024, 1, 1), datetime.date(2024, 1, 2), player_id=1)
+
+
 def test_validate_names_every_problem():
     slides = [dict(s) for s in SIX]
     del slides[1]["name"]

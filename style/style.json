@@ -236,7 +236,8 @@
    "question",
    "guess",
    "leaderboard",
-   "distribution"
+   "distribution",
+   "shot_map"
   ],
   "default_mode": "mixed",
   "mixed": {
@@ -250,7 +251,8 @@
    "question": "dark",
    "guess": "dark",
    "leaderboard": "light",
-   "distribution": "light"
+   "distribution": "light",
+   "shot_map": "light"
   },
   "comparison_panel": {
    "light": "#E4EAF0",

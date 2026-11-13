@@ -37,7 +37,7 @@ matplotlib.rcParams["lines.scale_dashes"] = False  # dash lengths in points, as 
 
 W, H, M = 1080, 1350, 80  # canvas and margins (story_reference.html)
 SLIDE_TYPES = ["hook", "reveal", "comparison", "trend", "turning_point", "conclusion", "statement",
-               "question", "guess", "leaderboard", "distribution"]
+               "question", "guess", "leaderboard", "distribution", "shot_map"]
 SLIDE_COUNT = (3, 20)  # Instagram allows up to 20 slides; fewer than 3 is not a story
 MIXED = STYLE["story"]["mixed"]
 CAROUSEL_KEYS = {"accent", "mode", "through", "handle", "caption", "slides", "facts"}
@@ -57,7 +57,9 @@ FIELDS = {
     "leaderboard": ({"title", "rows"}, {"subtitle", "gap", "bars"}),
     "distribution": ({"title", "sql", "subject"}, {"subtitle", "axis_title", "average_line", "decimals",
                                                    "drop_leading_zero"}),
+    "shot_map": ({"title", "from", "to"}, {"subtitle", "player_id", "team_id", "game_types", "count_line"}),
 }
+SHOT_MAP_FIRST_DAY = datetime.date(2009, 9, 1)  # shot locations start in 2009-10
 LEADERBOARD_ROW_KEYS = ({"name", "value"}, {"rank", "team", "subject"})
 
 # Fields written as a list of 1 to N lines of text: {(slide type, field): N}.
@@ -123,6 +125,8 @@ def validate(data):
             if not (isinstance(options, list) and 3 <= len(options) <= 4
                     and all(isinstance(o, (str, int, float)) and str(o) for o in options)):
                 problems.append("guess: options must be a list of 3 or 4 answers")
+        if slide["type"] == "shot_map":
+            problems += [f"shot_map: {p}" for p in shot_map_problems(slide)]
         if slide["type"] == "distribution":
             problems += [f"distribution: {p}" for p in distribution_problems(slide)]
         if slide["type"] == "leaderboard" and "rows" in slide:
@@ -174,6 +178,25 @@ def leaderboard_problems(slide):
             problems.append("gap: true needs the fourth row to be the subject, with its rank")
     elif len(rows) > 5:
         problems.append("at most five rows")
+    return problems
+
+
+def shot_map_problems(slide):
+    problems = []
+    if ("player_id" in slide) == ("team_id" in slide):
+        problems.append("give either player_id or team_id")
+    start, end = slide.get("from"), slide.get("to")
+    if not (isinstance(start, datetime.date) and isinstance(end, datetime.date)):
+        problems.append("from and to must be dates, for example 2026-10-07 and 2026-11-09")
+    elif start > end:
+        problems.append("from must be on or before to")
+    elif start < SHOT_MAP_FIRST_DAY:
+        problems.append("shot locations start in 2009-10: from must be 2009-09-01 or later")
+    game_types = slide.get("game_types", [2])
+    if not (isinstance(game_types, list) and game_types and set(game_types) <= {2, 3}):
+        problems.append("game_types must be a list of 2 (regular season) and/or 3 (playoffs)")
+    if not isinstance(slide.get("count_line", True), bool):
+        problems.append("count_line must be true or false")
     return problems
 
 
@@ -309,6 +332,35 @@ def goal_locations(con, player_id, season):
         raise CarouselError(f"turning_point: no goals with locations for player {player_id} in {season}")
     points = [(42.5 + d * y, d * x) for x, y, d in rows if d * x > 0]
     return points, len(rows) - len(points)
+
+
+def shot_locations(con, start, end, player_id=None, team_id=None, game_types=(2,)):
+    """(shots, (own_half_attempts, own_half_goals)): the unblocked shot attempts (goals, shots on goal, missed shots;
+    shootouts left out) of a player or team between two dates, as (across, depth, is_goal) in feet on a half rink
+    attacking downwards, and how many attempts and goals came from the shooter's own half (not drawable on a half
+    rink; most are empty-net shots).
+
+    Locations come from marts.int_shot_geometry, where every shot is normalised to attack the net at x = +89
+    (docs/data_coverage.md, "Advanced stats": the NHL's rink side from 2019-20, inferred from the shots before).
+    Depth is feet from the centre line (the goal line is at 89); across is 0 to 85 feet, 42.5 + y."""
+    rows = con.execute(
+        """
+        select x_norm, y_norm, is_goal
+        from marts.int_shot_geometry
+        where is_unblocked and x_norm is not null and y_norm is not null
+            and game_date between $start and $end
+            and list_contains($types, game_type)
+            and ($player is null or shooting_player_id = $player)
+            and ($team is null or shooting_team_id = $team)
+        """,
+        {"start": start, "end": end, "types": list(game_types), "player": player_id, "team": team_id},
+    ).fetchall()
+    if not rows:
+        who = f"player {player_id}" if player_id is not None else f"team {team_id}"
+        raise CarouselError(f"shot_map: no shots with locations for {who} from {start} to {end}")
+    shots = [(42.5 + y, x, bool(goal)) for x, y, goal in rows if x >= 0]
+    own_half = [bool(goal) for x, _, goal in rows if x < 0]
+    return shots, (len(own_half), sum(own_half))
 
 
 def distribution_rows(con, sql, subject):
@@ -453,10 +505,11 @@ def arc(cx, cy, r, start_deg, end_deg, steps=48):
     return [cx + r * math.cos(a) for a in angles], [cy + r * math.sin(a) for a in angles]
 
 
-def rink_half(cv, x, y, w, alpha):
-    """A half rink to real proportions (85 x 100 ft), centre line at the top, as in story_reference.html."""
+def rink_half(cv, x, y, w, alpha, plain=False):
+    """A half rink to real proportions (85 x 100 ft), centre line at the top, as in story_reference.html. plain=True
+    draws every line in ink (the shot map), so the accent on the goals is the only colour on the slide."""
     s = w / 85
-    red, blue = RINK_LINES[cv.c.mode]
+    red, blue = (cv.c.ink, cv.c.ink) if plain else RINK_LINES[cv.c.mode]
     ink = cv.c.ink
 
     def px(a, b):
@@ -827,9 +880,39 @@ def distribution(cv, slide, ctx):
     cv.text(sx, label_y + 4, 34, "C700", c.accent, number_text(value, decimals, drop), anchor=anchor)
 
 
+def shot_map(cv, slide, ctx):
+    """Where on the ice: a large half rink (the same drawing as the hook and turning point) with every unblocked shot
+    attempt of a player or team in a date range, from the play-by-play. Shots in ink at low opacity (lower the more
+    shots there are), goals in the accent on top. Real data, so no illustration label. An optional small count line
+    at the bottom left (count_line: false leaves it out when the subtitle already says it)."""
+    c = cv.c
+    title_block(cv, slide)
+    shots, own_half = shot_locations(ctx.con, slide["from"], slide["to"], slide.get("player_id"),
+                                     slide.get("team_id"), slide.get("game_types", [2]))
+    rw = 720
+    rx, ry, s = (W - rw) / 2, 380, rw / 85
+    rink_half(cv, rx, ry, rw, 0.3 if c.dark else 0.25, plain=True)
+    misses = [(a, d) for a, d, goal in shots if not goal]
+    goals = [(a, d) for a, d, goal in shots if goal]
+    alpha = max(0.08, min(0.35, 0.35 * math.sqrt(300 / max(len(misses), 1))))
+    for across, depth in misses:
+        cv.circle(rx + across * s, ry + min(depth, 100) * s, 6, c.ink, alpha=alpha)
+    for across, depth in goals:
+        cv.circle(rx + across * s, ry + min(depth, 100) * s, 9, c.accent, stroke=c.bg, stroke_px=2)
+    if slide.get("count_line", True):
+        # bottom left, clear of the handle: the totals, then (if any) the attempts a half rink cannot show
+        lines = [f"{len(shots):,} SHOT ATTEMPTS \u00b7 {len(goals):,} GOALS"]
+        attempts, scored = own_half
+        if attempts:
+            lines.append(f"NOT SHOWN: {attempts:,} FROM THE OWN HALF"
+                         + (f" ({scored:,} {'GOAL' if scored == 1 else 'GOALS'})" if scored else ""))
+        for i, line in enumerate(reversed(lines)):
+            cv.text(M, 1290 - 30 * i, 22, "C600", c.mut, line, spacing=2)
+
+
 DRAW = {"hook": hook, "reveal": reveal, "comparison": comparison, "trend": trend, "turning_point": turning_point,
         "conclusion": conclusion, "statement": statement, "question": question, "guess": guess,
-        "leaderboard": leaderboard, "distribution": distribution}
+        "leaderboard": leaderboard, "distribution": distribution, "shot_map": shot_map}
 
 
 # ---- Rendering ----

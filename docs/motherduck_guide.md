@@ -41,6 +41,8 @@ estimate it from other tables.
   player's NHL page (junior, college, minor and major pro, international, NHL). `league_abbrev` as the NHL writes it
   (OHL, AHL, NCAA, WC-A...); `is_before_first_nhl_season`. Sum several rows in a season. For NHL totals use the NHL
   tables. Only what the NHL lists: no row does not prove someone never played there.
+  The Canada Cup and World Cup are often listed twice, a season apart (`CC`/`Can-Cup`, `WCup`/`W-Cup`): count each
+  tournament once. Goalie rows in tournaments have no points.
 - `dim_players`: one row per person; use `is_nhl_player` (D15), as the list holds people who never played.
 - `dim_birthplaces`: `latitude`, `longitude` per birthplace (GeoNames, CC BY 4.0: credit GeoNames when shown); join
   on `birthplace_key`. 'unmatched' has no coordinates: say how many players a map leaves out. Former towns share

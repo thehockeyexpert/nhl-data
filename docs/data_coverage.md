@@ -177,6 +177,16 @@ entries). `marts.fct_player_league_seasons` holds 622,462 rows for 23,242 people
 - **Fields by era and league:** games, goals, assists, points and penalty minutes are on nearly every entry; plus-minus,
   power-play and shorthanded figures, shots and time on ice only on some (mostly NHL and recent seasons).
 - **Save percentage** is a fraction, except 3 entries above 1 (unexplained; kept as received).
+- **Canada Cup and World Cup listed twice** (checked 2026-11-13, team Canada): many players have the same tournament
+  under two codes a season apart: `CC` one season before `Can-Cup` (1976, 1981, 1984, 1987, 1991; 76 of 82 pairs
+  identical) and `WCup`/`W-Cup` for 1996 and 2004 (28 pairs, all identical). Count each tournament once per player.
+  Other senior codes for Canada: World Championships `WC-A`, `WEC-A`, `WC`, `WEC`; Olympics `Olympics`, `OG`;
+  women's tournaments end in `(W)`.
+- **Goalie rows have no points** in international tournaments (points empty, not 0).
+- **League names are not consistent across eras** (checked 2026-11-13): older pages use codes such as `CzRep`,
+  `Olympics`, `Sweden`; recent ones `Czechia`, `OG`, age groups (`Czechia U16`, `BEAST 16U`), and a country name can
+  be a league or a national team (`Latvia`). Counting "leagues" needs a hand-checked list of which codes are leagues
+  and at what level.
 - **Coverage of other leagues** is whatever the NHL lists: a missing league or season is not proof a player never
   played there.
 

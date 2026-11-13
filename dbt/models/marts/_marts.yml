@@ -844,3 +844,42 @@ models:
         description: Goals for as the team report gives them; the shootout goal is left out (checked by team_game_stats_match_games).
       - name: has_team_stats
         description: False when the NHL's team reports have no row for this team and game.
+
+  - name: fct_shifts
+    description: >
+      One row per player shift, regular season and playoffs, from 2010-11; none earlier (docs/data_coverage.md,
+      "Shifts"). Seconds within the period (start_seconds, end_seconds, duration_seconds) and from the opening
+      face-off (game_start_seconds, game_end_seconds). Goalies have shifts too. Incremental. `source` is
+      shift_chart, or html_report for a game whose chart is empty (the fallback rule, 2026-11-13); report names are
+      matched to player IDs (check shift_players_resolve).
+    columns:
+      - name: shift_key
+        description: chart-<shift_id>, or report-<game>-<side>-<sweater>-<shift number>.
+        data_tests: [unique, not_null]
+      - name: shift_id
+        description: The NHL's ID for the shift; empty for shifts from an HTML report.
+        data_tests: [unique]
+      - name: source
+        description: shift_chart (the stats API) or html_report (the NHL's HTML shift report).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['shift_chart', 'html_report']
+      - name: game_id
+        description: The game. Joins to fct_games and dim_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+      - name: player_id
+        description: The player. Joins to dim_players. Empty only for an HTML-report name that matched nobody (check shift_players_resolve).
+      - name: report_player_name
+        description: The name as the HTML report writes it; empty for chart shifts.
+      - name: team_id
+        description: The player's team in this game.
+        data_tests: [not_null]
+      - name: duration_seconds
+        description: Length of the shift in seconds.

@@ -80,3 +80,23 @@ def test_fetch_bytes_returns_a_file_untouched_and_retries_like_fetch():
     client, waits = make_client([httpx.Response(503), httpx.Response(200, content=body)])
     assert client.fetch_bytes("https://example.test/file.zip") == body
     assert waits == [2.0, 1.0]  # the retry wait, then the usual pause between requests
+
+
+def test_fetch_html_returns_none_for_an_unpublished_report():
+    import httpx
+    from ingest.nhl_api import NhlApiClient
+    transport = httpx.MockTransport(lambda request: httpx.Response(404, text="not found"))
+    client = NhlApiClient(transport=transport, sleep=lambda s: None)
+    assert client.fetch_html("https://www.nhl.com/scores/htmlreports/20262027/TH020154.HTM") is None
+    client.close()
+
+
+def test_fetch_html_refuses_a_cut_off_page():
+    import httpx
+    import pytest
+    from ingest.nhl_api import NhlApiClient, NhlApiError
+    transport = httpx.MockTransport(lambda request: httpx.Response(200, text="<html><body>half a page"))
+    client = NhlApiClient(transport=transport, sleep=lambda s: None)
+    with pytest.raises(NhlApiError):
+        client.fetch_html("https://www.nhl.com/scores/htmlreports/20262027/TH020154.HTM")
+    client.close()

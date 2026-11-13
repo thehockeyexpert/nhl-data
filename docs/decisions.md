@@ -3,6 +3,42 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-13: records lists reloaded on Sundays
+
+**Decision (owner, 2026-11-13).** The daily run reloads the records lists (`ingest.records`: player list, draft,
+awards, playoff series, standings rules) whenever it runs the full build: Sundays, or a manual "full" run. Until now
+they were loaded only by hand (last on 2026-10-14). 6 requests a week; a list identical to the last adds nothing. $0.
+
+## 2026-11-13: shifts from the HTML reports when the shift chart is empty
+
+**Decision (owner, 2026-11-13).** The rule: when a game's shift chart (stats API) comes back empty, fetch the NHL's
+HTML shift reports for that game (home `TH`, visitor `TV`, nhl.com/scores/htmlreports) and store them exactly as
+received in `raw.nhl_html__shift_report`; dbt parses the shifts (`stg_nhl_html__shift_reports`) and `fct_shifts`
+uses them for games with no chart (`source` = html_report). A report not published yet (404) is asked for again on a
+later run; when the NHL fills a chart later, the chart replaces the report rows.
+- **Why:** 50 consecutive games of 2026-27 (game numbers 154 to 203, played 2026-10-22 to 29) have an empty shift
+  chart, still empty when asked again on 2026-11-13, while their HTML reports are complete. Cause unknown.
+- **Player IDs:** the reports carry names and sweater numbers only. Names are matched to the players of that team
+  in that game (full name; teammates sharing a full name, such as Vancouver's two Elias Petterssons, by official ice
+  time; else a unique last name). Checked on the 50 games: every name matched, and every player's report total equals
+  the official time on ice to the second (1,903 player-games).
+- **Cost:** 2 requests per game with an empty chart; about 200 KB of HTML per report. $0.
+- **"Empty" means no shifts** (added 2026-11-13, after the backfill): a chart holding only goal markers counts as
+  empty too, as `fct_shifts` already treated it. Found on 2013020971 (one goal marker, no shifts).
+
+## 2026-11-13: shifts
+
+**Decision (owner, 2026-11-13).** Load the NHL's shift charts (stats API `shiftcharts`, one request per game), regular
+season and playoffs, 2010-11 onward (earlier games return nothing). The same split as the play-by-play: each game's
+full chart saved gzip-compressed on the laptop (`NHL_SHIFTS_DIR`, default `~/nhl-data-files/shifts`), outside the
+repo; one row per entry, exactly as received, bulk-loaded into `raw.nhl_stats__shift`. Modelled as `marts.fct_shifts`
+(incremental). Nightly: games of the last 14 days with no shifts yet, plus the last 3 days' games fetched again;
+older empty charts are asked for again only by a whole-season run on the laptop.
+- **Estimate, shown to the owner before the load:** 20,889 games, about 16.5 million shifts, about 6 hours at the
+  API's pace. About 2.3 GB in MotherDuck (about 2 GB raw, 0.3 GB modelled; measured on 30 games, within about 10%),
+  taking the database from about 1.3 GB to about 3.6 GB of the 10 GB included; about 310 MB of files on the laptop.
+  Nightly 6 to 16 requests, about 0.2 to 0.3 CU-hours a month. $0 a month inside the free plan.
+
 ## 2026-11-13: team game statistics
 
 **Decision (owner, 2026-11-13).** Load the NHL stats API's per-game team reports (summary, power play, penalty kill,

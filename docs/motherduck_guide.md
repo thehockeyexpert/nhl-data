@@ -18,8 +18,9 @@ estimate it from other tables.
   reports them: a shootout win counts as one goal. 2004-05 was not played.
 - `fct_team_games`: one row per team per finished game. `result` W, L, T or OTL under that era's rules; `points`.
 - `fct_team_standings_by_game`: each team's standings before each regular-season game (that game excluded).
-- `fct_team_seasons`: the NHL's official regular-season team totals. Refreshed Sundays, like draft, awards and
-  series, so the current season can lag a week.
+- `fct_team_seasons`: the NHL's official regular-season team totals. Reloaded from the NHL on Sundays, like the
+  player list, draft, awards and series, so these can lag up to a week; games, player and team stats and play-by-play
+  are loaded daily.
 - `fct_goalie_games`: one row per goalie per game. `decision` is the goalie's credited W, L, T or OTL.
 - `fct_skater_seasons`: one row per skater, season and game type; a traded player has one row
   (`bridge_skater_season_teams` lists the teams). `fct_skater_games`: one row per skater per game, with `team_id`

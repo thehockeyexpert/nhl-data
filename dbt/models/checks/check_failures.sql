@@ -1278,6 +1278,50 @@ team_special_teams_mirror as (
            or team.times_short_handed is distinct from opponent.power_play_opportunities
            or team.power_play_goals > team.power_play_opportunities)
 
+),
+
+shift_sides as (
+
+    select game_id, team_id, count(*) as shifts, count(*) filter (where player_id is null) as unmatched
+    from {{ ref('fct_shifts') }}
+    group by game_id, team_id
+
+),
+
+shift_players_resolve as (
+
+    -- Every shift has a player: a name in an HTML shift report that matched no player of that team in that game fails.
+    select
+        'shift_players_resolve' as check_name,
+        games.season,
+        shift_sides.game_id,
+        shift_sides.unmatched || ' shifts with a report name that matched no player' as detail,
+        shift_sides.team_id
+    from shift_sides
+    inner join games on games.game_id = shift_sides.game_id
+    where shift_sides.unmatched > 0
+
+),
+
+shifts_covered as (
+
+    -- Every finished regular-season or playoff game from 2010-11 (when the NHL's shift charts begin) has shifts for
+    -- both teams, from the shift chart or, where that is empty, the HTML shift reports. Two-day lag for a season in
+    -- progress.
+    select
+        'shifts_covered' as check_name,
+        team_games.season,
+        team_games.game_id,
+        'no shifts for this team in a finished game' as detail,
+        team_games.team_id
+    from {{ ref('fct_team_games') }} as team_games
+    left join shift_sides
+        on shift_sides.game_id = team_games.game_id and shift_sides.team_id = team_games.team_id
+    where team_games.season >= 20102011
+      and team_games.game_type in (2, 3)
+      and (team_games.season in (select season from finished_seasons) or team_games.game_date <= current_date - 2)
+      and shift_sides.game_id is null
+
 )
 
 select * from season_facts_present
@@ -1371,3 +1415,7 @@ union all
 select * from team_game_stats_match_games
 union all
 select * from team_special_teams_mirror
+union all
+select * from shift_players_resolve
+union all
+select * from shifts_covered

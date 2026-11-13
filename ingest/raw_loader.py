@@ -200,6 +200,43 @@ def append_events_file(con, table, path):
     ).fetchone()[0]
 
 
+def ensure_report_table(con, table):
+    """Create a raw table of HTML reports (one row per report, see append_report) if it does not exist yet."""
+    qualified = _qualified(table)
+    con.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
+    con.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {qualified} (
+            source_url   VARCHAR NOT NULL,
+            loaded_at    TIMESTAMPTZ NOT NULL,
+            season       INTEGER NOT NULL,
+            game_id      BIGINT NOT NULL,
+            payload_hash VARCHAR NOT NULL,
+            body         VARCHAR NOT NULL
+        )
+        """
+    )
+    return qualified
+
+
+def append_report(con, table, source_url, season, game_id, body):
+    """Store one HTML report exactly as received. Returns True if a row was added.
+
+    Used for the NHL's HTML shift reports, read only for games whose shift chart is empty (decided 2026-11-13). The
+    same report already stored (same URL and content) is not added again; a changed one is added and staging keeps
+    the newest.
+    """
+    qualified = ensure_report_table(con, table)
+    payload_hash = _sha256(body)
+    latest = con.execute(
+        f"SELECT payload_hash FROM {qualified} WHERE source_url = ? ORDER BY loaded_at DESC LIMIT 1", [source_url]
+    ).fetchone()
+    if latest is not None and latest[0] == payload_hash:
+        return False
+    con.execute(f"INSERT INTO {qualified} VALUES (?, now(), ?, ?, ?, ?)", [source_url, season, game_id, payload_hash, body])
+    return True
+
+
 def replace_text_file(con, table, source_url, path):
     """Store a downloaded text file one row per line, untouched, replacing what the table held before.
 

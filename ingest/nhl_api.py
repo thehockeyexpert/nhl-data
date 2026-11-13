@@ -16,7 +16,11 @@ RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 
 class NhlApiError(Exception):
-    """Raised when a request cannot be completed."""
+    """Raised when a request cannot be completed. status_code is the HTTP status, when there was one."""
+
+    def __init__(self, message, status_code=None):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class NhlApiClient:
@@ -73,6 +77,20 @@ class NhlApiClient:
         """Return the response body for `url` as bytes, for files that are not JSON (such as a zip)."""
         return self._get(url).content
 
+    def fetch_html(self, url):
+        """Return an HTML report (such as a shift report) as text, or None if the NHL has not published it (404)."""
+        try:
+            response = self._get(url)
+        except NhlApiError as error:
+            if error.status_code == 404:
+                return None
+            raise
+        text = response.text
+        # Never store an error page or a cut-off download in the raw layer.
+        if "</html>" not in text.lower():
+            raise NhlApiError(f"Response from {url} is not a complete HTML page")
+        return text
+
     def _get(self, url):
         """The successful response for `url`, after pacing and any retries."""
         for attempt in range(self._max_retries + 1):
@@ -87,7 +105,7 @@ class NhlApiClient:
                 if response.status_code == 200:
                     return response
                 if response.status_code not in RETRY_STATUSES:
-                    raise NhlApiError(f"HTTP {response.status_code} for {url}")
+                    raise NhlApiError(f"HTTP {response.status_code} for {url}", response.status_code)
                 problem = f"HTTP {response.status_code}"
 
             if attempt == self._max_retries:

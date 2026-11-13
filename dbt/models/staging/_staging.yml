@@ -483,3 +483,33 @@ models:
       - name: team_id
         description: The NHL's team ID.
         data_tests: [not_null]
+
+  - name: stg_nhl_stats__shifts
+    description: >
+      One row per entry of the NHL's shift charts, regular season and playoffs, from 2010-11: shifts (type_code 517)
+      and goal markers (505), newest version of each game. Incremental: a game loaded again replaces all its rows.
+    columns:
+      - name: shift_id
+        description: The NHL's ID for the entry.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: type_code
+        description: 517 a shift, 505 a goal marker.
+        data_tests: [not_null]
+
+  - name: stg_nhl_html__shift_reports
+    description: >
+      One row per shift parsed from the NHL's HTML shift reports, stored only for games whose shift chart is empty.
+      Sweater numbers and names, no player IDs (fct_shifts matches them). Newest copy of each report.
+    columns:
+      - name: report_shift_key
+        description: game_id, side, sweater number and shift number joined.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The NHL's ID for the game.
+        data_tests: [not_null]
+      - name: period_number
+        description: The period; OT is 4.
+        data_tests: [not_null]

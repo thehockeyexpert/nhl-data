@@ -180,6 +180,21 @@ Loaded 2026-11-13 from the laptop's play-by-play files, and nightly from then on
   short-handed goals against, times short-handed the opponent's opportunities, in every game; season sums match the
   NHL's season report.
 
+## Shifts
+
+`marts.fct_shifts` (2026-11-13), from the NHL's shift charts (stats API), 2010-11 onward; earlier games return
+nothing. Observed when loaded:
+- **Empty charts:** 50 consecutive games of 2026-27 (game numbers 154 to 203, 2026-10-22 to 29) had an empty chart,
+  still empty when asked again on 2026-11-13; cause unknown. Their shifts come from the NHL's HTML shift reports
+  (`source` = html_report), which were complete. Report names matched to player IDs (all matched); every player's
+  report total equals the official time on ice to the second. The same in the backfill: 57 consecutive games of
+  2024-25 (2024021235 to 2024021291) had an empty chart, and one game of 2013-14 (2013020971) had a chart with a
+  single goal marker and no shifts. All 58 were filled from the HTML reports; every name matched and all 2,207
+  player-games' report totals equal the official time on ice to the second. Cause of the empty charts unknown.
+- **Chart totals vs official ice time (2026-27, 248 games):** 8,780 of 8,927 player-games within 1 second; 71 off by
+  more than a minute (largest 287 s). Unexplained.
+- A team's shifts add up to about 6 x 60 minutes a game (goalie included); shifts average 57 seconds.
+
 ## Overtime rules
 
 `reference.overtime_rules` (2026-11-13). The play-by-play shows the early regular-season eras: before 1921-22 no

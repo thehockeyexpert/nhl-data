@@ -98,8 +98,9 @@ def loaded_games(con, season):
     return {game_id for (game_id,) in rows}
 
 
-def download(client, season, game_ids, folder, verbose=True, refetch=()):
-    """Save each game's play-by-play that is not on disk yet, or is in refetch. Returns the number of requests made."""
+def download(client, season, game_ids, folder, verbose=True, refetch=(), url=PBP_URL):
+    """Save each game's response (the play-by-play unless url says otherwise) that is not on disk yet, or is in refetch.
+    Returns the number of requests made."""
     season_folder = folder / str(season)
     season_folder.mkdir(parents=True, exist_ok=True)
     requests = 0
@@ -107,7 +108,7 @@ def download(client, season, game_ids, folder, verbose=True, refetch=()):
         path = season_folder / f"{game_id}.json.gz"
         if path.exists() and game_id not in refetch:
             continue
-        body = client.fetch(PBP_URL.format(game_id=game_id))
+        body = client.fetch(url.format(game_id=game_id))
         requests += 1
         # Written under a temporary name first, so a stopped run never leaves a cut-off file behind.
         partial = path.with_suffix(".partial")

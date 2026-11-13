@@ -42,6 +42,15 @@ sources:
         description: One row per season of standings from api-web.nhle.com, taken on the season's first standings day.
       - name: nhl_stats__goalie_game
         description: One row per season and game type (regular season, playoffs) of per-game goalie stats from the NHL stats API.
+      - name: nhl_html__shift_report
+        description: >
+          One row per NHL HTML shift report (home TH, visitor TV), exactly as received, stored only for games whose
+          shift chart came back empty (the fallback rule, from 2026-11-13).
+      - name: nhl_stats__shift
+        description: >
+          One row per entry (shift or goal marker) of the NHL stats API's shift charts, each exactly as received, with
+          the game and the hash of its whole response; from 2010-11, loaded 2026-11-13 and nightly from then on. The
+          full charts stay as compressed files on the owner's laptop.
       - name: nhl_stats__skater_game
         description: One row per date window (season, game type, first and last date) of per-game skater stats from the NHL stats API.
       - name: nhl_web__pbp_event

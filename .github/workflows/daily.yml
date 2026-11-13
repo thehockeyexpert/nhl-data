@@ -89,6 +89,13 @@ jobs:
           NHL_PBP_DIR: ${{ runner.temp }}/play_by_play
         run: uv run python -m ingest.play_by_play --season "$SEASON" --recent-days 3
 
+      # Shifts from the shift charts: new games of the last 14 days, plus the last 3 days' games fetched again. The full
+      # charts go to the runner's temporary folder, deleted when the job ends; only the shift rows reach MotherDuck.
+      - name: Load the season's shifts
+        env:
+          NHL_SHIFTS_DIR: ${{ runner.temp }}/shifts
+        run: uv run python -m ingest.shifts --season "$SEASON" --recent-days 3
+
       - name: Choose the dbt build
         id: choose
         run: |
@@ -111,6 +118,12 @@ jobs:
           uv run dbt build --project-dir dbt --profiles-dir dbt
           --select config.materialized:table config.materialized:incremental test_type:singular
           --exclude tag:records tag:geonames tag:player_pages --indirect-selection empty --no-populate-cache
+
+      # Records lists (players, draft, awards, playoff series) and standings rules: 6 requests, before the full build
+      # rebuilds the records tables (decided 2026-11-13). A list identical to the last one adds nothing.
+      - name: Load the records lists (full build only)
+        if: steps.choose.outputs.build == 'full'
+        run: uv run python -m ingest.records
 
       - name: Full dbt build (seeds, views, tables and every test)
         if: steps.choose.outputs.build == 'full'

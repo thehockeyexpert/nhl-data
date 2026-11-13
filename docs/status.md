@@ -173,6 +173,10 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Golden-question reference answers (2026-11-13):** 63 of 65 answered by direct SQL in `analyst/golden_answers.md`
+  (T08 partly; T06 needs team game statistics). Checked against known records where they exist (Sittler's 10
+  points, Malone's 7 goals, Gretzky's 51-game point streak, Pittsburgh's 17 wins, Montreal's 34-game home unbeaten
+  run, Roy's 151 playoff wins).
 - **Definitions D17 to D20 settled and every golden-question rewording decided (owner, 2026-11-13).** D17 fight
   (one fighting major, from 1947-48), D18 other leagues (CHL under any earlier name), D19 team minutes, D20 travel
   (from and back to the home arena). 14 rewordings approved as proposed, P15 changed to "either direction", G07 with NHL nationality beside birth country; no proposals left.
@@ -203,8 +207,8 @@ Last updated: 2026-11-13
 
 ## Next
 
-1. **Answer the golden questions** in `analyst/golden_questions.yml`: reference answers by direct SQL, then a blind
-   run through the Claude.ai Project. T08 first needs a small table of overtime rules by era (D19).
+1. **Blind run of the golden questions** through the Claude.ai Project, compared with `analyst/golden_answers.md`.
+   T08 still needs a small table of overtime rules by era (D19); T06 needs team game statistics (not loaded).
 2. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
 3. **Watch the daily run:** compare the Billing page with the estimates below.
 4. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
@@ -306,4 +310,3 @@ Last updated: 2026-11-13
 - Team game statistics (power play, penalties per team game), shifts, game duration.
 - Play-by-play events other than shots, hits and penalties: giveaways, takeaways, faceoffs, stoppages.
 - Travel and road-trip tables (venue coordinates and `dim_team_home_cities` are in place).
-- Answers to the golden questions beyond G01 (see "Next").

@@ -1,5 +1,5 @@
 # Golden questions for the conversational query layer.
-# Status: DRAFT for the owner's review (2026-10-14). Questions only; no answers yet.
+# Status: DRAFT for the owner's review (2026-10-14). Reference answers: analyst/golden_answers.md (2026-11-13).
 #
 # Fields:
 #   id              stable identifier. Season questions are SE01 to SE05 (renamed from S01 to S05 on 2026-10-17,
@@ -56,7 +56,7 @@ questions:
     question: Which team has the best record in one-goal games since 2005-06?
     difficulty: medium
     needs: [fct_games]
-    answerable_now: partly
+    answerable_now: true
     definitions: [D07]
   - id: T05
     source: claude_draft
@@ -64,7 +64,7 @@ questions:
     question: Which teams averaged the most shots per game in 2025-26?
     difficulty: easy
     needs: [team_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: []
   - id: T06
     source: claude_draft
@@ -93,7 +93,7 @@ questions:
     question: Where did Montreal stand in its division on 2026-01-01?
     difficulty: medium
     needs: [standings_by_date, divisions]
-    answerable_now: false
+    answerable_now: true
     definitions: [D02]
   - id: SE03
     source: claude_draft
@@ -101,7 +101,7 @@ questions:
     question: What is the biggest points lead any team has held during a season?
     difficulty: hard
     needs: [standings_by_date]
-    answerable_now: false
+    answerable_now: true
     definitions: [D02]
   - id: SE04
     source: claude_draft
@@ -109,7 +109,7 @@ questions:
     question: How many points did the last-place team have in each season since 1967-68?
     difficulty: medium
     needs: [fct_games, standings_rules]
-    answerable_now: partly
+    answerable_now: true
     definitions: [D02]
   - id: SE05
     source: claude_draft
@@ -181,7 +181,7 @@ questions:
     question: What is the longest playoff drought for each lineage?
     difficulty: medium
     needs: [fct_games, dim_teams]
-    answerable_now: partly
+    answerable_now: true
     definitions: [D03, D10]
   - id: F04
     source: claude_draft
@@ -224,7 +224,7 @@ questions:
     question: Who has the most career points against Boston?
     difficulty: medium
     needs: [skater_game_stats, dim_teams]
-    answerable_now: false
+    answerable_now: true
     definitions: [D03]
   - id: P04
     source: claude_draft
@@ -321,7 +321,7 @@ questions:
     question: Which goalie had the best save percentage in 2025-26, with a minimum number of games?
     difficulty: easy
     needs: [goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D05]
   - id: G04
     source: claude_draft
@@ -329,7 +329,7 @@ questions:
     question: How do goalies do on the second night of back-to-backs since 2010?
     difficulty: hard
     needs: [goalie_game_stats, fct_games]
-    answerable_now: false
+    answerable_now: true
     definitions: [D04, D08]
   - id: G05
     source: claude_draft
@@ -337,7 +337,7 @@ questions:
     question: Which goalies have the most playoff wins all time?
     difficulty: easy
     needs: [goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D04]
 
   # --- head to head
@@ -355,7 +355,7 @@ questions:
     question: Who has scored the most goals in Montreal v Toronto games?
     difficulty: medium
     needs: [skater_game_stats, dim_teams]
-    answerable_now: false
+    answerable_now: true
     definitions: [D03, D11]
   - id: X03
     source: claude_draft
@@ -373,7 +373,7 @@ questions:
     question: What is the longest winning streak in each lineage's history?
     difficulty: medium
     needs: [fct_games, dim_teams]
-    answerable_now: partly
+    answerable_now: true
     definitions: [D03, D06]
   - id: K02
     source: claude_draft
@@ -381,7 +381,7 @@ questions:
     question: What is the longest home unbeaten streak ever?
     difficulty: medium
     needs: [fct_games]
-    answerable_now: partly
+    answerable_now: true
     definitions: [D06]
   - id: K03
     source: claude_draft
@@ -405,7 +405,7 @@ questions:
     question: Who leads the league in points right now?
     difficulty: easy
     needs: [daily_skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D12]
   - id: C02
     source: claude_draft
@@ -413,7 +413,7 @@ questions:
     question: What is Toronto's record in its last 10 games?
     difficulty: easy
     needs: [daily_schedule]
-    answerable_now: false
+    answerable_now: true
     definitions: [D12]
   - id: C03
     source: claude_draft
@@ -421,7 +421,7 @@ questions:
     question: Which goalie has been best over the last two weeks?
     difficulty: medium
     needs: [daily_goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D04, D05, D12]
   - id: C04
     source: claude_draft
@@ -429,7 +429,7 @@ questions:
     question: What do the wild-card standings look like today?
     difficulty: medium
     needs: [standings_today]
-    answerable_now: false
+    answerable_now: true
     definitions: [D12]
 
   # --- awards
@@ -450,7 +450,7 @@ questions:
     question: Which Vezina winners also won the Stanley Cup that season?
     difficulty: medium
     needs: [awards, playoff_series]
-    answerable_now: false
+    answerable_now: true
     definitions: []
   # --- owner's questions (2026-10-14). Wording is the owner's and is not changed.
   - id: P09

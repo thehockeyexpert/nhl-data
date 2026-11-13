@@ -1,0 +1,53 @@
+version: 2
+
+# Advanced stats built only from tables we already load (tag: advanced). Definitions in docs/definitions.md
+# (S20 to S31 and D30 to D33).
+
+models:
+  - name: fct_team_game_shot_attempts
+    description: >
+      One row per team per finished regular-season or playoff game from 2009-10: shot attempts (Corsi), unblocked
+      attempts (Fenwick), shots on goal and goals, for and against, in all situations and at 5-on-5
+      (situation_code 1551). From fct_shots, shootouts left out. Blocked shots count for the shooting team whoever
+      blocked them, the NHL's "teammate-blocked" shots (from 2023-24) included. Goals include empty-net goals.
+    columns:
+      - name: team_game_key
+        description: game_id and team_id joined, as in fct_team_games.
+        data_tests: [unique, not_null]
+      - name: game_id
+        description: The game. Joins to fct_games.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_games')
+                field: game_id
+      - name: team_id
+        description: The team. Joins to dim_teams.
+        data_tests: [not_null]
+      - name: corsi_for
+        description: Shot attempts by the team (goals, shots on goal, missed and blocked shots).
+        data_tests: [not_null]
+      - name: corsi_against
+        description: Shot attempts by the opponent.
+        data_tests: [not_null]
+      - name: fenwick_for
+        description: Unblocked shot attempts by the team (goals, shots on goal, missed shots).
+      - name: fenwick_against
+        description: Unblocked shot attempts by the opponent.
+      - name: shots_on_goal_for
+        description: Shots on goal by the team, goals included.
+      - name: shots_on_goal_against
+        description: Shots on goal by the opponent, goals included.
+      - name: goals_for
+        description: Goals by the team, empty-net goals included, shootouts not.
+      - name: goals_against
+        description: Goals by the opponent, empty-net goals included, shootouts not.
+      - name: teammate_blocked_for
+        description: >
+          The team's attempts the NHL marks as blocked by a teammate (from 2023-24). Already counted in corsi_for;
+          shown so they can be taken out.
+      - name: corsi_for_5v5
+        description: Shot attempts by the team at 5-on-5 with both goalies in (situation_code 1551).
+      - name: corsi_against_5v5
+        description: Shot attempts by the opponent at 5-on-5.

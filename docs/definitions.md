@@ -1,6 +1,6 @@
 # Definitions
 
-Status: DRAFT (2026-10-14), most settled 2026-10-18, D17 to D20 settled 2026-11-13. These definitions are referenced by id from `analyst/golden_questions.yml`.
+Status: DRAFT (2026-10-14), most settled 2026-10-18, D17 to D20 and D30 to D32 settled 2026-11-13. These definitions are referenced by id from `analyst/golden_questions.yml`.
 Each one must be settled by the owner before the models or answers that depend on it are built.
 
 | id | Definition | Status | Proposed default |
@@ -34,6 +34,9 @@ Each one must be settled by the owner before the models or answers that depend o
 | D27 | Totals for one team (players who changed teams) | **Decided 2026-10-18** | Sum the per-game rows for that team (`fct_skater_games`, `fct_goalie_games`), grouped by `lineage_id` (D03). `fct_skater_seasons` has one row per player and season with all teams combined. The 36 rows of the suspended 1988 Final game have no team and fall out of team totals. |
 | D28 | Decades | **Decided 2026-10-18** | "The 1980s" means seasons starting 1980 to 1989 (1980-81 to 1989-90), as in D21. |
 | D29 | Shortened seasons | **Decided 2026-10-18** | Totals are never prorated. Rate minimums use the games actually played (D05). Answers name a shortened season when it matters: 1994-95 and 2012-13 (48 games), 2019-20 (stopped at 68 to 71 of 82), 2020-21 (56). |
+| D30 | 5-on-5 | **Decided 2026-11-13** | `situation_code = '1551'`: both goalies in net and 5 skaters a side. The code reads away goalie in net (1/0), away skaters, home skaters, home goalie in net (1/0). From 2009-10, the first season the play-by-play gives strength on every shot. Narrower than the NHL's even strength (which includes 4-on-4 and 3-on-3). Used by every `_5v5` column (`fct_team_game_shot_attempts`, `fct_team_season_advanced`, xG tables). |
+| D31 | Team shooting %, save % and PDO | **Decided 2026-11-13** | All situations, from 1955-56: goals and shots against goalies (`fct_goalie_games`), so empty-net goals and shootouts are left out and a team's shooting % mirrors its opponents' save %. 5-on-5 versions from the play-by-play, 2009-10 on. PDO = (shooting % + save %) x 100; league average is 100. CF% and FF% count every attempt the team took, including the NHL's "teammate-blocked" attempts from 2023-24 (owner's decision 2026-11-13; `teammate_blocked_for` shows them). |
+| D32 | Per-60 rates (skaters) | **Decided 2026-11-13** | Total x 3,600 / total seconds on ice over the regular season, all teams combined, 1997-98 on (`fct_skater_season_rates`). Minimum: D05's single-season rule (`meets_d05_minimum`); answers say which minimum they use, or give `toi_minutes`. |
 
 Notes:
 

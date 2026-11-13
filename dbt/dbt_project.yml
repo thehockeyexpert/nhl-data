@@ -36,6 +36,13 @@ models:
 seeds:
   nhl_data:
     +schema: reference
+    world_junior_tournaments:
+      +column_types:
+        tournament_year: integer
+        season: integer
+        first_day: date
+        last_day: date
+        is_official: boolean
     league_levels:
       +column_types:
         from_season: integer

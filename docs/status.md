@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-11-11
+Last updated: 2026-11-13
 
 ## Done
 
@@ -109,8 +109,7 @@ Last updated: 2026-11-11
   holds 2,714,604 shots in 24,827 games, 2007-08 to today. Shooting team checked against the rosters for every
   season (3 exceptions in 2.9 million events); goals match every game's score (`shot_goals_match_score` passes);
   the play-by-play build passes 11 of 11. 2007-08 and 2008-09 have almost no missed or blocked shots and almost
-  no coordinates (`docs/data_coverage.md`, "Shots"). The MotherDuck guide is updated in `docs/motherduck_guide.md`;
-  publishing it is left to the owner (`uv run python -m analyst.publish_guide`).
+  no coordinates (`docs/data_coverage.md`, "Shots"). The MotherDuck guide was updated and published.
 - **Hits and penalties, from the play-by-play (2026-11-11).** `raw.nhl_web__pbp_event` (loaded from the laptop files,
   no new downloads, and nightly), `stg_nhl_web__pbp_events`, `fct_hits` (1,033,173, from 2009-10) and `fct_penalties`
   (207,017 from 2007-08, 15,884 fights); 26 of 26 play-by-play models and tests pass. Every event's team matches the
@@ -123,26 +122,14 @@ Last updated: 2026-11-11
 - **Player pages (finished 2026-11-12).** 23,575 pages (15,378 requests in the last run, 257 min; stopped once when
   VS Code closed and resumed). `stg_nhl_web__player_season_totals` and `fct_player_league_seasons` (622,462 rows,
   23,242 people, 1,895 leagues; tag `player_pages`, rebuilt Sundays, not nightly): 15 of 15 tests pass. NHL rows
-  match our stats for 99.5% of skater and goalie seasons (`docs/data_coverage.md`, "Player pages"). The guide is
-  updated in `docs/motherduck_guide.md`; publishing it is left to the owner.
+  match our stats for 99.5% of skater and goalie seasons (`docs/data_coverage.md`, "Player pages"). The guide was
+  updated and published.
 - **Play-by-play before 2007-08 (finished 2026-11-12, checked 2026-11-13).** 45,810 games, 2006-07 back to 1917-18
   (stopped twice for low memory and finished in a separate PowerShell window; nothing lost). 876,659 shot events
   (goals only before 1997-98) and 568,173 penalties. Goals match every game's score in every season; every scorer's
   and penalised player's team matches `fct_skater_games`; 26 of 26 play-by-play models and tests and 44 of 44 checks
   pass. Two malformed clock times in 1985-86 made the staging models use `try_cast`. Fights are labelled only from
   1947-48; strength only from 2009-10 (`docs/data_coverage.md`).
-- **Latest `dbt build` on MotherDuck (2026-10-18):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
-  models, 34 data checks). No failure is left without an approved exception.
-
-## In progress
-
-- **G01 ("best record against teams above .500"):** `goalie_records_vs_above_500` is built under the revised D01
-  (headline: opponent above the league median by points % before the game, with at least 10 games played; second
-  column: above .500 by points %), with D04, D05 (50, and 100 reported) and D23.
-  - **Verified (2026-10-14).** Recomputed independently from the NHL's official standings for the day before each
-    game, it matches game for game: Ken Dryden 1975-76 under the headline (21 qualifying decisions, league median
-    equal on all 60 dates), and Dryden 1975-76 and Braden Holtby 2015-16 under the above-.500 column (24 and 45).
-  - **Still labelled draft** until the owner has checked it.
 - **Golden-question test of the query layer (2026-10-15).** Five questions (H03, T11, X01, SE05, G01), with
   reference answers computed by direct SQL and checked against outside sources where they exist:
   - H03: 21 goals, MTL 14-TSP 7 (1920-01-10) and EDM 12-CHI 9 (1985-12-11); playoffs 18, LAK 10-EDM 8
@@ -175,32 +162,49 @@ Last updated: 2026-11-11
     entries after 12:48 UTC, fewer than the two blind runs alone made, none of their marker queries, and no entry
     for a full dbt build at 12:46. So per-question costs of the blind runs could not be measured. Estimate: at most 3 to 4 CU-seconds per question (worst case, 3 or 4
     calls each).
+- **MotherDuck guide shortened and read from MotherDuck (2026-11-13).** 16,716 to about 10,900 characters (coverage
+  and table lists merged, every stat's start date in one section), version 11. The Claude.ai Project now gets a short
+  note (`analyst/claude_project_instructions.md`) that tells it to read the guide from MotherDuck, so nothing is
+  pasted. `publish_guide` warns above 14,000 characters and refuses above 16,000.
+- **Inbox answers after loads A, B and C (2026-11-13).** Fights (from 1947-48), primary assists, points by period,
+  shootout success, Team Canada without a point, most leagues before the NHL debut, oldest and youngest World Junior
+  players: in `analyst/question_inbox.md` (laptop only).
+- **Seeds (2026-11-13):** `league_levels` (1,142 league codes on the player pages with a level, season ranges and
+  rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
+  (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
+  building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **`dim_team_home_cities` (2026-11-13):** each team's home building and city per era, built from the games (98 eras,
+  60 team identities, 55 cities, all with coordinates); 9 of 9 tests pass. A model, not a seed, so no NHL extract
+  sits in the repo and moves appear by themselves.
+- **Latest full `dbt build` recorded here (2026-10-18; not rerun as a whole since):** 229 of 229 pass; the nightly build 48 of 48 (12 tables, 2 incremental
+  models, 34 data checks). No failure is left without an approved exception.
+
+## In progress
+
+- **G01 ("best record against teams above .500"):** `goalie_records_vs_above_500` is built under the revised D01
+  (headline: opponent above the league median by points % before the game, with at least 10 games played; second
+  column: above .500 by points %), with D04, D05 (50, and 100 reported) and D23.
+  - **Verified (2026-10-14).** Recomputed independently from the NHL's official standings for the day before each
+    game, it matches game for game: Ken Dryden 1975-76 under the headline (21 qualifying decisions, league median
+    equal on all 60 dates), and Dryden 1975-76 and Braden Holtby 2015-16 under the above-.500 column (24 and 45).
+  - **Still labelled draft** until the owner has checked it.
 
 ## Next
 
-1. **Keep the guide in step.** When it changes: edit `docs/motherduck_guide.md`, run
-   `uv run python -m analyst.publish_guide`. The Claude.ai Project reads it from MotherDuck
-   (`analyst/claude_project_instructions.md`, 2026-11-13), so nothing is pasted; the script refuses a guide over
-   16,000 characters.
-2. **Watch the daily run.** After the first nights on the free plan (from 2026-10-19): compare the Billing page with
-   the estimate below, and check in `raw.ingest_log` how many responses change each night now that ticket links are
-   ignored.
-3. **Review the golden questions and settle the open definitions.** Approve or reject the proposed rewordings in
-   `analyst/golden_questions.yml`, and decide the open entries in `docs/definitions.md` (see "Open decisions").
-4. **`fct_shots`, other seasons:** in progress (see "In progress"). Earlier estimates, before the trial:
-   - 24,542 games from 2007-08 to 2025-26, one request each (about 7 to 10 hours). Sampled sizes: about 35 KB per
-     game in 2007-09, 100 to 150 KB from 2009-10; about 2.8 GB raw JSON in all. About 2.6 million shot attempts.
-   - Shot coordinates: present in every sampled game from 2009-10 on, absent in the sampled games of 2007-08 and
-     2008-09 (one game per season; to confirm).
-   - Raw JSON in MotherDuck would mean about 49,000 statements (about 13.6 CU-hours, over the monthly allowance).
-     Recommended: raw play-by-play as compressed files on the laptop (about 0.3 to 0.4 GB), shots bulk-loaded into
-     MotherDuck (a handful of statements, $0). Nightly: 8 to 15 games, about 2 MB, small enough for `raw`.
-5. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
+1. **Open definitions from the question inbox** (round 2, numbers 12 to 20 in `analyst/question_inbox.md`): season or
+   career rankings, overtime goals or points, NHL eras, nationality, the Czechoslovakia team, "emerging hockey power",
+   relegation, ironman streaks and the most remote arena. Each unblocks one or more questions.
+2. **Review the golden questions and settle the open definitions** in `docs/definitions.md` (see "Open decisions"),
+   and approve or reject the proposed rewordings in `analyst/golden_questions.yml`.
+3. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
+4. **Watch the daily run:** compare the Billing page with the estimates below.
+5. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
+6. **Parked, not started: MoneyPuck** for expected goals. Blocked by the hard rule "No MoneyPuck data for now".
    - Terms: free for non-commercial use, credit MoneyPuck.com wherever shown; ask before scraping anything not
      offered for download ([moneypuck.com/data.htm](https://moneypuck.com/data.htm)).
    - About 2.08 million shots, 2007-08 to 2024-25 plus the current season nightly; no blocked shots; CSV in zip.
-   - IDs not verified (the data dictionary could not be read automatically): check by hand that its game number and
-     player IDs match `fct_games` and `dim_players` before any load.
+   - IDs not verified: check by hand that its game number and player IDs match `fct_games` and `dim_players`
+     before any load.
    - Estimate: 150 to 300 MB as a table, a few statements per load, $0 a month.
 
 ## Storage (2026-10-14)
@@ -288,14 +292,13 @@ Last updated: 2026-11-11
 
 - **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13 and D17 to D20.
   Proposed defaults await confirmation: D02, D08, D12, D16, D21 and D22.
+- **Question inbox, round 2:** definitions 12 to 20 (see "Next").
 - **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
-- **Fights and travel** are in scope (`docs/decisions.md`). Before the fight load: an optional wider test for missed
-  fights. The play-by-play storage question is settled (`docs/decisions.md`, 2026-11-10): fights would come from the
-  files on the laptop.
 - **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
 
 ## Not started
 
-- Team game statistics; play-by-play events other than shots (hits, penalties, fights); shifts; player pages
-  (college and junior seasons); arena coordinates.
-- Answers to the golden questions (beyond G01). The conversational layer itself is item 3 under "Next".
+- Team game statistics (power play, penalties per team game), shifts, game duration.
+- Play-by-play events other than shots, hits and penalties: giveaways, takeaways, faceoffs, stoppages.
+- Travel and road-trip tables (venue coordinates and `dim_team_home_cities` are in place).
+- Answers to the golden questions beyond G01.

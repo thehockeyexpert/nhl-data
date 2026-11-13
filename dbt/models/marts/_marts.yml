@@ -487,6 +487,41 @@ models:
       - name: above_500_win_pct
         description: W / (W + L + T + OTL) against above-.500 opponents. Empty if none.
 
+  - name: dim_team_home_cities
+    description: >
+      One row per team per home era (2026-11-13): the building, and its city, where the team played most of its
+      regular-season home games each season, with consecutive seasons in the same building merged. A rename keeps the
+      building (venues seed); a move or new arena starts a new era. Neutral-site home games do not count unless they
+      are the majority. home_city is the building's municipality (Inglewood, Uniondale, Sunrise), not the team's
+      market name. latitude and longitude are the building's, for travel distances. split_seasons counts seasons where
+      the main building held under 60% of the home games (1928-29 Chicago, 1967-68 Los Angeles, 1979-80 Hartford in
+      Springfield, 2018-19 Islanders).
+    columns:
+      - name: home_era_key
+        description: team_id and from_season joined.
+        data_tests: [unique, not_null]
+      - name: team_id
+        description: The team identity; joins to dim_teams.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
+      - name: from_season
+        description: First regular season of the era.
+        data_tests: [not_null]
+      - name: to_season
+        description: Last regular season of the era so far.
+        data_tests: [not_null]
+      - name: home_city
+        description: The main building's city, as in the venues seed.
+        data_tests: [not_null]
+      - name: building_id
+        description: The main building; joins to the venues seed.
+        data_tests: [not_null]
+      - name: split_seasons
+        description: Seasons in the era where the main building held under 60% of the team's home games.
   - name: dim_teams
     description: >
       One row per team identity that appears in our games, plus the NHL's two placeholder teams. A club that was renamed or moved

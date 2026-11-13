@@ -52,6 +52,8 @@ estimate it from other tables.
 - `dim_teams`: one row per team identity, `franchise_id` (the NHL's) and `lineage_id` (ours). `is_nhl_team` false
   for non-NHL preseason and early playoff opponents.
 - `dim_team_season`: conference and division per team per regular season. Join on `team_id` and `season`.
+- `dim_team_home_cities`: each team's home building and city per era (most home games each season), with the
+  building's coordinates for travel. `home_city` is the building's municipality (Inglewood, Uniondale).
 - `dim_seasons` (season facts and rules), `dim_games` (date, type, teams, venue).
 - `fct_draft_picks` (1963 on), `fct_award_results` (`is_winner`; finalists also listed; Stanley Cup rows name every
   player engraved), `dim_trophies`, `fct_playoff_series` (`winner_team_id`, `loser_team_id`, `is_final_round`;
@@ -59,7 +61,8 @@ estimate it from other tables.
 - `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
 **Not loaded, never estimate:** giveaways, takeaways, faceoff events, stoppages, shifts, zone starts, team game
-statistics, game duration, travel, expected goals, Game Score.
+statistics, game duration, expected goals, Game Score. Travel distances are not stored: compute them from venue
+coordinates (`reference.venues`, `dim_team_home_cities`).
 
 ## When stats begin (never count earlier seasons as zero; leave them out of "best ever" rates)
 - Strength split of skater scoring (even, power play, short-handed) 1933-34; goalie shots and saves 1955-56; skater

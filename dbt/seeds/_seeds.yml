@@ -236,3 +236,31 @@ seeds:
         data_tests: [not_null]
       - name: note
         description: What the code is, in our words, and any judgement call.
+  - name: world_junior_tournaments
+    description: >
+      The dates of every IIHF World Junior (under-20) Championship, top division, 1974 to 2026, each from its own
+      English Wikipedia article (infobox, read 2026-11-13). For players' ages at the tournament (the inbox question
+      "oldest and youngest World Junior player"). season is the 8-digit season the NHL's player pages file the
+      tournament under (WJC-A, WJC-20): the one it falls in. 1974-1976 were unofficial invitationals.
+    columns:
+      - name: tournament_year
+        description: The year the tournament is named after.
+        data_tests: [unique, not_null]
+      - name: season
+        description: The 8-digit season the player pages list it under; joins to fct_player_league_seasons.season.
+        data_tests: [unique, not_null]
+      - name: first_day
+        description: First day of the top-division tournament.
+        data_tests: [not_null]
+      - name: last_day
+        description: Last day of the top-division tournament.
+        data_tests: [not_null]
+      - name: host
+        description: Host country or countries, in English.
+      - name: is_official
+        description: False for the unofficial 1974-1976 invitationals, which are not in IIHF records.
+        data_tests: [not_null]
+      - name: source
+        description: The article read.
+      - name: note
+        description: Cancellations, replays and disagreements between the infobox and the article text.

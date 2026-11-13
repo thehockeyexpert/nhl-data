@@ -191,6 +191,12 @@ entries). `marts.fct_player_league_seasons` holds 622,462 rows for 23,242 people
   codes mean different leagues in different eras (`USHL`, `WHL`, `WCHL`, `MHL`, `MPHL`, `ECHL`...), so the seed
   has season ranges. 8 codes could not be placed (`Other`, `(none)`, `Independent`, `Ind.`, `NOHA`, `RHL`, `ACH`,
   `OPHL` after 1950).
+- **World Junior ages** (checked 2026-11-13 against `reference.world_junior_tournaments`): of 5,173 player
+  tournaments with a birth date and at least one game, 8 give an impossible age at the start: Igor Boldin at 12 and 13
+  (his birth date is recorded as 1970-01-01) and six players aged 22 to 34 on under-20 teams (Tom Anderson, USA 1989;
+  Ivan Kulbakov, Belarus 2016; Mike Green, USA 2003; Niclas Wallin, Switzerland 1998; Sergei Zinovjev and Sergey
+  Kalinin, Russia 2003 and 2014). Unexplained; leave them out of age questions. The 2022 tournament is listed under
+  2021-22; whether those rows are the cancelled December games or the August replay is not known.
 - **Coverage of other leagues** is whatever the NHL lists: a missing league or season is not proof a player never
   played there.
 

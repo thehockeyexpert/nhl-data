@@ -173,6 +173,9 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Definitions D17 to D20 settled and every golden-question rewording decided (owner, 2026-11-13).** D17 fight
+  (one fighting major, from 1947-48), D18 other leagues (CHL under any earlier name), D19 team minutes, D20 travel
+  (from and back to the home arena). 14 rewordings approved as proposed, P15 changed to "either direction", G07 with NHL nationality beside birth country; no proposals left.
 - **Question inbox definitions 12 to 20 settled (owner, 2026-11-13)** and their answers worked out (Mr Sunday,
   overtime hero, plus-minus by era, 50-goal seasons by birth country and nationality, Czechoslovakia teams, emerging
   powers, relegation, ironman streaks, most remote arena) in `analyst/question_inbox.md`. Seed `nhl_eras` (definition
@@ -200,8 +203,8 @@ Last updated: 2026-11-13
 
 ## Next
 
-1. **Review the golden questions and settle the open definitions** in `docs/definitions.md` (see "Open decisions"),
-   and approve or reject the proposed rewordings in `analyst/golden_questions.yml`.
+1. **Answer the golden questions** in `analyst/golden_questions.yml`: reference answers by direct SQL, then a blind
+   run through the Claude.ai Project. T08 first needs a small table of overtime rules by era (D19).
 2. **G01:** the owner checks `goalie_records_vs_above_500` so the draft label can come off.
 3. **Watch the daily run:** compare the Billing page with the estimates below.
 4. **Keep the guide in step:** edit `docs/motherduck_guide.md`, then `uv run python -m analyst.publish_guide`.
@@ -296,9 +299,6 @@ Last updated: 2026-11-13
 
 ## Open decisions
 
-- **Definitions** still open in `docs/definitions.md`: D05 beyond G01, D06, D07, D09, D10, D13 and D17 to D20.
-  Proposed defaults await confirmation: D02, D08, D12, D16, D21 and D22.
-- **Golden questions:** the proposed rewordings in `analyst/golden_questions.yml` await approval.
 - **Utah** is kept as the NHL's separate franchise (40), with no lineage override.
 
 ## Not started
@@ -306,4 +306,4 @@ Last updated: 2026-11-13
 - Team game statistics (power play, penalties per team game), shifts, game duration.
 - Play-by-play events other than shots, hits and penalties: giveaways, takeaways, faceoffs, stoppages.
 - Travel and road-trip tables (venue coordinates and `dim_team_home_cities` are in place).
-- Answers to the golden questions beyond G01.
+- Answers to the golden questions beyond G01 (see "Next").

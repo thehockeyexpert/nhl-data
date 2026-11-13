@@ -13,6 +13,8 @@
 #   source          claude_draft (drafted by Claude) or owner (the owner's own wording, unchanged)
 #   flags           optional: ambiguous, not_in_nhl_data, partial_history
 #   proposed_wording optional: a suggested rewording for the owner to approve; the question itself is unchanged
+#   owner_wording   optional: the owner's original wording, kept when an approved rewording replaced it
+#   approved_on     optional: the date the owner approved the rewording
 #   review_note     optional: why it is flagged and what would be needed
 #   in_scope        optional: true once the owner has decided the question stays in scope
 #   load_status     optional: not_started, in_progress or done, for the data the question is waiting on
@@ -454,152 +456,162 @@ questions:
   - id: P09
     source: owner
     theme: player
-    question: How many games does a player have 5+ assists?
+    question: How many times has a player had 5 or more assists in one regular-season game, and which players did it most often?
+    owner_wording: How many games does a player have 5+ assists?
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11]
     flags: [ambiguous]
-    proposed_wording: How many times has a player had 5 or more assists in one regular-season game, and which players did it most often?
     review_note: Could mean one total count across all players, or a count per player. Assist records in the earliest seasons may be thin.
   - id: P10
     source: owner
     theme: player
-    question: How many games does a player have a hat trick?
+    question: How many times has a player scored 3 or more goals in one regular-season game, and which players did it most often?
+    owner_wording: How many games does a player have a hat trick?
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11, D16]
     flags: [ambiguous]
-    proposed_wording: How many times has a player scored 3 or more goals in one regular-season game, and which players did it most often?
     review_note: Same ambiguity as P09. A hat trick needs a definition (exactly 3 goals, or 3 or more).
   - id: P11
     source: owner
     theme: player
-    question: Highest scoring player from Minnesota
+    question: Which player born in Minnesota has the most career NHL regular-season points?
+    owner_wording: Highest scoring player from Minnesota
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [skater_game_stats, player_bios]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11, D14, D15]
     flags: [ambiguous]
-    proposed_wording: Which player born in Minnesota has the most career NHL regular-season points?
     review_note: '"From Minnesota" could mean born there or played for a Minnesota team (North Stars, Wild). "Highest scoring" could mean career, one season, or goals rather than points.'
   - id: P12
     source: owner
     theme: player
-    question: What city has produced the most NHL players?
+    question: Which birth city (city, state or province, country) has the most players who played at least one NHL game?
+    owner_wording: What city has produced the most NHL players?
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [player_bios, skater_game_stats, goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D14, D15]
     flags: [ambiguous]
-    proposed_wording: Which birth city (city, state or province, country) has the most players who played at least one NHL game?
     review_note: '"Produced" could mean birthplace or hometown. Cities that share a name must be told apart by state or province and country.'
   - id: P13
     source: owner
     theme: player
-    question: What province or state has produced the highest point totals in NHL history?
+    question: Which Canadian province or US state has the highest combined career NHL regular-season points from players born there?
+    owner_wording: What province or state has produced the highest point totals in NHL history?
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [player_bios, skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11, D14]
     flags: [ambiguous]
-    proposed_wording: Which Canadian province or US state has the highest combined career NHL regular-season points from players born there?
     review_note: Could mean combined points or the single highest-scoring player. The NHL records a province or state only for players born in Canada or the United States.
   - id: P14
     source: owner
     theme: player
-    question: Player with the most fights who played at Boston College
+    question: Among players who played for Boston College (NCAA) and later in the NHL, who had the most NHL fighting majors?
+    owner_wording: Player with the most fights who played at Boston College
+    approved_on: 2026-11-13
     difficulty: hard
     needs: [play_by_play_penalties, player_other_leagues]
-    answerable_now: false
+    answerable_now: true
     definitions: [D17, D18]
     in_scope: true
-    load_status: not_started
-    blocked_on:
-      - play_by_play_penalties (fights; see docs/decisions.md)
-      - player_other_leagues (college seasons; one request per player)
-      - D17 fight definition
-      - D18 other-leagues definition
+    load_status: done
     flags: [ambiguous, partial_history]
-    proposed_wording: Among players who played for Boston College (NCAA) and later in the NHL, who had the most NHL fighting majors?
     review_note: Fights come only from play-by-play penalty events, one request per game. Their completeness in early seasons is unknown. College seasons come from each player's page, one request per player. "Most fights" could also include college fights, which the NHL data does not have.
   - id: P15
     source: owner
     theme: player
-    question: The player with the biggest difference between highest CHL point season and NHL highest point season
+    question: Among players who played in the CHL (the OHL, WHL or QMJHL, under any earlier name) and the NHL, whose best CHL regular-season point total and best NHL regular-season point total differ the most, in either direction?
+    owner_wording: The player with the biggest difference between highest CHL point season and NHL highest point season
+    approved_on: 2026-11-13
     difficulty: hard
     needs: [player_other_leagues, skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11, D15, D18]
     flags: [ambiguous]
-    proposed_wording: Among players who played in the CHL (OHL, WHL or QMJHL) and the NHL, whose best CHL regular-season point total exceeds their best NHL regular-season point total by the most?
     review_note: The direction is unclear (a CHL season higher than the NHL best, or either way). "CHL" needs a definition for the years before the three leagues formed the CHL in 1975.
   - id: G06
     source: owner
     theme: goalie
-    question: Goalie with a winning record that has the highest GAA (minimum 50 appearances)
+    question: Among goalies with at least 50 career NHL regular-season games played and more wins than losses, who has the highest career goals-against average?
+    owner_wording: Goalie with a winning record that has the highest GAA (minimum 50 appearances)
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D04, D11, D13]
     flags: [ambiguous]
-    proposed_wording: Among goalies with at least 50 career NHL regular-season games played and more wins than losses, who has the highest career goals-against average?
     review_note: '"Winning record" needs a definition (how ties and OT losses count). "Appearances" is read as games played, including relief appearances.'
   - id: T07
     source: owner
     theme: team
-    question: Which NHL team has the most bench minors since 1990
+    question: Since the 1990-91 season, which lineage has taken the most bench minor penalties in the regular season, in total and per game?
+    owner_wording: Which NHL team has the most bench minors since 1990
+    approved_on: 2026-11-13
     difficulty: easy
     needs: [team_penalty_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D03, D11, D21]
     flags: [ambiguous]
-    proposed_wording: Since the 1990-91 season, which lineage has taken the most bench minor penalties in the regular season, in total and per game?
     review_note: '"Since 1990" could mean calendar 1990 or the 1990-91 season. Teams that joined later have fewer seasons, so per-game helps. Source found: the stats API team penalties report gives benchMinorPenalties per team season (1990-91, 2000-01 and 2025-26 sampled).'
   - id: P16
     source: owner
     theme: player
-    question: The most recent NHL player to score more goals in the playoffs than that current season
+    question: Who is the most recent player to score more playoff goals than regular-season goals in the same season, with at least 20 regular-season games played?
+    owner_wording: The most recent NHL player to score more goals in the playoffs than that current season
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D05]
     flags: [ambiguous]
-    proposed_wording: Who is the most recent player to score more playoff goals than regular-season goals in the same season, with at least 20 regular-season games played?
     review_note: '"That current season" is read as the same season''s regular season. Without a minimum number of games, a late call-up with 0 regular-season goals and 1 playoff goal would qualify.'
   - id: P17
     source: owner
     theme: player
-    question: Points breakdown by how the player shoots (left or right)
+    question: What share of all-time NHL regular-season goals, assists and points were scored by left-shooting and by right-shooting skaters?
+    owner_wording: Points breakdown by how the player shoots (left or right)
+    approved_on: 2026-11-13
     difficulty: easy
     needs: [skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11]
     flags: [ambiguous]
-    proposed_wording: What share of all-time NHL regular-season goals, assists and points were scored by left-shooting and by right-shooting skaters?
     review_note: Could be all time, by season or by position. Skaters only, since goalies are recorded as catching.
   - id: G07
     source: owner
     theme: goalie
-    question: Which country produces the most goaltenders?
+    question: Which birth country has the most goaltenders who played at least one NHL game, with the count by NHL nationality beside it?
+    owner_wording: Which country produces the most goaltenders?
+    approved_on: 2026-11-13
     difficulty: easy
     needs: [player_bios, goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D14, D15]
     flags: [ambiguous]
-    proposed_wording: Which birth country has the most goaltenders who played at least one NHL game?
     review_note: '"Produces" could mean birth country or nationality (both are in the NHL data), and all time or recently.'
   - id: T08
     source: owner
     theme: team
-    question: Which team has played the most minutes?
+    question: Which lineage has played the most minutes of NHL regular-season and playoff hockey, counting regulation and overtime?
+    owner_wording: Which team has played the most minutes?
+    approved_on: 2026-11-13
     difficulty: hard
     needs: [fct_games, game_duration]
-    answerable_now: false
+    answerable_now: partly
+    blocked_on:
+      - overtime rules by era (full overtime length when nobody scored), a small table of our own
     definitions: [D03, D11, D19]
     flags: [ambiguous, partial_history]
-    proposed_wording: Which lineage has played the most minutes of NHL regular-season and playoff hockey, counting regulation and overtime?
     review_note: Overtime length is not in our tables. It comes from the time of the winning goal (play-by-play) and from the overtime rules of each era (10-minute non-sudden-death regular-season overtime before 1942). Shootouts add no minutes.
   - id: T09
     source: owner
@@ -607,30 +619,24 @@ questions:
     question: Which team travels the furthest in a season?
     difficulty: hard
     needs: [fct_games, venue_coordinates]
-    answerable_now: false
+    answerable_now: true
     definitions: [D20]
     in_scope: true
-    load_status: not_started
-    blocked_on:
-      - venue_coordinates (arena coordinates; see docs/decisions.md)
-      - D20 travel definition
-    flags: [not_in_nhl_data, ambiguous]
-    review_note: The NHL data names venues but has no coordinates, and it does not show where a team flies between games. It needs an outside table of arena coordinates (a hand-made seed with a source per arena) and a travel definition. Split from the owner's two-part question.
+    load_status: done
+    flags: [ambiguous]
+    review_note: Answerable since 2026-11-13 with D20 (arena coordinates in reference.venues, home arenas in dim_team_home_cities). The NHL data does not show where a team flies between games, so travel is measured arena to arena. Split from the owner's two-part question.
   - id: T10
     source: owner
     theme: team
     question: Which team travels the furthest in their history?
     difficulty: hard
     needs: [fct_games, venue_coordinates]
-    answerable_now: false
+    answerable_now: true
     definitions: [D03, D20]
     in_scope: true
-    load_status: not_started
-    blocked_on:
-      - venue_coordinates (arena coordinates; see docs/decisions.md)
-      - D20 travel definition
-    flags: [not_in_nhl_data, ambiguous]
-    review_note: Same as T09, across every season. Split from the owner's two-part question.
+    load_status: done
+    flags: [ambiguous]
+    review_note: Same as T09 (answerable since 2026-11-13 with D20), across every season. Split from the owner's two-part question.
   - id: T11
     source: owner
     theme: team
@@ -642,41 +648,40 @@ questions:
   - id: P18
     source: owner
     theme: player
-    question: Which player has the least amount of playing time in their NHL career with a maximum of 10 games played?
+    question: Among skaters who played between 1 and 10 NHL games, all since 1997-98, who has the least total time on ice?
+    owner_wording: Which player has the least amount of playing time in their NHL career with a maximum of 10 games played?
+    approved_on: 2026-11-13
     difficulty: medium
     needs: [skater_game_stats, goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D15, D22]
     flags: [ambiguous, partial_history]
-    proposed_wording: Among skaters who played between 1 and 10 NHL games, all since 1997-98, who has the least total time on ice?
     review_note: Skater ice time exists only from 1997-98 (goalie ice time goes back to 1917-18), so earlier players cannot be ranked. It is unclear whether goalies are included and whether the 10 games count regular season only or include playoffs.
   - id: P19
     source: owner
     theme: player
-    question: Which player has the most fights & points total combined?
+    question: Which player has the highest career total of NHL regular-season fighting majors plus points?
+    owner_wording: Which player has the most fights & points total combined?
+    approved_on: 2026-11-13
     difficulty: hard
     needs: [play_by_play_penalties, skater_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11, D17]
     in_scope: true
-    load_status: not_started
-    blocked_on:
-      - play_by_play_penalties (fights; see docs/decisions.md)
-      - skater_game_stats (points)
-      - D17 fight definition
+    load_status: done
     flags: [ambiguous, partial_history]
-    proposed_wording: Which player has the highest career total of NHL regular-season fighting majors plus points?
     review_note: '"Combined" is read as fights + points added together. Fights come only from play-by-play penalty events, one request per game, and their completeness in early seasons is unknown.'
   - id: G08
     source: owner
     theme: goalie
-    question: Which goalie has scored the most goals?
+    question: Which goalie has been credited with the most NHL goals, regular season and playoffs combined?
+    owner_wording: Which goalie has scored the most goals?
+    approved_on: 2026-11-13
     difficulty: easy
     needs: [goalie_game_stats]
-    answerable_now: false
+    answerable_now: true
     definitions: [D11]
     flags: [ambiguous]
-    proposed_wording: Which goalie has been credited with the most NHL goals, regular season and playoffs combined?
     review_note: Under the default scope (D11) this would count the regular season only; famous goalie goals include playoff ones.
   - id: P20
     source: claude_draft

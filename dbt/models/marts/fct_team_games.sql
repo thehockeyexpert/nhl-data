@@ -1,6 +1,7 @@
 -- One row per team per finished regular-season or playoff game, with the result under that era's
--- standings rules (docs/definitions.md, D02): an overtime or shootout loss is OTL only in seasons
--- that award a point for it; before that it is a plain loss.
+-- standings rules (docs/definitions.md, D02): an overtime or shootout loss is OTL only in regular-season games of
+-- seasons that award a point for it; before that, and in every playoff game, it is a plain loss (fixed 2026-11-13:
+-- playoff overtime losses from 1999-00 were marked OTL).
 
 with games as (
 
@@ -39,7 +40,8 @@ results as (
         case
             when goals_for > goals_against then 'W'
             when goals_for = goals_against then 'T'
-            when coalesce(rules.is_point_for_ot_loss_in_use, false)
+            when sides.game_type = 2
+                and coalesce(rules.is_point_for_ot_loss_in_use, false)
                 and last_period_type in ('OT', 'SO') then 'OTL'
             else 'L'
         end as result

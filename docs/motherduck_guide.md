@@ -39,13 +39,19 @@ estimate it from other tables.
   Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `fct_player_league_seasons`: one row per player, season, league, team and game type in every league on the
   player's NHL page (junior, college, minor and major pro, international, NHL). `league_abbrev` as the NHL writes it
-  (OHL, AHL, NCAA, WC-A...); `is_before_first_nhl_season`. Sum several rows in a season. For NHL totals use the NHL
-  tables. Only what the NHL lists: no row does not prove someone never played there.
+  (OHL, AHL, H-East, WC-A...); `is_before_first_nhl_season`. For NHL totals use the NHL tables. Only what the NHL
+  lists: no row does not prove someone never played there.
+  **Duplicate seasons:** a traded player's season can appear both per team and as a whole-season row, so summing a
+  season's rows can double count (129 junior games in one season). Use the best single row, or sum only when the
+  games played add up to no more than a season. **Colleges:** filter on `team_name` (e.g. 'Boston College'); most
+  college seasons are filed under conference codes (H-East, ECAC, WCHA), not 'NCAA'. **CHL** (D18) = `league_group`
+  'OHL', 'WCJHL/WHL junior' or 'QMJHL' in `reference.league_levels` (earlier names included).
   The Canada Cup and World Cup are often listed twice, a season apart (`CC`/`Can-Cup`, `WCup`/`W-Cup`): count each
   tournament once. Goalie rows in tournaments have no points. For "how many leagues", join
   `reference.league_levels` on `league_abbrev` with `season` between `from_season` and `to_season` (empty = open),
   keep `counts_before_nhl`, and count distinct `league_group`.
 - `dim_players`: one row per person; use `is_nhl_player` (D15), as the list holds people who never played.
+  Goalies are `position = 'G'`.
 - `dim_birthplaces`: `latitude`, `longitude` per birthplace (GeoNames, CC BY 4.0: credit GeoNames when shown); join
   on `birthplace_key`. 'unmatched' has no coordinates: say how many players a map leaves out. Former towns share
   their successor's point (Fort William at Thunder Bay).
@@ -61,8 +67,10 @@ estimate it from other tables.
 - `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
 **Not loaded, never estimate:** giveaways, takeaways, faceoff events, stoppages, shifts, zone starts, team game
-statistics, game duration, expected goals, Game Score. Travel distances are not stored: compute them from venue
-coordinates (`reference.venues`, `dim_team_home_cities`).
+statistics, game duration, expected goals, Game Score. Travel distances are not stored. Compute them (D20) as the
+great-circle distance between the arenas of a team's consecutive regular-season games (`fct_games.venue_name` joins
+`reference.venues.venue_name` for coordinates), from the home arena (`dim_team_home_cities`) to a season-opening road
+game and back home after a season-ending one.
 
 ## When stats begin (never count earlier seasons as zero; leave them out of "best ever" rates)
 - Strength split of skater scoring (even, power play, short-handed) 1933-34; goalie shots and saves 1955-56; skater
@@ -98,7 +106,8 @@ coordinates (`reference.venues`, `dim_team_home_cities`).
 - Regular season only (`game_type = 2`) unless playoffs or preseason are asked; with playoffs, give them separately
   and combined. Special events (all-star games) are not in `fct_games`.
 - Finished games only (`is_final`): the game list holds never-played "if necessary" playoff games.
-- Seasons are 8-digit IDs (20252026 = 2025-26). 2026-27 is in progress: say so, or exclude it, for "most ever".
+- Seasons are 8-digit IDs (20252026 = 2025-26). 2026-27 is in progress: leave it out of single-season "most ever"
+  answers and say so; career totals run to today.
 - "Since 1990" means 1990-91 onward. "The 1980s" is 1980-81 to 1989-90 (D28).
 
 ## Teams in history questions
@@ -112,8 +121,8 @@ coordinates (`reference.venues`, `dim_team_home_cities`).
 ## Results, ties and overtime
 - **`last_period_type = 'OT'` does not mean decided in overtime:** before 2005-06, 3,086 regular-season games went
   to overtime and ended tied. For "decided in OT or a shootout" add `NOT is_tie`.
-- OTL exists only in seasons that gave a point for an overtime loss; otherwise it is L. From 1999-00 to 2003-04 a
-  goalie's overtime loss is L while the team gets OTL.
+- OTL exists only in regular-season games of seasons that gave a point for an overtime loss; otherwise, and in every
+  playoff game, it is L. From 1999-00 to 2003-04 a goalie's overtime loss is L while the team gets OTL.
 - Standings points (D02): 2 for a win, 1 for a tie, 1 for an OT or shootout loss where that season's rules give it.
 
 ## Definitions
@@ -129,9 +138,9 @@ coordinates (`reference.venues`, `dim_team_home_cities`).
   save % from 1955-56 only. Never prorate a shortened season (D29).
 - **Streaks (D06):** consecutive games the player played, within one regular season (across seasons as an extra).
   A team winning streak counts any win; a loss of any kind or a tie ends it.
-- **Rookie (D09):** the Calder rule on NHL games: no earlier season over 25 games, not 6+ games in each of two
-  earlier seasons, from 1990-91 under 26 on September 15. Other pro leagues are not applied: say so, and name WHA
-  arrivals (Gretzky and Mike Rogers in 1979-80 were not NHL rookies).
+- **Rookie (D09):** the Calder rule on NHL regular-season games: no earlier season over 25 games, not 6+ games in
+  each of two earlier seasons, from 1990-91 under 26 on September 15. Other pro leagues are not applied: say so,
+  and name WHA arrivals (Gretzky and Mike Rogers in 1979-80 were not NHL rookies).
 - **Age (D25):** exact age on the game date; "age in a season" is age on February 1. **Active (D26):** played this
   season or last.
 - **One-goal games (D07):** OT wins count, shootout games only if asked. **Winning record (D13):** more wins than

@@ -173,6 +173,12 @@ Last updated: 2026-11-13
   rename groups; six judgement calls approved by the owner, `docs/decisions.md`) and `world_junior_tournaments`
   (dates of every World Junior Championship, 1974 to 2026, from Wikipedia). `venues` now has coordinates for every
   building except the Atlantic City Auditorium (1929-30, 3 games), so travel can be measured arena to arena.
+- **Blind test and fixes (2026-11-13).** A fresh agent with only the MotherDuck tools answered 20 golden questions
+  from the guide alone, all correct or correctly caveated (fights before 1947-48 "not recorded"), in 36 calls. It
+  found a model error: `fct_team_games` marked 526 playoff overtime losses (1999-00 on) as OTL with a point; now a
+  plain L (playoff wins and losses balance, 2,301 each). New check `playoff_results_valid` (no playoff OTL; one
+  winner and one loser, or two ties), proven on a throwaway in-memory copy. Guide fixed where the run stumbled:
+  duplicate player-page seasons, colleges by team name, the CHL league groups, the travel method, goalies, rookies.
 - **Golden-question reference answers (2026-11-13):** 63 of 65 answered by direct SQL in `analyst/golden_answers.md`
   (T08 partly; T06 needs team game statistics). Checked against known records where they exist (Sittler's 10
   points, Malone's 7 goals, Gretzky's 51-game point streak, Pittsburgh's 17 wins, Montreal's 34-game home unbeaten

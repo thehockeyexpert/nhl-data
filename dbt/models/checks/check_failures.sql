@@ -1062,6 +1062,24 @@ shot_goals_present as (
 
 ),
 
+playoff_results_valid as (
+
+    -- A playoff game has no overtime-loss result: an overtime or shootout loss in the playoffs is a plain loss, and
+    -- each playoff game has one winner and one loser (or two ties, in the early total-goals series).
+    select
+        'playoff_results_valid' as check_name,
+        team_games.season,
+        team_games.game_id,
+        'playoff results ' || string_agg(team_games.result, '/' order by team_games.result) as detail,
+        null::integer as team_id
+    from {{ ref('fct_team_games') }} as team_games
+    where team_games.game_type = 3
+    group by team_games.season, team_games.game_id
+    having count(*) filter (where team_games.result = 'OTL') > 0
+        or not (string_agg(team_games.result, '/' order by team_games.result) in ('L/W', 'T/T'))
+
+),
+
 team_season_unique as (
 
     -- Each team appears once per season in dim_team_season.
@@ -1246,6 +1264,8 @@ union all
 select * from shot_goals_match_score
 union all
 select * from shot_goals_present
+union all
+select * from playoff_results_valid
 union all
 select * from team_season_unique
 union all

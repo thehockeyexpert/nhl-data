@@ -103,3 +103,39 @@ models:
         description: 1 - 5-on-5 goals against / 5-on-5 shots on goal against. From 2009-10.
       - name: pdo_5v5
         description: (shooting_pct_5v5 + save_pct_5v5) x 100. From 2009-10.
+
+  - name: fct_skater_season_rates
+    description: >
+      One row per skater per regular season from 1997-98 (skater time on ice starts then), all teams combined:
+      goals, assists, points and shots per 60 minutes of ice time (x 3,600 / seconds on ice). Rates on small samples
+      mislead: filter on toi_minutes or games_played, or use meets_d05_minimum (docs/definitions.md, D05).
+    columns:
+      - name: skater_season_key
+        description: season, game type 2 and player_id joined, as in fct_skater_seasons.
+        data_tests: [unique, not_null]
+      - name: player_id
+        description: The player. Joins to dim_players.
+        data_tests: [not_null]
+      - name: season
+        description: The season, 8 digits.
+        data_tests: [not_null]
+      - name: games_played
+        description: Regular-season games played, all teams.
+      - name: time_on_ice_seconds
+        description: Total ice time in seconds.
+        data_tests: [not_null]
+      - name: toi_minutes
+        description: Total ice time in minutes, for filtering out small samples (for example toi_minutes >= 500).
+      - name: goals_per_60
+        description: Goals x 3,600 / time_on_ice_seconds. Empty when the player has no recorded ice time.
+      - name: assists_per_60
+        description: Assists per 60 minutes.
+      - name: points_per_60
+        description: Points per 60 minutes.
+      - name: shots_per_60
+        description: Shots on goal per 60 minutes.
+      - name: team_games
+        description: The most regular-season games any team played that season (D05's "team games").
+      - name: meets_d05_minimum
+        description: True when games_played is at least half of team_games (D05, skater single-season rates).
+        data_tests: [not_null]

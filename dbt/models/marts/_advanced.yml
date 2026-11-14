@@ -51,3 +51,55 @@ models:
         description: Shot attempts by the team at 5-on-5 with both goalies in (situation_code 1551).
       - name: corsi_against_5v5
         description: Shot attempts by the opponent at 5-on-5.
+
+  - name: fct_team_season_advanced
+    description: >
+      One row per team per regular season from 1955-56: CF%, FF%, shooting %, save % and PDO, in all situations and
+      at 5-on-5. All-situations shooting % and save % come from fct_goalie_games (goals and shots against goalies;
+      empty-net goals and shootouts left out), from 1955-56. CF%, FF% and all 5-on-5 columns come from
+      fct_team_game_shot_attempts, from 2009-10, empty before. Shares and percentages are fractions from 0 to 1.
+      PDO = (shooting % + save %) x 100.
+    columns:
+      - name: team_season_key
+        description: season and team_id joined, as in fct_team_seasons.
+        data_tests: [unique, not_null]
+      - name: season
+        description: The season, 8 digits.
+        data_tests: [not_null]
+      - name: team_id
+        description: The team. Joins to dim_teams.
+        data_tests: [not_null]
+      - name: games_played
+        description: Regular-season games played (fct_team_games).
+      - name: cf_pct
+        description: Corsi for % = attempts for / (for + against), all situations. From 2009-10.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: ff_pct
+        description: Fenwick for % = unblocked attempts for / (for + against), all situations. From 2009-10.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: shooting_pct
+        description: Goals / shots on the opponents' goalies (empty-net goals left out). From 1955-56.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: save_pct
+        description: 1 - goals / shots against the team's goalies. From 1955-56.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: pdo
+        description: (shooting_pct + save_pct) x 100. League average is 100.
+      - name: cf_pct_5v5
+        description: CF% at 5-on-5 with both goalies in (situation_code 1551). From 2009-10.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: ff_pct_5v5
+        description: FF% at 5-on-5. From 2009-10.
+        data_tests:
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: shooting_pct_5v5
+        description: 5-on-5 goals / 5-on-5 shots on goal, from the play-by-play. From 2009-10.
+      - name: save_pct_5v5
+        description: 1 - 5-on-5 goals against / 5-on-5 shots on goal against. From 2009-10.
+      - name: pdo_5v5
+        description: (shooting_pct_5v5 + save_pct_5v5) x 100. From 2009-10.

@@ -8,7 +8,11 @@
 -- report's total (report totals matched the official figures to the second in all 1,775 player-games checked).
 -- An unmatched name keeps an empty player_id and fails the check shift_players_resolve. When the NHL fills a chart later, the chart replaces the report rows.
 
-{{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', tags=['shifts']) }}
+-- full_refresh=false (option A, docs/decisions.md): raw keeps only the season in progress, so a full rebuild would
+-- lose every older season. `--full-refresh` leaves this table as it is; to rebuild a season, use
+-- `uv run python -m ingest.shifts --season <season> --restore` and a normal build.
+{{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', full_refresh=false,
+          tags=['shifts']) }}
 
 with chart_shifts as (
 

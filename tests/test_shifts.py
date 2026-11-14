@@ -180,3 +180,81 @@ def test_games_with_a_chart_never_ask_for_reports(con, tmp_path):
     client = FakeStats()
     shifts.run(20252026, client, con, verbose=False, folder=tmp_path)
     assert client.html_urls == []
+
+
+# Option A: raw keeps only the season in progress; older seasons live in staging, fct_shifts and the laptop files.
+
+from ingest import prune_shifts  # noqa: E402
+
+
+def build_staging(con):
+    """Stand in for dbt: staging and fct_shifts copy the newest load of every game in raw."""
+    con.execute("create schema if not exists staging")
+    con.execute("create schema if not exists marts")
+    con.execute(f"""
+        create or replace table staging.stg_nhl_stats__shifts as
+        select game_id, season, (event ->> 'typeCode')::integer as type_code
+        from {SHIFT_TABLE} qualify loaded_at = max(loaded_at) over (partition by game_id)""")
+    con.execute("create or replace table marts.fct_shifts as "
+                "select game_id, season from staging.stg_nhl_stats__shifts where type_code = 517")
+
+
+def test_a_game_in_staging_is_not_loaded_again_after_raw_was_pruned(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    con.execute(f"delete from {SHIFT_TABLE}")
+    assert shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)[shifts.SHIFT_TABLE] == [0, 0]
+    assert con.execute(f"select count(*) from {SHIFT_TABLE}").fetchone()[0] == 0
+
+
+def test_restore_loads_games_missing_from_staging_from_the_files_with_no_requests(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    con.execute(f"delete from {SHIFT_TABLE}")
+    con.execute("delete from staging.stg_nhl_stats__shifts where game_id = 2025020002")  # lost from staging
+    assert shifts.restore(20252026, con, verbose=False, folder=tmp_path) == {
+        shifts.SHIFT_TABLE: [0, 3], shifts.REPORT_TABLE: [0, 0]}
+    assert con.execute(f"select distinct game_id from {SHIFT_TABLE}").fetchall() == [(2025020002,)]
+
+
+def test_prune_is_a_dry_run_unless_applied(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    assert prune_shifts.prune(con, 20262027, folder=tmp_path, verbose=False) == ([20252026], 0)
+    assert con.execute(f"select count(*) from {SHIFT_TABLE}").fetchone()[0] == 6
+    assert prune_shifts.prune(con, 20262027, apply=True, folder=tmp_path, verbose=False) == ([20252026], 6)
+    assert con.execute(f"select count(*) from {SHIFT_TABLE}").fetchone()[0] == 0
+
+
+def test_prune_keeps_the_season_in_progress(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    assert prune_shifts.prune(con, 20252026, apply=True, folder=tmp_path, verbose=False) == ([], 0)
+    assert con.execute(f"select count(*) from {SHIFT_TABLE}").fetchone()[0] == 6
+
+
+@pytest.mark.parametrize("break_it", [
+    "delete from staging.stg_nhl_stats__shifts where game_id = 2025020001",              # missing in staging
+    "delete from staging.stg_nhl_stats__shifts where game_id = 2025020001 and rowid in "
+    "(select min(rowid) from staging.stg_nhl_stats__shifts where game_id = 2025020001)",  # entries differ
+    "delete from marts.fct_shifts where game_id = 2025020001",                            # missing in fct_shifts
+])
+def test_prune_keeps_a_season_that_is_not_complete_downstream(con, tmp_path, break_it):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    con.execute(break_it)
+    assert prune_shifts.prune(con, 20262027, apply=True, folder=tmp_path, verbose=False) == ([], 0)
+    assert con.execute(f"select count(*) from {SHIFT_TABLE}").fetchone()[0] == 6
+
+
+def test_prune_keeps_a_season_whose_files_are_not_on_this_computer(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    build_staging(con)
+    (tmp_path / "20252026" / "2025020002.json.gz").unlink()
+    assert prune_shifts.prune(con, 20262027, apply=True, folder=tmp_path, verbose=False) == ([], 0)
+
+
+def test_prune_refuses_without_staging(con, tmp_path):
+    shifts.run(20252026, FakeStats(), con, verbose=False, folder=tmp_path)
+    with pytest.raises(RuntimeError):
+        prune_shifts.prune(con, 20262027, folder=tmp_path, verbose=False)

@@ -3,6 +3,34 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
+## 2026-11-14: raw shifts keep only the season in progress (option A), PROPOSED, not yet approved
+
+**Status: code ready on branch `storage/raw-shifts-current-season`; no data deleted.** The owner approves before
+the first `--apply`.
+
+**Proposal.** `raw.nhl_stats__shift` keeps only the season in progress. Older seasons' entries are deleted from raw
+once checked, and live on in `staging.stg_nhl_stats__shifts` and `marts.fct_shifts`, and as the full gzip charts on
+the laptop (`NHL_SHIFTS_DIR`).
+- **Why:** raw shifts are 2.06 GB of the database's 4.67 GB active storage (2026-11-14), almost all in the `event`
+  JSON column. Expected saving about 2.0 GB once the deleted rows have aged out of history and failsafe (about 14
+  days, during which the total is temporarily *higher*). Raw then grows to about 0.13 GB by the end of a season.
+- **Lost from MotherDuck:** the original entries of finished seasons. Nothing we model is lost: only staging reads
+  raw, and the marts read staging.
+- **Safeguards (all on the branch):**
+  1. `stg_nhl_stats__shifts` and `fct_shifts` have `full_refresh=false`, so `--full-refresh` cannot rebuild them from
+     a raw table that no longer holds old seasons.
+  2. `ingest/shifts.py` counts a game as loaded when it is in raw *or* in staging, and sends only games not loaded
+     yet (or asked for again), so rerunning an old season adds nothing.
+  3. The way back: `uv run python -m ingest.shifts --season <season> --restore` loads the season's games missing
+     from staging from the laptop files, with no requests; a normal dbt build adds them back. Tested in
+     `tests/test_shifts.py`.
+  4. The yearly step: `uv run python -m ingest.prune_shifts --keep <season in progress>` (a dry run unless
+     `--apply`), run on the laptop after the daily run moves to the new season. It deletes a season only when every
+     game is in staging with the same number of entries as its newest raw load, is in `fct_shifts`, and has its file
+     on the laptop; a season that fails is kept and reported.
+  5. This entry and the raw-layer exception in `CLAUDE.md`.
+- **Cost:** $0; one DELETE a year plus a few checking queries.
+
 ## 2026-11-13: records lists reloaded on Sundays
 
 **Decision (owner, 2026-11-13).** The daily run reloads the records lists (`ingest.records`: player list, draft,

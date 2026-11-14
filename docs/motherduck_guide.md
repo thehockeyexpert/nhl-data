@@ -43,6 +43,17 @@ estimate it from other tables.
   penalty kill (`times_short_handed`, `power_play_goals_against`), `short_handed_goals`, penalties, shots. PP% = sum
   of goals / sum of opportunities; PK% = 1 - goals against / times short-handed. Opportunities from 1977-78, shots
   1959-60, PP time 1997-98. Its goals leave out the shootout goal: use `goals_for` for scores.
+- `fct_shifts`: one row per player shift, from 2010-11 (`player_id`, `team_id`, period, `start_seconds`,
+  `end_seconds`, `duration_seconds`, `game_start_seconds`). `source` html_report marks games filled from the NHL's
+  HTML reports.
+- Advanced (definitions D30 to D33, all fractions 0 to 1; 5-on-5 = `situation_code` 1551):
+  `fct_team_game_shot_attempts` (Corsi, Fenwick, shots, goals for and against per team-game, all and `_5v5`, from
+  2009-10); `fct_team_season_advanced` (regular season: `cf_pct`, `ff_pct` from 2009-10; `shooting_pct`,
+  `save_pct`, `pdo` from 1955-56, from goalie stats, empty-net goals out); `fct_skater_season_rates` (per 60, from
+  1997-98; filter on `meets_d05_minimum` or `toi_minutes`).
+- Expected goals, **our own lookup model** (D33), from 2010-11: `fct_shot_xg` (per unblocked shot),
+  `fct_skater_season_xg` (`goals_above_expected`), `fct_team_game_xg`, `fct_team_season_xg` (`xgf_pct`). Say it
+  is our model, not MoneyPuck's or the NHL's; single seasons drift by up to 4% (`docs/data_coverage.md`).
 - `fct_skater_shootouts`: shootout attempts, goals, game-deciding goals per skater per regular season, from 2005-06.
   Minimums: 5 attempts for a season, 25 for a career (sum, then divide).
 - `fct_player_league_seasons`: one row per player, season, league, team and game type in every league on the
@@ -75,7 +86,7 @@ estimate it from other tables.
   `has_winner` false for the unfinished 1919 Final), `bridge_playoff_series_games`.
 - `goalie_records_vs_above_500`: question G01, still a DRAFT.
 
-**Not loaded, never estimate:** shifts, zone starts, expected goals, Game Score. Travel distances are not stored. Compute them (D20) as the
+**Not loaded, never estimate:** zone starts, on-ice stats (Corsi or xG while a player is on the ice), Game Score. Travel distances are not stored. Compute them (D20) as the
 great-circle distance between the arenas of a team's consecutive regular-season games (`fct_games.venue_name` joins
 `reference.venues.venue_name` for coordinates), from the home arena (`dim_team_home_cities`) to a season-opening road
 game and back home after a season-ending one.

@@ -133,6 +133,7 @@ The owner is new to Python and dbt: explain changes in plain language.
   `uv run python -m instagram.carousel render carousels/<name>.yml`; facts only: `uv run python -m instagram.carousel check carousels/<name>.yml`
 - Find a free-licence player photo on Wikimedia Commons: `uv run python -m instagram.photos search "<player>"`, then `download "File:..."` (saved in the git-ignored `assets/nhl/photos/`); a cut-out photo needs `uv run --group photos ...` to render
 - Render a race Reel (facts re-checked first): `uv run python -m instagram.race render reels/<name>.yml`
+- Rebuild the advanced stats (Corsi, Fenwick, PDO, per-60 rates, our xG model; nightly, `int_shot_geometry` and `fct_shot_xg` add only new games, and every shot is scored again when the goal rates change): `uv run dbt build --project-dir dbt --profiles-dir dbt --select tag:advanced assert_xg_calibrated`
 - Python tests: `uv run pytest`
 - Transform: `uv run dbt build --project-dir dbt --profiles-dir dbt`
 - Nightly transform (all tables and the data checks): `uv run dbt build --project-dir dbt --profiles-dir dbt --select config.materialized:table config.materialized:incremental test_type:singular --exclude tag:records tag:geonames tag:player_pages --indirect-selection empty --no-populate-cache`

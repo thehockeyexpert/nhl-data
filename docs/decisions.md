@@ -3,12 +3,13 @@
 A log of the owner's decisions that change what we load or model, with the date and the expected cost.
 The newest decision is first.
 
-## 2026-11-14: raw shifts keep only the season in progress (option A), PROPOSED, not yet approved
+## 2026-11-14: raw shifts keep only the season in progress (option A)
 
-**Status: code ready on branch `storage/raw-shifts-current-season`; no data deleted.** The owner approves before
-the first `--apply`.
+**Decision (owner, 2026-11-14).** Approved and merged. **No data deleted yet:** the owner runs the first dry run
+and then `--apply`, not before 2026-11-21, once the retained history from the shift backfill has aged out.
+Claude does not run `--apply`.
 
-**Proposal.** `raw.nhl_stats__shift` keeps only the season in progress. Older seasons' entries are deleted from raw
+`raw.nhl_stats__shift` keeps only the season in progress. Older seasons' entries are deleted from raw
 once checked, and live on in `staging.stg_nhl_stats__shifts` and `marts.fct_shifts`, and as the full gzip charts on
 the laptop (`NHL_SHIFTS_DIR`).
 - **Why:** raw shifts are 2.06 GB of the database's 4.67 GB active storage (2026-11-14), almost all in the `event`

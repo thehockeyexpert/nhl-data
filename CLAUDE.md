@@ -29,9 +29,9 @@ The owner is new to Python and dbt: explain changes in plain language.
   (from 2026-11-13), each exactly as received; the full play-by-play
   responses stay as gzip files on the owner's laptop, outside the repo (decided 2026-11-10).
   Exception: `nhl_stats__shift` holds one row per shift-chart entry (2010-11 on), each exactly as received; the full
-  charts stay as gzip files on the laptop (decided 2026-11-13). Proposed 2026-11-14 (option A, not yet approved):
-  it keeps only the season in progress; older seasons are deleted by `ingest.prune_shifts` after checks, the one
-  delete allowed in `raw`. `stg_nhl_stats__shifts` and `fct_shifts` must never be fully rebuilt (`full_refresh=false`).
+  charts stay as gzip files on the laptop (decided 2026-11-13). From 2026-11-14 (option A, decided; first prune
+  by the owner after 2026-11-21) it keeps only the season in progress; older seasons are deleted by
+  `ingest.prune_shifts` after checks, the one delete allowed in `raw`. `stg_nhl_stats__shifts` and `fct_shifts` must never be fully rebuilt (`full_refresh=false`).
   Exception: `nhl_web__player_season_total` holds one row per season-total entry of a player page, each exactly as
   received; the full pages stay as gzip files on the laptop (decided 2026-11-11).
 - `staging`: one dbt model per raw table. Unpack JSON, rename, cast types, dedupe. No business logic.

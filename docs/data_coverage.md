@@ -195,6 +195,29 @@ nothing. Observed when loaded:
   more than a minute (largest 287 s). Unexplained.
 - A team's shifts add up to about 6 x 60 minutes a game (goalie included); shifts average 57 seconds.
 
+## Advanced stats (shot attempts, shooting and save %, xG)
+
+Built 2026-11-13 from tables already loaded (`fct_team_game_shot_attempts`, `fct_team_season_advanced`,
+`fct_skater_season_rates`, `fct_shot_xg` and its roll-ups; definitions D30 to D33). Observed when built:
+- **Shot attempts from 2009-10 only**, shooting % and save % from 1955-56, per-60 rates from 1997-98, xG from 2010-11.
+- **Shots on goal, play-by-play vs box score:** in 2009-10 to 2026-27 the play-by-play's shots on goal differ from the
+  NHL's per-game team totals (`fct_team_game_stats.shots_for`) in 444 of 44,438 team-games, mostly by one (294 one
+  more, 76 one fewer); 122 of them in 2009-10. Unexplained. Goals match the final score in every team-game.
+- **Which net a shot attacked:** `home_team_defending_side` exists only from 2019-20. Earlier, the net is inferred
+  from the game's offensive- and defensive-zone shots, with ends changing each period; on 2019-20 to 2026-27 that
+  agrees with the NHL's side in 99.9% of periods. In 2010-11 to 2014-15, regular-season overtime was played at the
+  same ends as the 3rd period (observed from the shots; the overtime's own shots agree with switching ends in only
+  319 of 1,312 overtimes); from 2015-16 the ends switch.
+- **Rebounds recorded differently from about 2022-23:** unblocked attempts within 3 seconds of a same-team attempt
+  rise from about 6% of attempts (2010-11 to 2018-19) to 9.7% in 2022-23 and about 11% from 2023-24, while their
+  goal rate falls from about 20% to about 10% (within one second of a shot on goal: 19% in 2018-19, 4% in 2023-24).
+  Most are not the same shot recorded twice (different shooter or a different spot). Unexplained; it makes a
+  single xG model drift by era (see D33).
+- **xG vs actual goals, finished seasons** (two eras, D33): 2010-11 +1.13%, 2011-12 +1.47%, 2012-13 +0.10%, 2013-14
+  +0.53%, 2014-15 +0.60%, 2015-16 +2.17%, 2016-17 +1.42%, 2017-18 -2.06%, 2018-19 -3.73%, 2019-20 -1.98%, 2020-21
+  -3.24%, 2021-22 -1.37%, 2022-23 +1.02%, 2023-24 -1.62%, 2024-25 -1.41%, 2025-26 +2.58%. All seasons: -0.26%. With
+  one set of rates for all seasons the range was -4.4% to +6.0% (2025-26).
+
 ## Overtime rules
 
 `reference.overtime_rules` (2026-11-13). The play-by-play shows the early regular-season eras: before 1921-22 no

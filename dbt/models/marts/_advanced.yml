@@ -139,3 +139,128 @@ models:
       - name: meets_d05_minimum
         description: True when games_played is at least half of team_games (D05, skater single-season rates).
         data_tests: [not_null]
+
+  - name: int_shot_geometry
+    description: >
+      Intermediate step of our expected-goals model (D33) and of the carousel shot maps; for xG use fct_shot_xg.
+      One row per shot attempt from 2009-10 (xG uses 2010-11 on), regular season and playoffs, shootouts left out, blocked shots included (for the rebound
+      test): coordinates normalised so every shot attacks the net at x = +89, y = 0; distance and angle to that net;
+      strength from the shooter's side (even, power_play, short_handed, empty_net, unknown); rebound flag; the bands
+      used by dim_xg_goal_rates. Which net a shot attacked: home_team_defending_side when given (2019-20 on), else a
+      vote of the game's offensive- and defensive-zone shots with ends changing each period (regular-season overtime
+      before 2015-16 at the 3rd period's ends). See the model's SQL for the checks behind these rules.
+    columns:
+      - name: shot_key
+        description: >
+          The shot, as in fct_shots. Must still be in fct_shots: a game that changes is replaced whole, so a shot the
+          NHL removes disappears; this catches one that lingers.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_shots')
+                field: shot_key
+      - name: direction_source
+        description: nhl_side (home_team_defending_side) or game_vote. Empty if neither could say.
+      - name: x_norm
+        description: x in feet, with the attacked net at +89.
+      - name: y_norm
+        description: y in feet, mirrored with x so the shot's side of the net is kept.
+      - name: distance_ft
+        description: Straight-line distance from the shot to the centre of the attacked net (89, 0), in feet.
+      - name: angle_deg
+        description: >
+          Angle in degrees from the line straight out of the net: 0 = in front, 90 = level with the goal line,
+          above 90 = from behind the net.
+      - name: strength
+        description: >
+          From the shooter's side: empty_net when the defending goalie is out; otherwise even, power_play or
+          short_handed by skaters, an extra attacker for a pulled goalie not counted. unknown without situation_code.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['even', 'power_play', 'short_handed', 'empty_net', 'unknown']
+      - name: is_rebound
+        description: >
+          An unblocked attempt whose previous attempt in the same game and period, by either team, was by the same
+          team at most 3 seconds earlier.
+        data_tests: [not_null]
+      - name: loaded_at
+        description: When the game's play-by-play was loaded (from fct_shots). Incremental builds rebuild games newer than the table's latest.
+        data_tests: [not_null]
+
+  - name: dim_xg_goal_rates
+    description: >
+      The lookup table of our expected-goals model (D33): goal rate (goals / unblocked shots) by distance band, angle
+      band, shot type, rebound and strength, from unblocked shots of 2010-11 to the last finished season, separately
+      for two eras (xg_era: 2010-11 to 2021-22, and 2022-23 on). Six levels per era from finest (1, all five) to
+      coarsest (6, all shots of the era); an empty column means "any". A shot uses the finest usable level of its
+      own era (is_usable: at least 200 shots, or level 6).
+    columns:
+      - name: cell_key
+        description: Era, level and the five band values joined with |, * for "any".
+        data_tests: [unique, not_null]
+      - name: xg_era
+        description: 2010-11 to 2021-22, or 2022-23 on.
+        data_tests: [not_null]
+      - name: level
+        description: 1 (finest) to 6 (all shots).
+        data_tests: [not_null]
+      - name: shots
+        description: Unblocked shots in the cell.
+      - name: goals
+        description: Goals among them.
+      - name: goal_rate
+        description: goals / shots.
+        data_tests:
+          - not_null
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: is_usable
+        description: True when the cell holds at least 200 shots (always true at level 6).
+
+  - name: fct_shot_xg
+    description: >
+      One row per unblocked shot attempt (goal, shot on goal, missed shot) from 2010-11, regular season and playoffs,
+      shootouts left out, with its expected-goals value from our own transparent model (D33): the goal rate of the
+      finest usable cell of dim_xg_goal_rates. Blocked attempts count as 0 xG and are not listed. Not the xG of
+      MoneyPuck or the NHL; answers must say it is ours.
+    columns:
+      - name: shot_key
+        description: >
+          The shot, as in fct_shots. Must still be in int_shot_geometry (see there).
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_shot_geometry')
+                field: shot_key
+      - name: game_id
+        description: The game. Joins to fct_games.
+        data_tests: [not_null]
+      - name: xg
+        description: Expected goals for this shot, from 0 to 1.
+        data_tests:
+          - not_null
+          - value_between: {arguments: {min_value: 0, max_value: 1}}
+      - name: xg_level
+        description: The lookup level used, 1 (finest) to 6 (all shots).
+        data_tests: [not_null]
+      - name: xg_rates_version
+        description: >
+          Fingerprint of the goal rates this shot was scored with. All rows share one value; when dim_xg_goal_rates
+          changes (normally once a year, when a season finishes), every shot is scored again.
+        data_tests: [not_null]
+      - name: loaded_at
+        description: When the game's play-by-play was loaded (from int_shot_geometry).
+      - name: xg_cell_key
+        description: The dim_xg_goal_rates cell used.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_xg_goal_rates')
+                field: cell_key
+      - name: is_5v5
+        description: 5-on-5 with both goalies in (situation_code 1551).

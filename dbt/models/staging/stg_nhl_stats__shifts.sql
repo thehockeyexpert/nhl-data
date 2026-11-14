@@ -3,7 +3,11 @@
 -- files on the owner's laptop (decided 2026-11-13).
 -- Incremental, like stg_nhl_web__pbp_plays: a game loaded again replaces all of that game's earlier rows.
 
-{{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', tags=['shifts']) }}
+-- full_refresh=false (option A, docs/decisions.md): raw keeps only the season in progress, so a full rebuild would
+-- lose every older season. `--full-refresh` leaves this table as it is; to rebuild a season, use
+-- `uv run python -m ingest.shifts --season <season> --restore` and a normal build.
+{{ config(materialized='incremental', unique_key='game_id', incremental_strategy='delete+insert', full_refresh=false,
+          tags=['shifts']) }}
 
 with new_rows as (
 

@@ -311,3 +311,18 @@ def append_player_rows_file(con, table, path):
         )
         """
     ).fetchone()[0]
+
+
+def delete_seasons(con, table, seasons):
+    """Delete the given seasons' rows from a raw event table. Returns the number of rows deleted.
+
+    The one exception to raw being append-only (option A, docs/decisions.md): raw.nhl_stats__shift keeps only the
+    season in progress, once ingest.prune_shifts has checked that each older season is complete in staging and in the
+    files on the laptop. Nothing else calls this.
+    """
+    seasons = sorted({int(season) for season in seasons})
+    if not seasons:
+        return 0
+    qualified = _qualified(table)
+    placeholders = ", ".join("?" for _ in seasons)
+    return con.execute(f"DELETE FROM {qualified} WHERE season IN ({placeholders})", seasons).fetchone()[0]

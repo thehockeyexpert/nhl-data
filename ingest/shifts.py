@@ -24,6 +24,13 @@ reports for that game (home TH and visitor TV, nhl.com/scores/htmlreports) are f
 in raw.nhl_html__shift_report; dbt reads the shifts from them. A report the NHL has not published (404) is skipped and
 asked for again on a later run. A game already filled from its reports is not asked for again, unless it is recent.
 
+Raw keeps only the season in progress (option A, proposed 2026-11-14, docs/decisions.md): older seasons' entries are
+deleted from raw.nhl_stats__shift by `uv run python -m ingest.prune_shifts`, after checks, and live on in staging and
+fct_shifts (which are never rebuilt from raw) and in the files on the laptop. So "already loaded" means in raw OR in
+staging, and only games not loaded yet (or asked for again) are gathered and sent.
+The way back: `uv run python -m ingest.shifts --season 20152016 --restore` loads, from the files on this computer and
+with no requests, the season's games that are missing from staging; the next dbt build adds them back.
+
 The game list comes from raw.nhl_stats__game (load the schedule first).
 """
 
@@ -48,6 +55,8 @@ JOB = "shifts"
 
 SHIFT_URL = "https://api.nhle.com/stats/rest/en/shiftcharts?cayenneExp=gameId={game_id}"
 SHIFT_TABLE = "nhl_stats__shift"
+# Older seasons' shifts live here once raw keeps only the season in progress (option A).
+STAGING_TABLE = "staging.stg_nhl_stats__shifts"
 SHIFT_TYPE = 517  # a shift; 505 is a goal marker
 FIRST_SEASON = 20102011
 # The nightly run asks again for games with no shifts only this many days back.
@@ -77,11 +86,30 @@ def season_games(con, season):
     return final_games(con, season) if season >= FIRST_SEASON else {}
 
 
+def has_staging(con):
+    """Whether dbt has built the shift staging table in this database yet."""
+    schema, name = STAGING_TABLE.split(".")
+    return con.execute(
+        "select count(*) from information_schema.tables "
+        "where table_catalog = current_database() and table_schema = ? and table_name = ?",
+        [schema, name],
+    ).fetchone()[0] > 0
+
+
+def staged_games(con, season):
+    """The IDs of the season's games that have shift-chart entries in staging."""
+    if not has_staging(con):
+        return set()
+    rows = con.execute(f"select distinct game_id from {STAGING_TABLE} where season = ?", [season]).fetchall()
+    return {game_id for (game_id,) in rows}
+
+
 def loaded_games(con, season):
-    """The IDs of the season's games that already have shifts in the raw layer."""
+    """The IDs of the season's games that already have shifts: in the raw layer, or in staging for a season whose raw
+    entries have been deleted (raw keeps only the season in progress, option A)."""
     table = ensure_events_table(con, SHIFT_TABLE)
     rows = con.execute(f"select distinct game_id from {table} where season = ?", [season]).fetchall()
-    return {game_id for (game_id,) in rows}
+    return {game_id for (game_id,) in rows} | staged_games(con, season)
 
 
 def gather_shifts(season, game_ids, folder):
@@ -167,9 +195,12 @@ def fill_from_reports(client, con, season, game_ids, folder, verbose, refetch=()
 
 def load(client, con, season, game_ids, folder, verbose, refetch=(), report_refetch=()):
     """Download what is needed of game_ids, load their shifts, then fill empty charts from the HTML reports.
-    Returns {table: [requests, rows added]}."""
+    Only games not loaded yet, or asked for again (refetch), are gathered and sent: a game whose raw entries were
+    deleted but which is in staging is not loaded again (option A). Returns {table: [requests, rows added]}."""
     requests = download(client, season, game_ids, folder, verbose, refetch, url=SHIFT_URL)
-    added = append_events_file(con, SHIFT_TABLE, gather_shifts(season, game_ids, folder)) if game_ids else 0
+    loaded = loaded_games(con, season)
+    to_send = [game_id for game_id in game_ids if game_id in refetch or game_id not in loaded]
+    added = append_events_file(con, SHIFT_TABLE, gather_shifts(season, to_send, folder)) if to_send else 0
     reports = fill_from_reports(client, con, season, game_ids, folder, verbose, report_refetch)
     return {SHIFT_TABLE: [requests, added], REPORT_TABLE: [reports[0], reports[1]]}
 
@@ -198,17 +229,38 @@ def run_recent(season, client, con, days, today=None, verbose=True, folder=None)
     return load(client, con, season, sorted(new | recent), folder, verbose, refetch=new | recent, report_refetch=recent)
 
 
+def restore(season, con, verbose=True, folder=None):
+    """The way back (option A): load into raw again, from the files on this computer and with no requests, the
+    season's games that have a file on disk but no entries in staging. Games still in staging are left alone, so a
+    correction fetched later by the nightly run is not replaced by an older file. The next dbt build of
+    stg_nhl_stats__shifts and fct_shifts adds them back. Returns {table: [requests, rows added]}."""
+    folder = folder or files_folder()
+    staged = staged_games(con, season)
+    season_folder = folder / str(season)
+    to_send = sorted(game_id for game_id in season_games(con, season)
+                     if game_id not in staged and (season_folder / f"{game_id}.json.gz").exists())
+    added = append_events_file(con, SHIFT_TABLE, gather_shifts(season, to_send, folder)) if to_send else 0
+    if verbose:
+        # Counts only, never file content.
+        print(f"  {season}: {len(to_send)} games restored from files on disk, {added} rows added to raw")
+    return {SHIFT_TABLE: [0, added], REPORT_TABLE: [0, 0]}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--season", type=season_id, required=True, help="for example 20252026")
     parser.add_argument("--recent-days", type=int, help="nightly: new games, plus the last N days' games fetched again")
+    parser.add_argument("--restore", action="store_true",
+                        help="the way back: load the season's games missing from staging from the files on disk, no requests")
     args = parser.parse_args()
 
     started = time.monotonic()
     con = connect()
     client = NhlApiClient()
     try:
-        if args.recent_days:
+        if args.restore:
+            counts = restore(args.season, con)
+        elif args.recent_days:
             counts = run_recent(args.season, client, con, args.recent_days)
         else:
             ensure_log(con)

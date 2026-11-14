@@ -52,7 +52,7 @@ The owner is new to Python and dbt: explain changes in plain language.
 - `docs/`: metric definitions, and `data_coverage.md` (where the data is thin or different by era; read it before answering historical questions).
 - `analyst/`: golden questions for checking the conversational query layer. `question_inbox.md` (gitignored, on the
   laptop only) is the owner's list of questions to triage: answerable now, needs a load or definition, or not in NHL data.
-- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (07:00 UTC: ingest the current season, per-game team stats, play-by-play shots, hits, penalties and play events, shifts and shootout totals included, then the nightly dbt build; on Sundays the records lists and the full build). Its logs are public.
+- `.github/workflows/`: `geonames.yml` (GeoNames refresh, quarterly and on demand) and `daily.yml`, the daily run (06:23 UTC: ingest the current season, per-game team stats, play-by-play shots, hits, penalties and play events, shifts and shootout totals included, then the nightly dbt build; on Sundays the records lists and the full build). Its logs are public.
 - `data/`: local scratch, gitignored.
 - `instagram/`: Instagram images drawn from MotherDuck (`carousel.py` story carousels; `make_post.py` shared drawing
   helpers and the older single post), following `style/`. Images are saved outside the repo.

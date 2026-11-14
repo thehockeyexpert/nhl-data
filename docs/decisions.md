@@ -32,6 +32,13 @@ the laptop (`NHL_SHIFTS_DIR`).
   5. This entry and the raw-layer exception in `CLAUDE.md`.
 - **Cost:** $0; one DELETE a year plus a few checking queries.
 
+## 2026-11-14: daily run moved to 06:23 UTC
+
+**Decision (owner, 2026-11-14).** `.github/workflows/daily.yml` runs at 06:23 UTC instead of 07:00 UTC (cron
+`23 6 * * *`). GitHub's docs say scheduled runs can be delayed at busy times, the top of the hour especially; the
+07:00 run of 2026-11-13 started at 15:11. Nothing else changed; the cost is unchanged. A game not yet final when the
+run starts is picked up the next night, as before (the last 3 days are fetched again).
+
 ## 2026-11-13: records lists reloaded on Sundays
 
 **Decision (owner, 2026-11-13).** The daily run reloads the records lists (`ingest.records`: player list, draft,

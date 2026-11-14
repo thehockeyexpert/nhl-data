@@ -279,8 +279,8 @@ Last updated: 2026-11-13
 
 ## Daily run (started 2026-10-15)
 
-- **Workflow:** `.github/workflows/daily.yml`. Every day at 07:00 UTC (11:00 UTC until 2026-11-10), and by hand from
-  the Actions tab.
+- **Workflow:** `.github/workflows/daily.yml`. Every day at 06:23 UTC (07:00 UTC from 2026-11-11, 11:00 UTC until
+  2026-11-10), and by hand from the Actions tab.
   1. Install the locked packages and run `uv run pytest` (no network, no database).
   2. Ingest the season in the repository variable `CURRENT_SEASON`: `ingest.schedule`, `ingest.goalies`,
      `ingest.skaters`, `ingest.skater_games --recent-days 3`, `ingest.standings`, then
